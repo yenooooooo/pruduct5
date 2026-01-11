@@ -30,6 +30,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Accessible only to users with `admin` custom claims.
     - Displays a list of all users and their PRO status.
     - Allows administrators to toggle PRO status for any user.
+    - Includes a "cheat" button to create 5 days of success data for testing the weekly report feature.
 
 ### UI Components
 - **Header**: Sticky navigation bar with logo, navigation links (Features, PRO, Pricing), "Start" button, and Dark Mode toggle.
@@ -46,6 +47,14 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Dynamically displays an AI-powered weekly report (after 3 consecutive days) within the user interface.
     - Presents personalized habit analysis and AI-generated advice.
     - Features a locked state with an engaging preview for free users, encouraging PRO upgrade.
+- **Admin Panel**:
+    - Displays a list of all users and their PRO status.
+    - Allows administrators to toggle PRO status for any user.
+    - Includes a "cheat" button to create 5 days of success data for testing.
+- **Admin Panel**:
+    - Displays a list of all users and their PRO status.
+    - Allows administrators to toggle PRO status for any user.
+    - Includes a "cheat" button to create 5 days of success data for testing.
 - **Footer**: Contains copyright information and support email.
 
 ### Firebase Integration
