@@ -100,7 +100,19 @@ section {
   clip-path: ellipse(150% 100% at 50% 0%); /* 아래쪽이 둥근 곡선 */
   padding: 0 20px;
 }
-  </style>
+  .tier-bronze { background: #cd7f32; color: white; }
+.tier-silver { background: #c0c0c0; color: #333; }
+.tier-gold { background: #ffd700; color: #333; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+.tier-platinum { background: #e5e4e2; color: #555; border: 1px solid #aaa; }
+.tier-diamond { background: #b9f2ff; color: #333; box-shadow: 0 0 15px rgba(185, 242, 255, 0.8); }
+.tier-master { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; }
+.tier-bronze { background: #cd7f32; color: white; }
+.tier-silver { background: #c0c0c0; color: #333; }
+.tier-gold { background: #ffd700; color: #333; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+.tier-platinum { background: #e5e4e2; color: #555; border: 1px solid #aaa; }
+.tier-diamond { background: #b9f2ff; color: #333; box-shadow: 0 0 15px rgba(185, 242, 255, 0.8); }
+.tier-master { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; }
+</style>
 </head>
 <body>
 
@@ -197,6 +209,14 @@ section {
 
       <div id="app" style="display:none">
         <h2 id="welcome" style="font-size: 1.5rem;"></h2>
+        <div id="tierBadge" style="display:none; margin: 10px 0;">
+          <span id="tierText" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;"></span>
+          <p id="streakCount" style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;"></p>
+        </div>
+        <div id="tierBadge" style="display:none; margin: 10px 0;">
+          <span id="tierText" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;"></span>
+          <p id="streakCount" style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;"></p>
+        </div>
         <div id="themeSection">
            <p style="font-size: 0.9rem; font-weight: 700;">🎁 오늘의 루틴 팩</p>
            <div class="tag-container">
@@ -430,12 +450,15 @@ onAuthStateChanged(auth, async user => {
 
     // ✅ 7일 연속 달성 시 PRO 팝업(무료 유저만)
     await maybeShow7DayPopup(user.uid, isPro);
+    
+    // 티어 UI 업데이트
+    await refreshUserTier();
   } catch (e) {
     console.error("Token error:", e);
   }
 });
 
-// 3. 습관 저장 로직 수정 (기존 habitBtn.onclick 부분 업데이트)
+// 2. 습관 완료 버튼 로직 확장
 habitBtn.onclick = async () => {
   const user = auth.currentUser;
   if(!user) return;
@@ -454,8 +477,20 @@ habitBtn.onclick = async () => {
     timestamp: new Date()
   });
 
-  habitBtn.classList.add("done");
-  celebrate(); // 효과 호출
+  // [추가] 연속 성공 횟수 가져오기 및 티어 업데이트
+  const streak = await getConsecutiveStreak(user.uid); // 기존에 만든 함수 호출
+  updateTierUI(streak);
+  
+  // [추가] 지능형 리마인드 예약 (스케줄러 호출)
+  // 사용자가 '지금' 완료했다면, 내일 이 시간에도 완료할 확률이 높음!
+  const now = new Date();
+  const nextTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+  // 아래는 제가(모델이) 나중에 처리할 수 있도록 스케줄링 도구를 사용하는 부분입니다.
+  // 실제 서비스 시에는 백엔드 알림 API를 호출하거나 아래 도구를 사용합니다.
+  scheduleNextReminder(habitName);
+
+  celebrate(); // 파티 효과
 };
 
 goProBtn.onclick = () => {
@@ -719,6 +754,60 @@ function celebrate() {
   
   // 브라우저 기본 알림 대신 커스텀 메시지
   status.innerHTML = `<span style="color:#22c55e; font-weight:bold; font-size:1.2em;">🎉 미션 완료! 내일도 함께해요.</span>`;
+}
+
+// 1. 티어 계산기 함수
+function updateTierUI(streak) {
+  const tierBadge = document.getElementById("tierBadge");
+  const tierText = document.getElementById("tierText");
+  const streakCount = document.getElementById("streakCount");
+  
+  tierBadge.style.display = "block";
+  streakCount.innerText = `🔥 현재 ${streak}일 연속 성공 중!`;
+
+  let tier = "";
+  let tierClass = "";
+
+  if (streak >= 30) { tier = "🏆 GRANDMASTER"; tierClass = "tier-master"; }
+  else if (streak >= 20) { tier = "💎 DIAMOND"; tierClass = "tier-diamond"; }
+  else if (streak >= 14) { tier = "✨ PLATINUM"; tierClass = "tier-platinum"; }
+  else if (streak >= 7) { tier = "🥇 GOLD"; tierClass = "tier-gold"; }
+  else if (streak >= 3) { tier = "🥈 SILVER"; tierClass = "tier-silver"; }
+  else { tier = "🥉 BRONZE"; tierClass = "tier-bronze"; }
+
+  tierText.innerText = tier;
+  tierText.className = ""; // 기존 클래스 제거
+  tierText.classList.add(tierClass);
+}
+
+// 티어 UI 업데이트 로직 (JavaScript)
+async function refreshUserTier() {
+  const user = auth.currentUser;
+  const streak = await getConsecutiveStreak(user.uid); // 연속 성공 일수 계산 함수
+  
+  const tierBadge = document.getElementById("tierBadge");
+  const tierText = document.getElementById("tierText");
+  const streakCount = document.getElementById("streakCount");
+  
+  tierBadge.style.display = "block";
+  streakCount.innerText = `🔥 현재 ${streak}일 연속 성공 중!`;
+
+  let tier = "🥉 BRONZE";
+  let tierClass = "tier-bronze";
+
+  if (streak >= 30) { tier = "🏆 MASTER"; tierClass = "tier-master"; }
+  else if (streak >= 14) { tier = "✨ PLATINUM"; tierClass = "tier-platinum"; }
+  else if (streak >= 7) { tier = "🥇 GOLD"; tierClass = "tier-gold"; }
+  else if (streak >= 3) { tier = "🥈 SILVER"; tierClass = "tier-silver"; }
+
+  tierText.innerText = tier;
+  tierText.className = "tier-tag " + tierClass; // 클래스 적용
+}
+
+// 습관 완료 버튼 클릭 시 알림 예약 (가상 로직)
+function scheduleNextReminder(habitName) {
+  console.log(`[AI 알림 예약] 내일 이 시간에 '${habitName}' 알림을 보냅니다.`);
+  // 실제 서비스 시 알림 API 호출 위치
 }
 // [추가 코드] 5일 연속 성공 치트키 로직
 const cheatStreakBtn = document.getElementById("cheatStreakBtn");

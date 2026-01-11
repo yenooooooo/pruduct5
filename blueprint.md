@@ -33,6 +33,14 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Includes a "cheat" button to create 5 days of success data for testing the weekly report feature.
 - **Habit Completion Effects**:
     - Provides a visual (button scaling) and textual (status message update) celebration effect upon successful habit completion.
+- **Tier System**:
+    - Calculates and displays user tiers (Bronze, Silver, Gold, etc.) based on their consecutive habit streak.
+- **Intelligent Reminders (Simulation)**:
+    - Simulates scheduling a reminder for the next day at the same time a habit is completed.
+- **Tier System**:
+    - Calculates and displays user tiers (Bronze, Silver, Gold, etc.) based on their consecutive habit streak.
+- **Intelligent Reminders (Simulation)**:
+    - Simulates scheduling a reminder for the next day at the same time a habit is completed.
 
 ### UI Components
 - **Header**: Sticky navigation bar with logo, navigation links (Features, PRO, Pricing), "Start" button, and Dark Mode toggle.
@@ -47,6 +55,8 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Dynamically switches between a streamlined login/signup form and the main application interface.
     - The app view now features a redesigned habit theme selector with a new tag container, and a restyled, less intrusive logout button.
     - Includes a celebration effect upon habit completion.
+- **Tier Badge**:
+    - Displays the user's current tier and streak count in the main app view.
 - **Habit Theme Section**:
     - Restyled with a new `tag-container` for better alignment and responsiveness.
     - Button labels have been shortened for a cleaner look.
