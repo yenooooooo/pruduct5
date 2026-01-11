@@ -126,6 +126,41 @@ input:focus {
   outline: none;
   background: white;
 }
+
+/* Global Centering and Layout */
+section {
+  padding: 80px 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; /* Center sections themselves */
+  text-align: center; /* Center content within sections by default */
+}
+
+ul, ol {
+  max-width: 600px; /* Limit width for readability */
+  margin: 20px auto; /* Center lists */
+  padding-left: 0; /* Remove default padding for lists */
+  list-style-position: inside; /* Adjust list item marker position */
+  text-align: left; /* Keep list text left-aligned within the list block */
+}
+
+#mainContainer {
+  width: 100%;
+  max-width: 900px; /* Keep max-width */
+  margin: 40px auto; /* Adjust margin for spacing */
+  display: flex;
+  gap: 24px; /* Increase gap slightly */
+  align-items: flex-start; /* Align items to the start of the cross axis */
+  justify-content: center; /* Center items along the main axis */
+  flex-wrap: wrap;
+}
+
+.auth-card, #adminPanel { /* adminPanel에도 적용 */
+  flex: 1; /* Allow cards to grow and shrink */
+  min-width: 300px; /* Minimum width for responsiveness */
+  max-width: 420px; /* Max width for single column layout */
+  text-align: center; /* Center text within cards */
+}
   </style>
 </head>
 <body>

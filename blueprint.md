@@ -74,6 +74,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **AI Coach Report Styles**: Dedicated CSS for the AI Coach card, badges, text, and failure highlights.
 - **Theme Tag Styles**: CSS for the habit theme selection buttons, including active state.
 - **Glassmorphism & Minimalism**: Overall design incorporating glassmorphism effects for cards and a minimalist aesthetic with refined color palettes and button animations.
+- **Layout & Alignment**: Global centering for sections and content, improved centering for lists, and refined main container/card layouts for better visual balance and responsiveness.
 
 ### External Libraries/Resources
 - **Firebase SDK**: Via CDN.
