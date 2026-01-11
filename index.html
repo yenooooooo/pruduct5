@@ -7,303 +7,124 @@
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&amp;display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg-color: #f9fafb;
-      --text-color: #111;
-      --card-bg: #fff;
-      --card-shadow: rgba(0,0,0,0.15);
-      --input-border: #ddd;
-      --pro-card-bg: #fef3c7;
-      --admin-panel-bg: #e0f2fe;
-      --habit-bg: #eee;
-      --habit-color: #333;
-      --bgm-bg: rgba(255,255,255,0.92);
-    }
-    .dark-mode {
-      --bg-color: #1a202c;
-      --text-color: #f7fafc;
-      --card-bg: #2d3748;
-      --card-shadow: rgba(0,0,0,0.4);
-      --input-border: #4a5568;
-      --pro-card-bg: #4a5568;
-      --admin-panel-bg: #2d3748;
-      --habit-bg: #4a5568;
-      --habit-color: #f7fafc;
-      --bgm-bg: rgba(45, 55, 72, 0.92);
-    }
+:root {
+  --bg-color: #f0f2f5;
+  --text-color: #1a202c;
+  --primary-color: #6366f1; /* 세련된 인디고 블루 */
+  --accent-color: #f59e0b; /* 따뜻한 골드(PRO용) */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+}
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Pretendard, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-    section { padding: 80px 20px; width: 100%; max-width: 1200px; }
-    h1,h2,h3 { margin: 0 0 16px; color: var(--text-color); }
-    p { color: var(--text-color); line-height: 1.6; }
+.dark-mode {
+  --bg-color: #0f172a; /* 깊은 네이비 */
+  --text-color: #f1f5f9;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
 
-    /* Header */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--card-bg);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px var(--card-shadow);
-      width: 100%;
-    }
-    header .logo { font-weight: 700; font-size: 20px; color: var(--text-color); }
-    header nav { display: flex; align-items: center; gap: 16px; }
-    header nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-weight: 500;
-    }
-    header .btn-start {
-      padding: 10px 16px;
-      border-radius: 10px;
-      border: none;
-      background: #667eea;
-      color: #fff;
-      cursor: pointer;
-    }
+body {
+  margin: 0;
+  font-family: 'Pretendard', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg,#667eea,#764ba2);
-      color: #fff;
-      text-align: center;
-      width: 100%;
-      max-width: 100%;
-      padding: 100px 20px;
-    }
-    .hero h1 { font-size: 42px; color: #fff; }
-    .hero p { color: #e5e7eb; font-size: 18px; }
-    .hero button {
-      margin-top: 24px;
-      padding: 14px 24px;
-      font-size: 16px;
-      border-radius: 14px;
-      border: none;
-      background: #fff;
-      color: #333;
-      font-weight: 600;
-      cursor: pointer;
-    }
+/* 글래스모피즘 카드 스타일 */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  padding: 30px;
+  transition: transform 0.3s ease;
+}
 
-    /* Problem */
-    .problem ul {
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 0;
-      list-style: none;
-    }
-    .problem li { margin-bottom: 10px; font-size: 15px; }
+.glass-card:hover {
+  transform: translateY(-5px);
+}
 
-    /* Features */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-      gap: 24px;
-      max-width: 900px;
-      margin: auto;
-      text-align: center;
-    }
-    .features div {
-      background: var(--card-bg);
-      padding: 24px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px var(--card-shadow);
-    }
+/* 버튼 디자인 개선 */
+button {
+  transition: all 0.2s ease;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.5px;
+}
 
-    /* PRO */
-    .pro {
-      background: var(--pro-card-bg);
-      text-align: center;
-      border-radius: 20px;
-      margin: 40px auto;
-    }
-    .pro ul {
-      list-style: none;
-      padding: 0;
-      max-width: 400px;
-      margin: 20px auto;
-    }
+button:active {
+  transform: scale(0.96);
+}
 
-    /* Flow */
-    .flow ol {
-      max-width: 400px;
-      margin: auto;
-      font-size: 16px;
-    }
-    .flow li { margin-bottom: 12px; }
+#loginBtn, .btn-start {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
 
-    /* Pricing */
-    .pricing {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-      gap: 24px;
-      max-width: 700px;
-      margin: auto;
-    }
-    .pricing .card {
-      background: var(--card-bg);
-      padding: 24px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 10px 30px var(--card-shadow);
-    }
-    .pricing .highlight { border: 2px solid #667eea; }
+/* 습관 버튼 - 더 크게, 더 직관적으로 */
+#habitBtn {
+  height: 60px;
+  font-size: 18px !important;
+  background: white;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  margin-top: 20px;
+}
 
-    /* Auth/App Styles */
-    #mainContainer {
-      width: 100%;
-      max-width: 900px;
-      margin: 20px auto;
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .auth-card {
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px var(--card-shadow);
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid var(--input-border);
-      background: var(--bg-color);
-      color: var(--text-color);
-    }
-    button.habit, button.logout, #loginBtn, #goProBtn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #loginBtn { background: #667eea; color: white; }
-    .habit { background: var(--habit-bg); color: var(--habit-color); }
-    .habit.done { background: #48bb78; color: white; }
-    .logout { background: #e53e3e; color: white; margin-top: 20px; }
+#habitBtn.done {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+}
 
-    /* Admin Panel */
-    #adminPanel {
-      background: var(--admin-panel-bg);
-      box-shadow: 0 20px 40px var(--card-shadow);
-      width: 100%;
-      max-width: 420px;
-      border-radius: 20px;
-      padding: 16px;
-    }
-
-    /* Footer */
-    footer {
-      padding: 40px 20px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-color);
-      background: var(--card-bg);
-      width: 100%;
-    }
-
-    /* BGM Player */
-    #bgm {
-      position: fixed; right: 16px; bottom: 16px; z-index: 9999;
-      background: var(--bgm-bg);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(0,0,0,0.08);
-      padding: 12px; border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      width: 260px;
-      color: var(--text-color);
-    }
-
-    /* Mobile */
-    @media (max-width: 768px) {
-      header nav a { display: none; }
-      .hero h1 { font-size: 32px; }
-      #mainContainer { flex-direction: column; align-items: center; }
-    }
-
+/* 테마 태그 스타일 개선 */
 .theme-tag {
-    white-space: nowrap;
-    padding: 8px 14px;
-    border-radius: 20px;
-    border: 1px solid #667eea;
-    background: white;
-    color: #667eea;
-    font-size: 13px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .theme-tag.active {
-    background: #667eea;
-    color: white;
-  }
+  background: transparent;
+  border: 1.5px solid #e2e8f0;
+  color: #64748b;
+  padding: 10px 18px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
 
-  .theme-tag {
-    white-space: nowrap;
-    padding: 8px 14px;
-    border-radius: 20px;
-    border: 1px solid #667eea;
-    background: white;
-    color: #667eea;
-    font-size: 13px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .theme-tag.active {
-    background: #667eea;
-    color: white;
-  }
+.theme-tag.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+}
 
-/* AI 코치 리포트 스타일 */
-.ai-coach-card {
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 12px;
-  position: relative;
-  overflow: hidden;
+/* 헤더 - 고정형 메뉴 */
+header {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
-.dark-mode .ai-coach-card {
-  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-  border-color: #4a5568;
+
+/* Hero 섹션 - 부드러운 그라데이션 */
+.hero {
+  background: radial-gradient(circle at top right, #6366f1, #4f46e5);
+  border-radius: 0 0 50px 50px;
 }
-.ai-coach-badge {
-  background: #667eea; color: white;
-  font-size: 11px; font-weight: bold;
-  padding: 4px 8px; border-radius: 6px;
-  display: inline-block; margin-bottom: 8px;
+
+/* 입력창 */
+input {
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 14px !important;
+  font-size: 15px;
 }
-.ai-advice-text {
-  font-size: 14px; line-height: 1.5; color: #374151; margin-top: 4px;
-}
-.dark-mode .ai-advice-text { color: #e2e8f0; }
-.worst-day-highlight {
-  color: #e53e3e; font-weight: 800;
+
+input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  background: white;
 }
   </style>
 </head>
@@ -389,7 +210,7 @@
 
 <section id="authSection">
   <div id="mainContainer">
-    <div class="auth-card">
+    <div class="auth-card glass-card">
       <div id="auth">
         <h1>HabitFlow</h1>
         <input id="email" placeholder="이메일">
@@ -471,7 +292,7 @@
       </div>
     </div>
 
-    <div id="adminPanel" style="display:none;">
+    <div id="adminPanel" class="glass-card" style="display:none; border: 2px solid #6366f1;">
       <h3>👑 관리자 패널</h3>
       <button id="adminTestBtn" style="width:100%; padding:10px; margin-bottom:12px; cursor:pointer;">
         관리자 기능 테스트
@@ -718,7 +539,7 @@ habitBtn.onclick = async () => {
   });
 
   habitBtn.classList.add("done");
-  status.innerText = `✅ [${habitName}] 완료!`;
+  celebrate(); // 효과 호출
 };
 
 goProBtn.onclick = () => {
@@ -972,6 +793,16 @@ async function loadAllUsers() {
     console.error("User load error:", error);
     userListDiv.innerHTML = "권한이 없거나 불러오기 실패";
   }
+}
+
+// 습관 완료 시 간단한 이펙트 함수
+function celebrate() {
+  const btn = document.getElementById("habitBtn");
+  btn.style.transform = "scale(1.1)";
+  setTimeout(() => { btn.style.transform = "scale(1)"; }, 200);
+  
+  // 브라우저 기본 알림 대신 커스텀 메시지
+  status.innerHTML = `<span style="color:#22c55e; font-weight:bold; font-size:1.2em;">🎉 미션 완료! 내일도 함께해요.</span>`;
 }
 // [추가 코드] 5일 연속 성공 치트키 로직
 const cheatStreakBtn = document.getElementById("cheatStreakBtn");

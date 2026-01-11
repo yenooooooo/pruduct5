@@ -16,7 +16,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Habit completion is logged in Firebase Firestore, storing the habit name and timestamp.
     - Streak visualization for PRO users.
 - **Weekly Report (AI Coach)**:
-    - Displays a personalized report with AI-driven insights after 3 consecutive days of habit completion (previously 7 days).
+    - Displays a personalized report with AI-driven insights after 3 consecutive days of habit completion.
     - Analyzes habit patterns and provides tailored advice (e.g., identifying "worst day" for habits).
     - Locked for free users (with a more engaging preview message), unlocked for PRO users.
 - **Dark Mode**:
@@ -31,6 +31,8 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Displays a list of all users and their PRO status.
     - Allows administrators to toggle PRO status for any user.
     - Includes a "cheat" button to create 5 days of success data for testing the weekly report feature.
+- **Habit Completion Effects**:
+    - Provides a visual (button scaling) and textual (status message update) celebration effect upon successful habit completion.
 
 ### UI Components
 - **Header**: Sticky navigation bar with logo, navigation links (Features, PRO, Pricing), "Start" button, and Dark Mode toggle.
@@ -43,6 +45,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Authentication/App Section**:
     - Dynamically switches between login/signup form and the main application interface based on user authentication status.
     - Displays user's email, today's date, habit completion button, status messages, and PRO upgrade option.
+    - Now includes a celebration effect upon habit completion.
 - **Weekly Report Section (AI Coach Integration)**:
     - Dynamically displays an AI-powered weekly report (after 3 consecutive days) within the user interface.
     - Presents personalized habit analysis and AI-generated advice.
@@ -70,6 +73,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Modern Design Principles**: Clean layout, clear typography (Pretendard font), use of shadows and gradients for visual depth.
 - **AI Coach Report Styles**: Dedicated CSS for the AI Coach card, badges, text, and failure highlights.
 - **Theme Tag Styles**: CSS for the habit theme selection buttons, including active state.
+- **Glassmorphism & Minimalism**: Overall design incorporating glassmorphism effects for cards and a minimalist aesthetic with refined color palettes and button animations.
 
 ### External Libraries/Resources
 - **Firebase SDK**: Via CDN.
@@ -80,4 +84,4 @@ HabitFlow is a web-based habit tracking application designed to help users build
 
 The initial setup of the Firebase Studio environment is complete. The `.idx/mcp.json` configuration is correctly in place. The `index.html` file now contains the full HabitFlow application, resolving previous discrepancies.
 
-For now, the application structure and core features are outlined above based on the provided `index.html`. The next step will be to address the typo in the font import URL within `index.html`, and then continue with further development tasks as requested by the user.
+For now, the application structure and core features are outlined above based on the provided `index.html`. The next step will be to finalize the styling updates and push changes to reflect the improved UI/UX.
