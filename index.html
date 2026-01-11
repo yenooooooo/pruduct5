@@ -221,7 +221,10 @@ section {
         <button id="habitBtn" class="habit">오늘 습관 완료</button>
         <p id="status"></p>
         
-        <div id="stats" style="display:none;">...</div>
+        <div id="stats" style="display:none;">
+          <h3>📊 나의 습관 통계</h3>
+          <p id="totalDays"></p>
+        </div>
         <div id="weeklyReport" style="display:none;">...</div>
 
         <button class="logout" id="logoutBtn" style="background:none; color:#94a3b8; font-size:0.8rem; text-decoration:underline;">로그아웃</button>
@@ -360,8 +363,10 @@ const weeklyReportBody = document.getElementById("weeklyReportBody");
 const weeklyReportLocked = document.getElementById("weeklyReportLocked");
 const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
 
-const todayStr = new Date().toISOString().slice(0,10);
-today.innerText = ` ${todayStr}`;
+// 안전하게 today 텍스트 넣기 (요소 없으면 그냥 스킵)
+const todayEl = document.getElementById("today");
+const todayStr = new Date().toISOString().slice(0, 10);
+if (todayEl) todayEl.textContent = `📅 ${todayStr}`;
 
 // Login Handler
 loginBtn.onclick = async () => {
@@ -385,7 +390,7 @@ loginBtn.onclick = async () => {
     } else if (error.code === "auth/invalid-email") {
       alert("잘못된 이메일 형식입니다.");
     } else {
-      console.error("Login error:", error);
+      console.error("Login error:", error.code, error.message);
       alert("로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
   }
