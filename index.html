@@ -743,59 +743,26 @@ function celebrate() {
   status.innerHTML = `<span style="color:#22c55e; font-weight:bold; font-size:1.2em;">🎉 미션 완료! 내일도 함께해요.</span>`;
 }
 
-// 1. 티어 계산기 함수
-function updateTierUI(streak) {
-  const tierBadge = document.getElementById("tierBadge");
-  const tierText = document.getElementById("tierText");
-  const streakCount = document.getElementById("streakCount");
-  
-  tierBadge.style.display = "block";
-  streakCount.innerText = `🔥 현재 ${streak}일 연속 성공 중!`;
+// ===== 티어 UI =====
+  function updateTierUI(streak){
+    if (!tierBadge || !tierText || !streakCount) return;
 
-  let tier = "";
-  let tierClass = "";
+    tierBadge.style.display = "block";
+    streakCount.textContent = `🔥 현재 ${streak}일 연속 성공 중!`;
 
-  if (streak >= 30) { tier = "🏆 GRANDMASTER"; tierClass = "tier-master"; }
-  else if (streak >= 20) { tier = "💎 DIAMOND"; tierClass = "tier-diamond"; }
-  else if (streak >= 14) { tier = "✨ PLATINUM"; tierClass = "tier-platinum"; }
-  else if (streak >= 7) { tier = "🥇 GOLD"; tierClass = "tier-gold"; }
-  else if (streak >= 3) { tier = "🥈 SILVER"; tierClass = "tier-silver"; }
-  else { tier = "🥉 BRONZE"; tierClass = "tier-bronze"; }
+    let label = "🥉 BRONZE";
+    let cls = "tier-bronze";
+    if (streak >= 30) { label = "🏆 GRANDMASTER"; cls = "tier-master"; }
+    else if (streak >= 20) { label = "💎 DIAMOND"; cls = "tier-diamond"; }
+    else if (streak >= 14) { label = "✨ PLATINUM"; cls = "tier-platinum"; }
+    else if (streak >= 7) { label = "🥇 GOLD"; cls = "tier-gold"; }
+    else if (streak >= 3) { label = "🥈 SILVER"; cls = "tier-silver"; }
 
-  tierText.innerText = tier;
-  tierText.className = ""; // 기존 클래스 제거
-  tierText.classList.add(tierClass);
-}
+    tierText.textContent = label;
+    tierText.className = ""; // reset
+    tierText.classList.add("badge", cls);
+  }
 
-// 티어 UI 업데이트 로직 (JavaScript)
-async function refreshUserTier() {
-  const user = auth.currentUser;
-  const streak = await getConsecutiveStreak(user.uid); // 연속 성공 일수 계산 함수
-  
-  const tierBadge = document.getElementById("tierBadge");
-  const tierText = document.getElementById("tierText");
-  const streakCount = document.getElementById("streakCount");
-  
-  tierBadge.style.display = "block";
-  streakCount.innerText = `🔥 현재 ${streak}일 연속 성공 중!`;
-
-  let tier = "🥉 BRONZE";
-  let tierClass = "tier-bronze";
-
-  if (streak >= 30) { tier = "🏆 MASTER"; tierClass = "tier-master"; }
-  else if (streak >= 14) { tier = "✨ PLATINUM"; tierClass = "tier-platinum"; }
-  else if (streak >= 7) { tier = "🥇 GOLD"; tierClass = "tier-gold"; }
-  else if (streak >= 3) { tier = "🥈 SILVER"; tierClass = "tier-silver"; }
-
-  tierText.innerText = tier;
-  tierText.className = "tier-tag " + tierClass; // 클래스 적용
-}
-
-// 습관 완료 버튼 클릭 시 알림 예약 (가상 로직)
-function scheduleNextReminder(habitName) {
-  console.log(`[AI 알림 예약] 내일 이 시간에 '${habitName}' 알림을 보냅니다.`);
-  // 실제 서비스 시 알림 API 호출 위치
-}
 // [추가 코드] 5일 연속 성공 치트키 로직
 const cheatStreakBtn = document.getElementById("cheatStreakBtn");
 
