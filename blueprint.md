@@ -1,0 +1,64 @@
+# HabitFlow Application Blueprint
+
+## Overview
+HabitFlow is a web-based habit tracking application designed to help users build and maintain positive habits. It features user authentication, habit logging, progress visualization, and different tiers of access (Free, PRO, Admin) managed through Firebase. The application includes a modern and responsive user interface, dark mode functionality, and integrated background music.
+
+## Detailed Outline
+
+### Core Functionality
+- **User Authentication**:
+    - Sign in and sign up with email and password using Firebase Authentication.
+    - Automatic user session management.
+    - Logout functionality.
+- **Habit Tracking**:
+    - Free users can track one habit per day.
+    - PRO users have unlimited habit tracking and access to advanced statistics.
+    - Habit completion is logged in Firebase Firestore.
+    - Streak visualization for PRO users.
+- **Dark Mode**:
+    - Toggle functionality to switch between light and dark themes.
+    - Uses CSS variables for easy theme management.
+    - Persists user preference using `localStorage`.
+- **Background Music (BGM) Player**:
+    - Integrated audio player with play/pause and volume controls.
+    - Uses a pre-defined audio source from an external CDN.
+- **Admin Panel**:
+    - Accessible only to users with `admin` custom claims.
+    - Displays a list of all users and their PRO status.
+    - Allows administrators to toggle PRO status for any user.
+
+### UI Components
+- **Header**: Sticky navigation bar with logo, navigation links (Features, PRO, Pricing), "Start" button, and Dark Mode toggle.
+- **Hero Section**: Prominent banner with a catchy headline and call to action.
+- **Problem/Solution Section**: Highlights common habit-building problems and how HabitFlow addresses them.
+- **Features Section**: Showcases key features like "One Habit a Day", "Streak Tracking", and "Auto Save".
+- **PRO Section**: Details the benefits of the PRO subscription.
+- **Flow Section**: Step-by-step guide on how to use the application.
+- **Pricing Section**: Displays pricing tiers for Free and PRO plans.
+- **Authentication/App Section**:
+    - Dynamically switches between login/signup form and the main application interface based on user authentication status.
+    - Displays user's email, today's date, habit completion button, status messages, and PRO upgrade option.
+- **Footer**: Contains copyright information and support email.
+
+### Firebase Integration
+- **Firebase SDK**: Loaded via CDN (`firebase-app.js`, `firebase-auth.js`, `firebase-firestore.js`).
+- **Authentication**: `getAuth`, `signInWithEmailAndPassword`, `createUserWithEmailAndPassword`, `onAuthStateChanged`, `signOut`, `getIdTokenResult`.
+- **Firestore**: `getFirestore`, `doc`, `setDoc`, `getDoc`, `collection`, `getDocs`, `updateDoc`.
+- **Custom Claims**: Utilizes `getIdTokenResult` to check `admin` and `pro` claims for role-based access and UI adjustments.
+
+### Styling
+- **Inline CSS**: All styling is currently embedded within the `index.html` `<style>` tags.
+- **CSS Variables**: Used extensively for theme management (light/dark mode).
+- **Responsive Design**: Basic media queries for mobile adjustments (e.g., header navigation, main container layout).
+- **Modern Design Principles**: Clean layout, clear typography (Pretendard font), use of shadows and gradients for visual depth.
+
+### External Libraries/Resources
+- **Firebase SDK**: Via CDN.
+- **Google Fonts**: Pretendard font family.
+- **Audio**: Background music from Pixabay CDN.
+
+## Current Plan
+
+The initial setup of the Firebase Studio environment is complete. The `.idx/mcp.json` configuration is correctly in place. The `index.html` file now contains the full HabitFlow application, resolving previous discrepancies.
+
+For now, the application structure and core features are outlined above based on the provided `index.html`. The next step will be to address the typo in the font import URL within `index.html`, and then continue with further development tasks as requested by the user.

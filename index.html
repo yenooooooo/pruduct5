@@ -1,14 +1,660 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <title>HabitFlow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&amp;display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f9fafb;
+      --text-color: #111;
+      --card-bg: #fff;
+      --card-shadow: rgba(0,0,0,0.15);
+      --input-border: #ddd;
+      --pro-card-bg: #fef3c7;
+      --admin-panel-bg: #e0f2fe;
+      --habit-bg: #eee;
+      --habit-color: #333;
+      --bgm-bg: rgba(255,255,255,0.92);
+    }
+    .dark-mode {
+      --bg-color: #1a202c;
+      --text-color: #f7fafc;
+      --card-bg: #2d3748;
+      --card-shadow: rgba(0,0,0,0.4);
+      --input-border: #4a5568;
+      --pro-card-bg: #4a5568;
+      --admin-panel-bg: #2d3748;
+      --habit-bg: #4a5568;
+      --habit-color: #f7fafc;
+      --bgm-bg: rgba(45, 55, 72, 0.92);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Pretendard, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    section { padding: 80px 20px; width: 100%; max-width: 1200px; }
+    h1,h2,h3 { margin: 0 0 16px; color: var(--text-color); }
+    p { color: var(--text-color); line-height: 1.6; }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card-bg);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px var(--card-shadow);
+      width: 100%;
+    }
+    header .logo { font-weight: 700; font-size: 20px; color: var(--text-color); }
+    header nav { display: flex; align-items: center; gap: 16px; }
+    header nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 500;
+    }
+    header .btn-start {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      background: #667eea;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg,#667eea,#764ba2);
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      max-width: 100%;
+      padding: 100px 20px;
+    }
+    .hero h1 { font-size: 42px; color: #fff; }
+    .hero p { color: #e5e7eb; font-size: 18px; }
+    .hero button {
+      margin-top: 24px;
+      padding: 14px 24px;
+      font-size: 16px;
+      border-radius: 14px;
+      border: none;
+      background: #fff;
+      color: #333;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Problem */
+    .problem ul {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 0;
+      list-style: none;
+    }
+    .problem li { margin-bottom: 10px; font-size: 15px; }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: auto;
+      text-align: center;
+    }
+    .features div {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px var(--card-shadow);
+    }
+
+    /* PRO */
+    .pro {
+      background: var(--pro-card-bg);
+      text-align: center;
+      border-radius: 20px;
+      margin: 40px auto;
+    }
+    .pro ul {
+      list-style: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
+    /* Flow */
+    .flow ol {
+      max-width: 400px;
+      margin: auto;
+      font-size: 16px;
+    }
+    .flow li { margin-bottom: 12px; }
+
+    /* Pricing */
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 24px;
+      max-width: 700px;
+      margin: auto;
+    }
+    .pricing .card {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px var(--card-shadow);
+    }
+    .pricing .highlight { border: 2px solid #667eea; }
+
+    /* Auth/App Styles */
+    #mainContainer {
+      width: 100%;
+      max-width: 900px;
+      margin: 20px auto;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .auth-card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px var(--card-shadow);
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+    button.habit, button.logout, #loginBtn, #goProBtn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #loginBtn { background: #667eea; color: white; }
+    .habit { background: var(--habit-bg); color: var(--habit-color); }
+    .habit.done { background: #48bb78; color: white; }
+    .logout { background: #e53e3e; color: white; margin-top: 20px; }
+
+    /* Admin Panel */
+    #adminPanel {
+      background: var(--admin-panel-bg);
+      box-shadow: 0 20px 40px var(--card-shadow);
+      width: 100%;
+      max-width: 420px;
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 20px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-color);
+      background: var(--card-bg);
+      width: 100%;
+    }
+
+    /* BGM Player */
+    #bgm {
+      position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+      background: var(--bgm-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.08);
+      padding: 12px; border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 260px;
+      color: var(--text-color);
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      header nav a { display: none; }
+      .hero h1 { font-size: 32px; }
+      #mainContainer { flex-direction: column; align-items: center; }
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+<header>
+  <div class="logo">HabitFlow</div>
+  <nav>
+    <a href="#features">기능</a>
+    <a href="#pro">PRO</a>
+    <a href="#pricing">가격</a>
+    <button class="btn-start" onclick="scrollToAuth()">시작하기</button>
+    <button id="darkModeToggle" style="background: #333; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+      🌓
+    </button>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>하루 하나,<br>인생을 바꾸는 습관</h1>
+  <p>작심삼일을 끝내는 가장 단순한 방법</p>
+  <button onclick="scrollToAuth()">지금 시작하기</button>
+</section>
+
+<section class="problem">
+  <h2 style="text-align:center;">왜 습관은 항상 실패할까?</h2>
+  <ul>
+    <li>❌ 목표가 너무 많다</li>
+    <li>❌ 기록이 귀찮다</li>
+    <li>❌ 성취가 눈에 안 보인다</li>
+  </ul>
+  <h3 style="text-align:center;">HabitFlow는 다릅니다</h3>
+  <ul>
+    <li>✅ 하루 딱 하나</li>
+    <li>✅ 버튼 한 번</li>
+    <li>✅ 연속 기록 시각화</li>
+  </ul>
+</section>
+
+<section id="features">
+  <h2 style="text-align:center;">핵심 기능</h2>
+  <div class="features">
+    <div><h3>📅 하루 1습관</h3><p>오늘 할 단 하나만</p></div>
+    <div><h3>🔥 연속 기록</h3><p>성취가 쌓인다</p></div>
+    <div><h3>☁️ 자동 저장</h3><p>어디서든 이어서</p></div>
+  </div>
+</section>
+
+<section id="pro" class="pro">
+  <h2>🚀 HabitFlow PRO</h2>
+  <ul>
+    <li>✔ 습관 무제한</li>
+    <li>✔ 연속 기록 통계</li>
+    <li>✔ 히스토리 관리</li>
+  </ul>
+</section>
+
+<section class="flow">
+  <h2 style="text-align:center;">사용 방법</h2>
+  <ol>
+    <li>1️⃣ 로그인</li>
+    <li>2️⃣ 오늘의 습관</li>
+    <li>3️⃣ 버튼 클릭</li>
+    <li>4️⃣ 연속 기록 확인</li>
+  </ol>
+</section>
+
+<section id="pricing">
+  <h2 style="text-align:center;">가격</h2>
+  <div class="pricing">
+    <div class="card">
+      <h3>무료</h3>
+      <p>₩0</p>
+      <p>하루 1습관</p>
+    </div>
+    <div class="card highlight">
+      <h3>PRO</h3>
+      <p>₩3,900 / 월</p>
+      <p>습관 무제한 + 통계</p>
+    </div>
+  </div>
+</section>
+
+<section id="authSection">
+  <div id="mainContainer">
+    <div class="auth-card">
+      <div id="auth">
+        <h1>HabitFlow</h1>
+        <input id="email" placeholder="이메일">
+        <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
+        <button id="loginBtn">시작하기</button>
+      </div>
+
+      <div id="app" style="display:none">
+        <h2 id="welcome"></h2>
+        <p id="today"></p>
+        <button class="habit" id="habitBtn">오늘 습관 완료</button>
+        <p id="status"></p>
+
+        <div id="stats" style="display:none; margin-top:16px; background:var(--bg-color); padding:14px; border-radius:14px;">
+          <h3>📊 나의 습관 통계</h3>
+          <p id="totalDays"></p>
+        </div>
+
+        <div id="proCard" style="display:none; margin-top:16px; padding:16px; border-radius:14px; background:var(--pro-card-bg);">
+          <h3>🚀 HabitFlow PRO</h3>
+          <ul>
+            <li>하루 습관 무제한</li>
+            <li>연속 기록 통계</li>
+          </ul>
+          <p><b>₩3,900 / 월</b></p>
+          <button id="goProBtn" style="background:#ff9800; color:white;">PRO 업그레이드</button>
+        </div>
+
+        <button class="logout" id="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+      <h3>👑 관리자 패널</h3>
+      <button id="adminTestBtn" style="width:100%; padding:10px; margin-bottom:12px; cursor:pointer;">
+        관리자 기능 테스트
+      </button>
+      <div id="userList">불러오는 중...</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 HabitFlow</p>
+  <p>support @habitflow.app</p>
+</footer>
+
+<div id="bgm">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+    <div style="font-weight:700; font-size:14px;">🎵 BGM</div>
+    <button id="bgmToggle" style="
+      padding: 8px 10px; border-radius: 10px; border: none; cursor:pointer;
+      background:#667eea; color:#fff; font-weight:700; font-size:12px;
+    ">재생</button>
+  </div>
+
+  <div style="margin-top:10px;">
+    <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
+    <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.7;">
+      <span>볼륨</span><span id="bgmVolText">25%</span>
+    </div>
+  </div>
+  <audio id="bgmAudio" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lo-fi-116528.mp3" preload="auto" loop></audio>
+</div>
+
+<script>
+function scrollToAuth() {
+  document.getElementById("authSection")
+    .scrollIntoView({ behavior: "smooth" });
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, getIdTokenResult } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
+  authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
+  projectId: "giiiddd-36340523-3f595",
+  storageBucket: "giiiddd-36340523-3f595.firebasestorage.app",
+  messagingSenderId: "698901018936",
+  appId: "1:698901018936:web:2fb12a7a03cbd844c1e9cd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getFirestore();
+
+// DOM Elements
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+const authDiv = document.getElementById('auth');
+const appDiv = document.getElementById('app');
+const habitBtn = document.getElementById('habitBtn');
+const status = document.getElementById('status');
+const welcome = document.getElementById('welcome');
+const today = document.getElementById('today');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const proCard = document.getElementById("proCard");
+const goProBtn = document.getElementById("goProBtn");
+const statsDiv = document.getElementById("stats");
+const totalDays = document.getElementById("totalDays");
+const adminPanel = document.getElementById("adminPanel");
+const adminTestBtn = document.getElementById("adminTestBtn");
+const userListDiv = document.getElementById("userList");
+const darkModeToggle = document.getElementById("darkModeToggle");
+
+const todayStr = new Date().toISOString().slice(0,10);
+today.innerText = ` ${todayStr}`;
+
+// Login Handler
+loginBtn.onclick = async () => {
+  if (password.value.length < 6) {
+    alert("비밀번호는 6자 이상이어야 합니다");
+    return;
+  }
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+  } catch (error) {
+    if (error.code === "auth/user-not-found") {
+      await createUserWithEmailAndPassword(auth, email.value, password.value);
+    } else if (error.code === "auth/wrong-password") {
+      alert("비밀번호가 틀렸습니다");
+    } else if (error.code === "auth/email-already-in-use") {
+      alert("이미 가입된 이메일입니다. 로그인하세요.");
+    } else {
+      alert(error.message);
+    }
+  }
+};
+
+// Logout Handler
+logoutBtn.onclick = () => signOut(auth);
+
+// Auth State Monitor
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    authDiv.style.display = 'block';
+    appDiv.style.display = 'none';
+    adminPanel.style.display = 'none'; // 로그아웃시 관리자 패널 숨김
+    return;
+  }
+
+  authDiv.style.display = 'none';
+  appDiv.style.display = 'block';
+
+  try {
+    const tokenResult = await getIdTokenResult(user, true);
+    const isAdmin = tokenResult.claims.admin === true;
+    const isPro = tokenResult.claims.pro === true;
+
+    console.log("admin?", isAdmin, "pro?", isPro);
+
+    // Admin UI
+    if (isAdmin) {
+      adminPanel.style.display = "block";
+      welcome.innerText = `👑 관리자 ${user.email}`;
+      loadAllUsers();
+    } else {
+      adminPanel.style.display = "none";
+      welcome.innerText = `👋 ${user.email}`;
+    }
+
+    // PRO UI
+    if (isPro) {
+      proCard.style.display = "none";
+      statsDiv.style.display = "block";
+      status.innerText = "🌟 PRO 회원입니다";
+      loadStats(user.uid); // PRO인 경우 통계 로드
+    } else {
+      proCard.style.display = "block";
+      statsDiv.style.display = "none";
+      status.innerText = "무료 회원 (하루 1습관)";
+    }
+  } catch (e) {
+    console.error("Token error:", e);
+  }
+});
+
+// Habit Click Handler
+habitBtn.onclick = async () => {
+  const user = auth.currentUser;
+  if(!user) return;
+
+  const tokenResult = await getIdTokenResult(user, true);
+  const isPro = tokenResult.claims.pro === true;
+
+  const ref = doc(db,"users",user.uid,"habits",todayStr);
+  const snap = await getDoc(ref);
+
+  if (!isPro && snap.exists()) {
+    status.innerText = "❌ 무료 회원은 하루 1번만 가능";
+    return;
+  }
+
+  await setDoc(ref,{done:true});
+  habitBtn.classList.add("done");
+  status.innerText = "✅ 습관 완료!";
+};
+
+goProBtn.onclick = () => {
+  alert("👑 이 버튼은 관리자 확인용입니다.\nPRO 권한은 서버(관리자)에서만 부여됩니다.");
+};
+
+if (adminTestBtn) {
+  adminTestBtn.onclick = () => alert("👑 관리자 전용 기능 정상 작동!");
+}
+
+// Dark Mode Logic
+function setDarkMode(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark-mode');
+    localStorage.setItem('darkMode', 'enabled');
+  } else {
+    document.body.classList.remove('dark-mode');
+    localStorage.setItem('darkMode', 'disabled');
+  }
+}
+
+const savedDarkMode = localStorage.getItem('darkMode');
+if (savedDarkMode === 'enabled') {
+  setDarkMode(true);
+} else if (savedDarkMode === 'disabled') {
+  setDarkMode(false);
+} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  setDarkMode(true);
+}
+
+darkModeToggle.onclick = () => {
+  setDarkMode(!document.body.classList.contains('dark-mode'));
+};
+
+// Functions
+async function loadStats(uid){
+  let count=0;
+  let date=new Date();
+  while(true){
+    const key=date.toISOString().slice(0,10);
+    const snap=await getDoc(doc(db,"users",uid,"habits",key));
+    if(!snap.exists()) break;
+    count++; date.setDate(date.getDate()-1);
+  }
+  if(totalDays) totalDays.innerText=`🔥 연속 성공 ${count}일`;
+}
+
+async function loadAllUsers() {
+  if (!userListDiv) return;
+
+  userListDiv.innerHTML = "불러오는 중...";
+
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    userListDiv.innerHTML = "";
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const uid = docSnap.id;
+
+      const box = document.createElement("div");
+      box.style.background = "#fff";
+      box.style.padding = "12px";
+      box.style.borderRadius = "10px";
+      box.style.marginBottom = "10px";
+      box.style.color = "#333";
+
+      box.innerHTML = `
+        <div style="font-size:12px; word-break:break-all;"><b>UID</b>: ${uid}</div>
+        <div style="margin:5px 0;"><b>PRO</b>: ${data.isPro ? "✅" : "❌"}</div>
+        <button class="toggleProBtn" style="padding:5px 10px; cursor:pointer;">
+          ${data.isPro ? "PRO 해제" : "PRO 부여"}
+        </button>
+      `;
+
+      box.querySelector(".toggleProBtn").onclick = async () => {
+        await updateDoc(doc(db, "users", uid), {
+          isPro: !data.isPro
+        });
+        alert("변경 완료");
+        loadAllUsers();
+      };
+
+      userListDiv.appendChild(box);
+    });
+  } catch (error) {
+    console.error("User load error:", error);
+    userListDiv.innerHTML = "권한이 없거나 불러오기 실패";
+  }
+}
+</script>
+
+<script>
+(() => {
+  const audio = document.getElementById("bgmAudio");
+  const btn = document.getElementById("bgmToggle");
+  const vol = document.getElementById("bgmVol");
+  const volText = document.getElementById("bgmVolText");
+
+  if (!audio || !btn || !vol || !volText) return;
+
+  // Set initial volume
+  audio.volume = Number(vol.value);
+
+  btn.addEventListener("click", async () => {
+    try {
+      if (audio.paused) {
+        await audio.play();
+        btn.textContent = "일시정지";
+      } else {
+        audio.pause();
+        btn.textContent = "재생";
+      }
+    } catch (e) {
+      alert("브라우저 정책상 자동재생이 막혀있어요. 버튼을 다시 눌러주세요!");
+      console.log(e);
+    }
+  });
+
+  vol.addEventListener("input", () => {
+    audio.volume = Number(vol.value);
+    volText.textContent = Math.round(audio.volume * 100) + "%" ;
+  });
+})();
+</script>
 </body>
 </html>
