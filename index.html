@@ -245,6 +245,34 @@
       .hero h1 { font-size: 32px; }
       #mainContainer { flex-direction: column; align-items: center; }
     }
+
+/* AI 코치 리포트 스타일 */
+.ai-coach-card {
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.dark-mode .ai-coach-card {
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  border-color: #4a5568;
+}
+.ai-coach-badge {
+  background: #667eea; color: white;
+  font-size: 11px; font-weight: bold;
+  padding: 4px 8px; border-radius: 6px;
+  display: inline-block; margin-bottom: 8px;
+}
+.ai-advice-text {
+  font-size: 14px; line-height: 1.5; color: #374151; margin-top: 4px;
+}
+.dark-mode .ai-advice-text { color: #e2e8f0; }
+.worst-day-highlight {
+  color: #e53e3e; font-weight: 800;
+}
   </style>
 </head>
 <body>
@@ -632,65 +660,121 @@ async function getConsecutiveStreak(uid) {
   return count;
 }
 
+// [수정됨] AI 분석 로직이 포함된 리포트 함수
 async function updateWeeklyReport(uid, isPro) {
   if (!weeklyReport || !weeklyReportBody || !weeklyReportLocked) return;
 
-  // 최근 7일 성공 횟수 계산
-  let success = 0;
+  // 1. 최근 7일 데이터 수집 및 분석 준비
+  let successCount = 0;
   const days = [];
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+  
+  // 요일별 실패 횟수 카운팅 (0:일 ~ 6:토)
+  const failCountsPerDay = [0, 0, 0, 0, 0, 0, 0]; 
 
   for (let i = 0; i < 7; i++) {
     const key = dateKeyFromOffset(i);
     const snap = await getDoc(doc(db, "users", uid, "habits", key));
     const done = snap.exists();
-    if (done) success++;
-    days.push({ key, done });
+    
+    // 날짜 객체 생성하여 요일 인덱스 추출
+    const dateObj = new Date(key);
+    const dayIdx = dateObj.getDay(); 
+
+    if (done) {
+      successCount++;
+    } else {
+      failCountsPerDay[dayIdx]++; // 실패한 요일 카운트 증가
+    }
+    
+    days.push({ key, done, dayName: dayNames[dayIdx] });
   }
 
   const streak = await getConsecutiveStreak(uid);
 
-  // ✅ 7일 연속 성공(= streak >= 7)일 때만 주간 리포트 섹션 표시
-  if (streak < 7) {
+  // 2. 표시 조건: 3일 이상 연속 성공 시 '맛보기'로라도 틀을 보여줌 (동기부여 위해 7일->3일로 완화 추천)
+  if (streak < 3) {
     weeklyReport.style.display = "none";
     return;
   }
-
   weeklyReport.style.display = "block";
 
+  // 3. 무료 회원일 경우 (잠금 화면)
   if (!isPro) {
     weeklyReportBody.innerHTML = "";
     weeklyReportLocked.style.display = "block";
 
+    // 텍스트를 더 자극적으로 변경
+    weeklyReportLocked.querySelector("div > div:nth-child(2)").innerHTML = 
+      `<b>${streak}일 연속 성공</b> 중입니다!<br>
+      AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
+      PRO 회원이 되어 확인해보세요.`;
+
     if (weeklyGoProBtn) {
       weeklyGoProBtn.onclick = () => {
-        alert("PRO 권한은 서버(관리자/결제)에서만 부여되도록 해두는 게 안전해요.\n결제 연동 붙이면 여기서 결제 페이지로 보내면 됩니다.");
+        alert("관리자 패널에서 'PRO 부여' 버튼을 눌러보세요!\n(실제 결제 연동 전 테스트)");
       };
     }
     return;
   }
 
-  // ✅ PRO면 실제 리포트 보여주기
+  // 4. PRO 회원일 경우 (AI 분석 결과 출력)
   weeklyReportLocked.style.display = "none";
 
-  const rate = Math.round((success / 7) * 100);
-  const missed = 7 - success;
+  const rate = Math.round((successCount / 7) * 100);
+  
+  // 가장 많이 실패한 요일 찾기 (최대값 인덱스 찾기)
+  let maxFailures = -1;
+  let worstDayIdx = -1;
+  
+  failCountsPerDay.forEach((count, idx) => {
+    if (count > maxFailures) {
+      maxFailures = count;
+      worstDayIdx = idx;
+    }
+  });
+  
+  const worstDayName = (maxFailures > 0) ? dayNames[worstDayIdx] : null;
 
-  const list = days
-    .reverse()
-    .map(d => `${d.key} : ${d.done ? "✅" : "❌"}`)
-    .join("<br>");
+  // AI 조언 생성 로직
+  let aiAdvice = "";
+  if (rate === 100) {
+    aiAdvice = "완벽합니다! 이대로면 <b>'습관 마스터'</b> 칭호까지 얼마 안 남았어요.";
+  } else if (worstDayName) {
+    if (worstDayName === "금") aiAdvice = "<b>불금</b>이라 마음이 뜨기 쉽군요. 금요일 목표는 조금 더 작게 잡아볼까요?";
+    else if (worstDayName === "월") aiAdvice = "<b>월요병</b>이 습관까지 방해하고 있어요. 일요일 밤에 미리 준비해두면 어떨까요?";
+    else if (worstDayName === "토" || worstDayName === "일") aiAdvice = "주말에는 루틴이 깨지기 쉽죠. <b>오전 중에 미리 해치우는 전략</b>이 필요합니다!";
+    else aiAdvice = `회원님은 주로 <b>${worstDayName}요일</b>에 에너지가 떨어집니다. 이날은 알림을 10분 일찍 맞춰보세요.`;
+  } else {
+    aiAdvice = "조금만 더 분발하세요! 꾸준함이 재능을 이깁니다.";
+  }
 
+  // 리스트 HTML 생성
+  const listHTML = days.reverse().map(d => 
+    `<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; color:var(--text-color);">
+       <span>${d.key} (${d.dayName})</span>
+       <span>${d.done ? "✅ 성공" : "<span style='color:#e53e3e; opacity:0.6;'>Failed</span>"}</span>
+     </div>`
+  ).join("");
+
+  // 최종 HTML 주입
   weeklyReportBody.innerHTML = `
-    <div style="font-weight:900; font-size:15px; margin-bottom:8px;">
-      이번 주 성공률 <span style="color:#4338ca;">${rate}%</span>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+      <span style="font-weight:900; font-size:16px;">이번 주 성공률 <span style="color:#667eea;">${rate}%</span></span>
+      <span style="font-size:12px; opacity:0.7;">🔥 ${streak}일 연속</span>
     </div>
-    <div>✅ 성공: <b>${success}일</b> / ❌ 실패: <b>${missed}일</b></div>
-    <div style="margin-top:8px;">🔥 현재 연속 기록: <b>${streak}일</b></div>
-    <div style="margin-top:12px; padding:10px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.08);">
-      <div style="font-size:12px; color:#666; margin-bottom:6px;">최근 7일 기록</div>
-      <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:12px;">
-        ${list}
+
+    <div class="ai-coach-card">
+      <div class="ai-coach-badge">🤖 AI Habit Coach</div>
+      <div class="ai-advice-text">
+        ${rate === 100 
+          ? aiAdvice 
+          : `회원님은 특히 <span class="worst-day-highlight">${worstDayName}요일</span>에 약하시네요.<br>👉 ${aiAdvice}`}
       </div>
+    </div>
+    <div style="margin-top:12px; padding:12px; border-radius:10px; background:var(--bg-color); border:1px solid var(--input-border);">
+      <div style="font-size:12px; opacity:0.6; margin-bottom:8px;">상세 기록</div>
+      ${listHTML}
     </div>
   `;
 }

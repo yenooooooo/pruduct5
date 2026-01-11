@@ -15,10 +15,10 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - PRO users have unlimited habit tracking and access to advanced statistics.
     - Habit completion is logged in Firebase Firestore.
     - Streak visualization for PRO users.
-- **Weekly Report**:
-    - Generates a report after 7 consecutive days of habit completion.
-    - Locked for free users, unlocked for PRO users.
-    - Includes a blurred preview for free users.
+- **Weekly Report (AI Coach)**:
+    - Displays a personalized report with AI-driven insights after 3 consecutive days of habit completion (previously 7 days).
+    - Analyzes habit patterns and provides tailored advice (e.g., identifying "worst day" for habits).
+    - Locked for free users (with a more engaging preview message), unlocked for PRO users.
 - **Dark Mode**:
     - Toggle functionality to switch between light and dark themes.
     - Uses CSS variables for easy theme management.
@@ -42,10 +42,10 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Authentication/App Section**:
     - Dynamically switches between login/signup form and the main application interface based on user authentication status.
     - Displays user's email, today's date, habit completion button, status messages, and PRO upgrade option.
-- **Weekly Report Section**:
-    - Displays a weekly report of habit completion after 7 consecutive days.
-    - Features a locked state with a blurred preview for free users.
-    - Includes a button to upgrade to PRO to unlock the full report.
+- **Weekly Report Section (AI Coach Integration)**:
+    - Dynamically displays an AI-powered weekly report (after 3 consecutive days) within the user interface.
+    - Presents personalized habit analysis and AI-generated advice.
+    - Features a locked state with an engaging preview for free users, encouraging PRO upgrade.
 - **Footer**: Contains copyright information and support email.
 
 ### Firebase Integration
@@ -59,6 +59,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **CSS Variables**: Used extensively for theme management (light/dark mode).
 - **Responsive Design**: Basic media queries for mobile adjustments (e.g., header navigation, main container layout).
 - **Modern Design Principles**: Clean layout, clear typography (Pretendard font), use of shadows and gradients for visual depth.
+- **AI Coach Report Styles**: Dedicated CSS for the AI Coach card, badges, text, and failure highlights.
 
 ### External Libraries/Resources
 - **Firebase SDK**: Via CDN.
