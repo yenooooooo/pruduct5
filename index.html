@@ -474,6 +474,12 @@ const adminTestBtn = document.getElementById("adminTestBtn");
 const userListDiv = document.getElementById("userList");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
+// ✅ 주간 리포트 요소
+const weeklyReport = document.getElementById("weeklyReport");
+const weeklyReportBody = document.getElementById("weeklyReportBody");
+const weeklyReportLocked = document.getElementById("weeklyReportLocked");
+const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
+
 const todayStr = new Date().toISOString().slice(0,10);
 today.innerText = ` ${todayStr}`;
 
@@ -541,6 +547,12 @@ onAuthStateChanged(auth, async user => {
       statsDiv.style.display = "none";
       status.innerText = "무료 회원 (하루 1습관)";
     }
+
+    // ✅ 주간 리포트 업데이트
+    await updateWeeklyReport(user.uid, isPro);
+
+    // ✅ 7일 연속 달성 시 PRO 팝업(무료 유저만)
+    await maybeShow7DayPopup(user.uid, isPro);
   } catch (e) {
     console.error("Token error:", e);
   }
@@ -600,6 +612,114 @@ darkModeToggle.onclick = () => {
 };
 
 // Functions
+function dateKeyFromOffset(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return d.toISOString().slice(0, 10);
+}
+
+async function getConsecutiveStreak(uid) {
+  let count = 0;
+  let date = new Date();
+
+  while (true) {
+    const key = date.toISOString().slice(0, 10);
+    const snap = await getDoc(doc(db, "users", uid, "habits", key));
+    if (!snap.exists()) break;
+    count++;
+    date.setDate(date.getDate() - 1);
+  }
+  return count;
+}
+
+async function updateWeeklyReport(uid, isPro) {
+  if (!weeklyReport || !weeklyReportBody || !weeklyReportLocked) return;
+
+  // 최근 7일 성공 횟수 계산
+  let success = 0;
+  const days = [];
+
+  for (let i = 0; i < 7; i++) {
+    const key = dateKeyFromOffset(i);
+    const snap = await getDoc(doc(db, "users", uid, "habits", key));
+    const done = snap.exists();
+    if (done) success++;
+    days.push({ key, done });
+  }
+
+  const streak = await getConsecutiveStreak(uid);
+
+  // ✅ 7일 연속 성공(= streak >= 7)일 때만 주간 리포트 섹션 표시
+  if (streak < 7) {
+    weeklyReport.style.display = "none";
+    return;
+  }
+
+  weeklyReport.style.display = "block";
+
+  if (!isPro) {
+    weeklyReportBody.innerHTML = "";
+    weeklyReportLocked.style.display = "block";
+
+    if (weeklyGoProBtn) {
+      weeklyGoProBtn.onclick = () => {
+        alert("PRO 권한은 서버(관리자/결제)에서만 부여되도록 해두는 게 안전해요.\n결제 연동 붙이면 여기서 결제 페이지로 보내면 됩니다.");
+      };
+    }
+    return;
+  }
+
+  // ✅ PRO면 실제 리포트 보여주기
+  weeklyReportLocked.style.display = "none";
+
+  const rate = Math.round((success / 7) * 100);
+  const missed = 7 - success;
+
+  const list = days
+    .reverse()
+    .map(d => `${d.key} : ${d.done ? "✅" : "❌"}`)
+    .join("<br>");
+
+  weeklyReportBody.innerHTML = `
+    <div style="font-weight:900; font-size:15px; margin-bottom:8px;">
+      이번 주 성공률 <span style="color:#4338ca;">${rate}%</span>
+    </div>
+    <div>✅ 성공: <b>${success}일</b> / ❌ 실패: <b>${missed}일</b></div>
+    <div style="margin-top:8px;">🔥 현재 연속 기록: <b>${streak}일</b></div>
+    <div style="margin-top:12px; padding:10px; border-radius:10px; background:#fff; border:1px solid rgba(0,0,0,0.08);">
+      <div style="font-size:12px; color:#666; margin-bottom:6px;">최근 7일 기록</div>
+      <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size:12px;">
+        ${list}
+      </div>
+    </div>
+  `;
+}
+
+async function maybeShow7DayPopup(uid, isPro) {
+  if (isPro) return;
+
+  const streak = await getConsecutiveStreak(uid);
+  if (streak < 7) return;
+
+  // ✅ 같은 주에 팝업 반복 방지 (주차 키)
+  const now = new Date();
+  const weekKey = `${now.getFullYear()}-${Math.ceil((now.getDate()) / 7)}-${now.getMonth()+1}`;
+  const storageKey = `hf_7day_popup_${uid}_${weekKey}`;
+
+  if (localStorage.getItem(storageKey) === "shown") return;
+  localStorage.setItem(storageKey, "shown");
+
+  alert(
+    "🎉 7일 연속 성공!\n" +
+    "지금이 습관이 굳어지는 타이밍이에요.\n\n" +
+    "PRO로 업그레이드하면 ‘주간 리포트’로\n" +
+    "성공률/패턴을 확인할 수 있어요."
+  );
+
+  // 스크롤로 리포트 영역 보여주기
+  if (weeklyReport) weeklyReport.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
 async function loadStats(uid){
   let count=0;
   let date=new Date();
