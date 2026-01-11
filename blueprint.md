@@ -11,9 +11,9 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Automatic user session management.
     - Logout functionality.
 - **Habit Tracking**:
-    - Free users can track one habit per day.
-    - PRO users have unlimited habit tracking and access to advanced statistics.
-    - Habit completion is logged in Firebase Firestore.
+    - Free users can track one habit per day, selectable from pre-defined themes.
+    - PRO users have unlimited habit tracking and access to advanced statistics, including custom habit input.
+    - Habit completion is logged in Firebase Firestore, storing the habit name and timestamp.
     - Streak visualization for PRO users.
 - **Weekly Report (AI Coach)**:
     - Displays a personalized report with AI-driven insights after 3 consecutive days of habit completion (previously 7 days).
@@ -47,10 +47,10 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - Dynamically displays an AI-powered weekly report (after 3 consecutive days) within the user interface.
     - Presents personalized habit analysis and AI-generated advice.
     - Features a locked state with an engaging preview for free users, encouraging PRO upgrade.
-- **Admin Panel**:
-    - Displays a list of all users and their PRO status.
-    - Allows administrators to toggle PRO status for any user.
-    - Includes a "cheat" button to create 5 days of success data for testing.
+- **Habit Theme Section**:
+    - Provides pre-defined habit themes (e.g., "Survival Fitness", "Godsaeng Intro", "Detox") for easy selection.
+    - Allows PRO users to input custom habits.
+    - Updates the habit input field based on the selected theme or custom input.
 - **Admin Panel**:
     - Displays a list of all users and their PRO status.
     - Allows administrators to toggle PRO status for any user.
@@ -69,6 +69,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Responsive Design**: Basic media queries for mobile adjustments (e.g., header navigation, main container layout).
 - **Modern Design Principles**: Clean layout, clear typography (Pretendard font), use of shadows and gradients for visual depth.
 - **AI Coach Report Styles**: Dedicated CSS for the AI Coach card, badges, text, and failure highlights.
+- **Theme Tag Styles**: CSS for the habit theme selection buttons, including active state.
 
 ### External Libraries/Resources
 - **Firebase SDK**: Via CDN.

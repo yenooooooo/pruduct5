@@ -246,6 +246,38 @@
       #mainContainer { flex-direction: column; align-items: center; }
     }
 
+.theme-tag {
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #667eea;
+    background: white;
+    color: #667eea;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .theme-tag.active {
+    background: #667eea;
+    color: white;
+  }
+
+  .theme-tag {
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid #667eea;
+    background: white;
+    color: #667eea;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .theme-tag.active {
+    background: #667eea;
+    color: white;
+  }
+
 /* AI 코치 리포트 스타일 */
 .ai-coach-card {
   background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
@@ -368,6 +400,21 @@
       <div id="app" style="display:none">
         <h2 id="welcome"></h2>
         <p id="today"></p>
+<div id="themeSection" style="margin-bottom: 20px;">
+  <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">🎁 오늘 추천 습관 (무료 테마)</p>
+  <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;">
+    <button class="theme-tag" onclick="selectTheme('survival')">🏥 생존 체력</button>
+    <button class="theme-tag" onclick="selectTheme('godsaeng')">✨ 갓생 입문</button>
+    <button class="theme-tag" onclick="selectTheme('detox')">📱 디톡스</button>
+    <button class="theme-tag" onclick="selectTheme('custom')" style="background: #f3f4f6; color: #666; border: 1px dashed #ccc;">➕ 직접 입력 (PRO)</button>
+  </div>
+  
+  <div id="habitInputArea" style="margin-top: 10px;">
+    <input id="habitName" type="text" readonly value="테마를 선택하세요" 
+           style="background: #eee; cursor: not-allowed; text-align: center; font-weight: bold;">
+  </div>
+</div>
+
         <button class="habit" id="habitBtn">오늘 습관 완료</button>
         <p id="status"></p>
 
@@ -489,6 +536,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
+// 1. 테마별 요일 습관 데이터 (0:일 ~ 6:토)
+const themeData = {
+  survival: [
+    "🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", 
+    "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋", "🚶 30분 산책"
+  ],
+  godsaeng: [
+    "📅 다음 주 계획 짜기", "🛏️ 이불 정리하기", "💰 가계부 적기", 
+    "📚 책 2페이지 읽기", "🗣️ 영단어 1개 외우기", "📝 감사 일기 3줄", "🧹 방 청소하기"
+  ],
+  detox: [
+    "📝 내일 할 일 손기록", "📵 기상 후 10분 노폰", "🍽️ 식사 중 영상 금지", 
+    "🎧 이어폰 없이 걷기", "📱 스크린 타임 확인", "🧘 5분 명상", "📵 디지털 프리 1시간"
+  ]
+};
+
+// 2. 테마 선택 함수 (전역 범위 호출을 위해 window에 할당)
+window.selectTheme = async (themeType) => {
+  const user = auth.currentUser;
+  const tokenResult = await user.getIdTokenResult();
+  const isPro = tokenResult.claims.pro === true;
+  const habitInput = document.getElementById("habitName");
+  const dayIdx = new Date().getDay();
+
+  // 모든 태그 활성화 해제
+  document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
+
+  if (themeType === 'custom') {
+    if (!isPro) {
+      alert("🔒 '직접 입력'은 PRO 전용 기능입니다.\n기본 제공 테마를 이용하거나 PRO로 업그레이드하세요!");
+      return;
+    }
+    // PRO인 경우 직접 입력 가능하게 변경
+    habitInput.readOnly = false;
+    habitInput.value = "";
+    habitInput.placeholder = "원하는 습관을 입력하세요";
+    habitInput.style.background = "#fff";
+    habitInput.style.cursor = "text";
+    habitInput.focus();
+  } else {
+    // 무료 테마 선택 시
+    habitInput.readOnly = true;
+    habitInput.style.background = "#eee";
+    habitInput.style.cursor = "not-allowed";
+    habitInput.value = themeData[themeType][dayIdx];
+    
+    // 선택된 태그 강조
+    event.target.classList.add('active');
+  }
+};
+
 // DOM Elements
 const email = document.getElementById('email');
 const password = document.getElementById('password');
@@ -600,25 +698,27 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-// Habit Click Handler
+// 3. 습관 저장 로직 수정 (기존 habitBtn.onclick 부분 업데이트)
 habitBtn.onclick = async () => {
   const user = auth.currentUser;
   if(!user) return;
 
-  const tokenResult = await getIdTokenResult(user, true);
-  const isPro = tokenResult.claims.pro === true;
-
-  const ref = doc(db,"users",user.uid,"habits",todayStr);
-  const snap = await getDoc(ref);
-
-  if (!isPro && snap.exists()) {
-    status.innerText = "❌ 무료 회원은 하루 1번만 가능";
+  const habitName = document.getElementById("habitName").value;
+  if(habitName === "테마를 선택하세요" || !habitName) {
+    alert("습관을 선택하거나 입력해주세요!");
     return;
   }
 
-  await setDoc(ref,{done:true});
+  const ref = doc(db, "users", user.uid, "habits", todayStr);
+  
+  await setDoc(ref, {
+    done: true,
+    name: habitName, // 어떤 습관을 완료했는지 이름 저장
+    timestamp: new Date()
+  });
+
   habitBtn.classList.add("done");
-  status.innerText = "✅ 습관 완료!";
+  status.innerText = `✅ [${habitName}] 완료!`;
 };
 
 goProBtn.onclick = () => {
