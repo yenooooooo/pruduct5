@@ -15,6 +15,10 @@ HabitFlow is a web-based habit tracking application designed to help users build
     - PRO users have unlimited habit tracking and access to advanced statistics.
     - Habit completion is logged in Firebase Firestore.
     - Streak visualization for PRO users.
+- **Weekly Report**:
+    - Generates a report after 7 consecutive days of habit completion.
+    - Locked for free users, unlocked for PRO users.
+    - Includes a blurred preview for free users.
 - **Dark Mode**:
     - Toggle functionality to switch between light and dark themes.
     - Uses CSS variables for easy theme management.
@@ -38,6 +42,10 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Authentication/App Section**:
     - Dynamically switches between login/signup form and the main application interface based on user authentication status.
     - Displays user's email, today's date, habit completion button, status messages, and PRO upgrade option.
+- **Weekly Report Section**:
+    - Displays a weekly report of habit completion after 7 consecutive days.
+    - Features a locked state with a blurred preview for free users.
+    - Includes a button to upgrade to PRO to unlock the full report.
 - **Footer**: Contains copyright information and support email.
 
 ### Firebase Integration

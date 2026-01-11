@@ -358,6 +358,40 @@
           <button id="goProBtn" style="background:#ff9800; color:white;">PRO 업그레이드</button>
         </div>
 
+<!-- ✅ 주간 리포트 (7일 연속 달성 시 생성 / 무료는 잠금) -->
+<div id="weeklyReport" style="display:none; margin-top:16px; padding:16px; border-radius:14px; background:#eef2ff;">
+  <h3 style="margin:0 0 8px;">🧾 주간 리포트</h3>
+
+  <!-- PRO면 여기 내용 표시 -->
+  <div id="weeklyReportBody" style="font-size:14px; line-height:1.6;"></div>
+
+  <!-- 무료면 잠금 표시 -->
+  <div id="weeklyReportLocked" style="display:none;">
+    <div style="
+      margin-top:10px; padding:14px; border-radius:12px;
+      background:rgba(255,255,255,0.7);
+      border:1px solid rgba(0,0,0,0.08);
+    ">
+      <div style="font-weight:800;">🔒 리포트가 잠겨 있어요</div>
+      <div style="margin-top:6px; color:#444;">
+        <b>7일 연속 성공</b>을 달성했어요!<br>
+        PRO로 업그레이드하면 <b>주간 변화 리포트</b>를 볼 수 있어요.
+      </div>
+
+      <div style="margin-top:10px; padding:10px; border-radius:10px; background:#fff; border:1px dashed rgba(0,0,0,0.15);">
+        <div style="font-size:12px; color:#666; margin-bottom:6px;">미리보기(블러)</div>
+        <div style="filter: blur(4px); user-select:none;">
+          이번 주 성공률 86% • 가장 잘 된 시간대 07~09시 • 최고 연속 7일
+        </div>
+      </div>
+
+      <button id="weeklyGoProBtn" style="margin-top:12px; background:#ff9800; font-weight:900;">
+        PRO로 리포트 열기
+      </button>
+    </div>
+  </div>
+</div>
+
         <button class="logout" id="logoutBtn">로그아웃</button>
       </div>
     </div>
