@@ -29,6 +29,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* 글래스모피즘 카드 스타일 */
@@ -81,6 +82,24 @@ button:active {
   border-color: #22c55e !important;
   color: white !important;
   box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+}
+
+.hero-button {
+  background: white;
+  color: var(--primary-color);
+  padding: 16px 32px;
+  font-size: 18px;
+  border-radius: 16px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* 테마 태그 스타일 개선 */
@@ -161,6 +180,23 @@ ul, ol {
   max-width: 420px; /* Max width for single column layout */
   text-align: center; /* Center text within cards */
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* AI 코치 리포트 스타일 */
+.ai-coach-card {
   </style>
 </head>
 <body>
@@ -181,7 +217,7 @@ ul, ol {
 <section class="hero">
   <h1>하루 하나,<br>인생을 바꾸는 습관</h1>
   <p>작심삼일을 끝내는 가장 단순한 방법</p>
-  <button onclick="scrollToAuth()">지금 시작하기</button>
+  <button class="hero-button" onclick="scrollToAuth()">지금 시작하기</button>
 </section>
 
 <section class="problem">
@@ -202,13 +238,13 @@ ul, ol {
 <section id="features">
   <h2 style="text-align:center;">핵심 기능</h2>
   <div class="features">
-    <div><h3>📅 하루 1습관</h3><p>오늘 할 단 하나만</p></div>
-    <div><h3>🔥 연속 기록</h3><p>성취가 쌓인다</p></div>
-    <div><h3>☁️ 자동 저장</h3><p>어디서든 이어서</p></div>
+    <div><h3><span class="icon">📅</span> 하루 1습관</h3><p>오늘 할 단 하나만</p></div>
+    <div><h3><span class="icon">🔥</span> 연속 기록</h3><p>성취가 쌓인다</p></div>
+    <div><h3><span class="icon">☁️</span> 자동 저장</h3><p>어디서든 이어서</p></div>
   </div>
 </section>
 
-<section id="pro" class="pro">
+<section id="pro" class="pro" style="background: var(--accent-color); color: white;">
   <h2>🚀 HabitFlow PRO</h2>
   <ul>
     <li>✔ 습관 무제한</li>

@@ -38,8 +38,8 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Header**: Sticky navigation bar with logo, navigation links (Features, PRO, Pricing), "Start" button, and Dark Mode toggle.
 - **Hero Section**: Prominent banner with a catchy headline and call to action.
 - **Problem/Solution Section**: Highlights common habit-building problems and how HabitFlow addresses them.
-- **Features Section**: Showcases key features like "One Habit a Day", "Streak Tracking", and "Auto Save".
-- **PRO Section**: Details the benefits of the PRO subscription.
+- **Features Section**: Showcases key features like "One Habit a Day", "Streak Tracking", and "Auto Save", with added icons for better visual representation.
+- **PRO Section**: Details the benefits of the PRO subscription, now with enhanced styling using an accent color.
 - **Flow Section**: Step-by-step guide on how to use the application.
 - **Pricing Section**: Displays pricing tiers for Free and PRO plans.
 - **Authentication/App Section**:
@@ -75,6 +75,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Theme Tag Styles**: CSS for the habit theme selection buttons, including active state.
 - **Glassmorphism & Minimalism**: Overall design incorporating glassmorphism effects for cards and a minimalist aesthetic with refined color palettes and button animations.
 - **Layout & Alignment**: Global centering for sections and content, improved centering for lists, and refined main container/card layouts for better visual balance and responsiveness.
+- **Animations & Effects**: Added fade-in animations for a more dynamic page load, and a subtle background pattern for visual depth.
 
 ### External Libraries/Resources
 - **Firebase SDK**: Via CDN.
