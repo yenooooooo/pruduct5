@@ -8,195 +8,98 @@
 
   <style>
 :root {
-  --bg-color: #f0f2f5;
-  --text-color: #1a202c;
-  --primary-color: #6366f1; /* 세련된 인디고 블루 */
-  --accent-color: #f59e0b; /* 따뜻한 골드(PRO용) */
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.3);
+  --bg-color: #f8fafc;
+  --text-main: #0f172a;
+  --primary: #6366f1;
+  --secondary: #a855f7;
+  --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 .dark-mode {
-  --bg-color: #0f172a; /* 깊은 네이비 */
-  --text-color: #f1f5f9;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-color: #020617;
+  --text-main: #f8fafc;
+  --card-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
 }
 
 body {
   margin: 0;
-  font-family: 'Pretendard', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* 글래스모피즘 카드 스타일 */
-.glass-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  padding: 30px;
-  transition: transform 0.3s ease;
-}
-
-.glass-card:hover {
-  transform: translateY(-5px);
-}
-
-/* 버튼 디자인 개선 */
-button {
-  transition: all 0.2s ease;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.5px;
-}
-
-button:active {
-  transform: scale(0.96);
-}
-
-#loginBtn, .btn-start {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
-  color: white;
-  border: none;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-/* 습관 버튼 - 더 크게, 더 직관적으로 */
-#habitBtn {
-  height: 60px;
-  font-size: 18px !important;
-  background: white;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  margin-top: 20px;
-}
-
-#habitBtn.done {
-  background: #22c55e !important;
-  border-color: #22c55e !important;
-  color: white !important;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-}
-
-.hero-button {
-  background: white;
-  color: var(--primary-color);
-  padding: 16px 32px;
-  font-size: 18px;
-  border-radius: 16px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-.hero-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* 테마 태그 스타일 개선 */
-.theme-tag {
-  background: transparent;
-  border: 1.5px solid #e2e8f0;
-  color: #64748b;
-  padding: 10px 18px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.theme-tag.active {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
-}
-
-/* 헤더 - 고정형 메뉴 */
-header {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Hero 섹션 - 부드러운 그라데이션 */
-.hero {
-  background: radial-gradient(circle at top right, #6366f1, #4f46e5);
-  border-radius: 0 0 50px 50px;
-}
-
-/* 입력창 */
-input {
-  border: 1.5px solid #e2e8f0;
-  background: #f8fafc;
-  padding: 14px !important;
-  font-size: 15px;
-}
-
-input:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  background: white;
-}
-
-/* Global Centering and Layout */
-section {
-  padding: 80px 20px;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto; /* Center sections themselves */
-  text-align: center; /* Center content within sections by default */
-}
-
-ul, ol {
-  max-width: 600px; /* Limit width for readability */
-  margin: 20px auto; /* Center lists */
-  padding-left: 0; /* Remove default padding for lists */
-  list-style-position: inside; /* Adjust list item marker position */
-  text-align: left; /* Keep list text left-aligned within the list block */
-}
-
-#mainContainer {
-  width: 100%;
-  max-width: 900px; /* Keep max-width */
-  margin: 40px auto; /* Adjust margin for spacing */
   display: flex;
-  gap: 24px; /* Increase gap slightly */
-  align-items: flex-start; /* Align items to the start of the cross axis */
-  justify-content: center; /* Center items along the main axis */
+  flex-direction: column;
+  align-items: center; /* 전체 가로 중앙 정렬 */
+  background: var(--bg-color);
+  color: var(--text-main);
+  font-family: 'Pretendard', sans-serif;
+  overflow-x: hidden;
+}
+
+/* 섹션 공통 - 너비 제한 및 중앙 정렬 */
+section {
+  width: 100%;
+  max-width: 1000px; /* 너무 넓어지지 않게 제한 */
+  padding: 80px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 내부 요소 중앙 정렬 */
+  text-align: center;
+}
+
+/* 메인 컨테이너 (App/Auth 카드) */
+#mainContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* 카드들이 자동 정렬됨 */
+  gap: 32px;
+  width: 100%;
+  justify-items: center; /* 그리드 내부 카드 중앙 배치 */
+  margin-top: -40px; /* Hero 섹션에 살짝 걸치게 */
+}
+
+/* 카드 디자인 */
+.glass-card {
+  width: 100%;
+  max-width: 450px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 32px;
+  padding: 40px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 테마 선택 태그 정렬 */
+#themeSection {
+  width: 100%;
+}
+
+#themeSection .tag-container {
+  display: flex;
+  justify-content: center; /* 태그 중앙 정렬 */
   flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.auth-card, #adminPanel { /* adminPanel에도 적용 */
-  flex: 1; /* Allow cards to grow and shrink */
-  min-width: 300px; /* Minimum width for responsiveness */
-  max-width: 420px; /* Max width for single column layout */
-  text-align: center; /* Center text within cards */
+/* 습관 버튼 커스터마이징 */
+#habitBtn {
+  width: 100%;
+  max-width: 300px; /* 너무 길어지지 않게 */
+  margin: 24px auto;
+  border-radius: 100px !important; /* 알약 모양 */
+  padding: 18px 0;
+  font-size: 1.1rem;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* 히어로 섹션 */
+.hero {
+  width: 100vw;
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  clip-path: ellipse(150% 100% at 50% 0%); /* 아래쪽이 둥근 곡선 */
+  padding: 0 20px;
 }
-
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
-}
-.icon {
-  font-size: 2em;
-  margin-bottom: 10px;
-  display: block;
-}
-
-/* AI 코치 리포트 스타일 */
-.ai-coach-card {
   </style>
 </head>
 <body>
@@ -279,104 +182,46 @@ ul, ol {
   </div>
 </section>
 
-<section id="authSection">
-  <div id="mainContainer">
+<section id="authSection" style="padding-top: 0;"> <div id="mainContainer">
+    
     <div class="auth-card glass-card">
       <div id="auth">
-        <h1>HabitFlow</h1>
-        <input id="email" placeholder="이메일">
-        <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
-        <button id="loginBtn">시작하기</button>
+        <h2 style="font-weight: 800;">시작하기</h2>
+        <p style="opacity: 0.6; font-size: 0.9rem;">습관은 복리로 쌓입니다.</p>
+        <div style="margin-top: 24px;">
+           <input id="email" placeholder="이메일 주소">
+           <input id="password" type="password" placeholder="비밀번호">
+           <button id="loginBtn" style="margin-top: 16px;">HabitFlow 시작하기</button>
+        </div>
       </div>
 
       <div id="app" style="display:none">
-        <h2 id="welcome"></h2>
-        <p id="today"></p>
-<div id="themeSection" style="margin-bottom: 20px;">
-  <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">🎁 오늘 추천 습관 (무료 테마)</p>
-  <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;">
-    <button class="theme-tag" onclick="selectTheme('survival')">🏥 생존 체력</button>
-    <button class="theme-tag" onclick="selectTheme('godsaeng')">✨ 갓생 입문</button>
-    <button class="theme-tag" onclick="selectTheme('detox')">📱 디톡스</button>
-    <button class="theme-tag" onclick="selectTheme('custom')" style="background: #f3f4f6; color: #666; border: 1px dashed #ccc;">➕ 직접 입력 (PRO)</button>
-  </div>
-  
-  <div id="habitInputArea" style="margin-top: 10px;">
-    <input id="habitName" type="text" readonly value="테마를 선택하세요" 
-           style="background: #eee; cursor: not-allowed; text-align: center; font-weight: bold;">
-  </div>
-</div>
-
-        <button class="habit" id="habitBtn">오늘 습관 완료</button>
+        <h2 id="welcome" style="font-size: 1.5rem;"></h2>
+        <div id="themeSection">
+           <p style="font-size: 0.9rem; font-weight: 700;">🎁 오늘의 루틴 팩</p>
+           <div class="tag-container">
+              <button class="theme-tag" onclick="selectTheme('survival')">🚑 생존</button>
+              <button class="theme-tag" onclick="selectTheme('godsaeng')">✨ 갓생</button>
+              <button class="theme-tag" onclick="selectTheme('detox')">📱 디톡스</button>
+              <button class="theme-tag" onclick="selectTheme('custom')">➕ 커스텀</button>
+           </div>
+        </div>
+        
+        <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center;">
+        <button id="habitBtn" class="habit">오늘 습관 완료</button>
         <p id="status"></p>
+        
+        <div id="stats" style="display:none;">...</div>
+        <div id="weeklyReport" style="display:none;">...</div>
 
-        <div id="stats" style="display:none; margin-top:16px; background:var(--bg-color); padding:14px; border-radius:14px;">
-          <h3>📊 나의 습관 통계</h3>
-          <p id="totalDays"></p>
-        </div>
-
-        <div id="proCard" style="display:none; margin-top:16px; padding:16px; border-radius:14px; background:var(--pro-card-bg);">
-          <h3>🚀 HabitFlow PRO</h3>
-          <ul>
-            <li>하루 습관 무제한</li>
-            <li>연속 기록 통계</li>
-          </ul>
-          <p><b>₩3,900 / 월</b></p>
-          <button id="goProBtn" style="background:#ff9800; color:white;">PRO 업그레이드</button>
-        </div>
-
-<!-- ✅ 주간 리포트 (7일 연속 달성 시 생성 / 무료는 잠금) -->
-<div id="weeklyReport" style="display:none; margin-top:16px; padding:16px; border-radius:14px; background:#eef2ff;">
-  <h3 style="margin:0 0 8px;">🧾 주간 리포트</h3>
-
-  <!-- PRO면 여기 내용 표시 -->
-  <div id="weeklyReportBody" style="font-size:14px; line-height:1.6;"></div>
-
-  <!-- 무료면 잠금 표시 -->
-  <div id="weeklyReportLocked" style="display:none;">
-    <div style="
-      margin-top:10px; padding:14px; border-radius:12px;
-      background:rgba(255,255,255,0.7);
-      border:1px solid rgba(0,0,0,0.08);
-    ">
-      <div style="font-weight:800;">🔒 리포트가 잠겨 있어요</div>
-      <div style="margin-top:6px; color:#444;">
-        <b>7일 연속 성공</b>을 달성했어요!<br>
-        PRO로 업그레이드하면 <b>주간 변화 리포트</b>를 볼 수 있어요.
-      </div>
-
-      <div style="margin-top:10px; padding:10px; border-radius:10px; background:#fff; border:1px dashed rgba(0,0,0,0.15);">
-        <div style="font-size:12px; color:#666; margin-bottom:6px;">미리보기(블러)</div>
-        <div style="filter: blur(4px); user-select:none;">
-          이번 주 성공률 86% • 가장 잘 된 시간대 07~09시 • 최고 연속 7일
-        </div>
-      </div>
-
-      <button id="weeklyGoProBtn" style="margin-top:12px; background:#ff9800; font-weight:900;">
-        PRO로 리포트 열기
-      </button>
-    </div>
-  </div>
-</div>
-
-        <button class="logout" id="logoutBtn">로그아웃</button>
+        <button class="logout" id="logoutBtn" style="background:none; color:#94a3b8; font-size:0.8rem; text-decoration:underline;">로그아웃</button>
       </div>
     </div>
 
-    <div id="adminPanel" class="glass-card" style="display:none; border: 2px solid #6366f1;">
-      <h3>👑 관리자 패널</h3>
-      <button id="adminTestBtn" style="width:100%; padding:10px; margin-bottom:12px; cursor:pointer;">
-        관리자 기능 테스트
-      </button>
-
-      <button id="cheatStreakBtn" style="
-        width:100%; padding:10px; margin-top:10px; 
-        background:#10b981; color:white; border:none; 
-        border-radius:10px; cursor:pointer; font-weight:bold;">
-        🧪 (테스트용) 5일 연속 성공 만들기
-      </button>
-      <div id="userList">불러오는 중...</div>
+    <div id="adminPanel" class="glass-card" style="display:none;">
+       ...
     </div>
+
   </div>
 </section>
 

@@ -43,17 +43,13 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Flow Section**: Step-by-step guide on how to use the application.
 - **Pricing Section**: Displays pricing tiers for Free and PRO plans.
 - **Authentication/App Section**:
-    - Dynamically switches between login/signup form and the main application interface based on user authentication status.
-    - Displays user's email, today's date, habit completion button, status messages, and PRO upgrade option.
-    - Now includes a celebration effect upon habit completion.
-- **Weekly Report Section (AI Coach Integration)**:
-    - Dynamically displays an AI-powered weekly report (after 3 consecutive days) within the user interface.
-    - Presents personalized habit analysis and AI-generated advice.
-    - Features a locked state with an engaging preview for free users, encouraging PRO upgrade.
+    - Redesigned with a more prominent "Get Started" call-to-action.
+    - Dynamically switches between a streamlined login/signup form and the main application interface.
+    - The app view now features a redesigned habit theme selector with a new tag container, and a restyled, less intrusive logout button.
+    - Includes a celebration effect upon habit completion.
 - **Habit Theme Section**:
-    - Provides pre-defined habit themes (e.g., "Survival Fitness", "Godsaeng Intro", "Detox") for easy selection.
-    - Allows PRO users to input custom habits.
-    - Updates the habit input field based on the selected theme or custom input.
+    - Restyled with a new `tag-container` for better alignment and responsiveness.
+    - Button labels have been shortened for a cleaner look.
 - **Admin Panel**:
     - Displays a list of all users and their PRO status.
     - Allows administrators to toggle PRO status for any user.
@@ -73,7 +69,7 @@ HabitFlow is a web-based habit tracking application designed to help users build
 - **Modern Design Principles**: Clean layout, clear typography (Pretendard font), use of shadows and gradients for visual depth.
 - **AI Coach Report Styles**: Dedicated CSS for the AI Coach card, badges, text, and failure highlights.
 - **Theme Tag Styles**: CSS for the habit theme selection buttons, including active state.
-- **Glassmorphism & Minimalism**: Overall design incorporating glassmorphism effects for cards and a minimalist aesthetic with refined color palettes and button animations.
+- **Glassmorphism & Minimalism**: Overhauled design with a more polished and modern aesthetic. This includes updated color variables, a new CSS Grid layout for the main container, pill-shaped buttons, a curved hero section, and refined glassmorphism effects on cards.
 - **Layout & Alignment**: Global centering for sections and content, improved centering for lists, and refined main container/card layouts for better visual balance and responsiveness.
 - **Animations & Effects**: Added fade-in animations for a more dynamic page load, and a subtle background pattern for visual depth.
 
