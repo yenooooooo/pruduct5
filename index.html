@@ -571,12 +571,7 @@
     if (!requireEmailPass()) return;
     try {
       const cred = await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
-      if (!cred.user.emailVerified) {
-         await signOut(auth);
-         alert("📩 이메일 인증이 필요합니다. 메일함을 확인해주세요.");
-      } else {
-         alert("✅ 로그인 성공!");
-      }
+      // 로그인 클릭 시에는 여기서 체크하지 않고 onAuthStateChanged에서 일괄 처리
     } catch (e) {
       alert("로그인 실패: " + e.message);
     }
@@ -592,49 +587,30 @@
 
   logoutBtn.onclick = () => signOut(auth);
 
-  // --- Core Logic ---
+  // --- Core Logic (수정된 부분) ---
   onAuthStateChanged(auth, async user => {
+    // 1. 로그아웃 상태일 때
     if (!user) {
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
       adminPanel.style.display = 'none';
       return;
     }
-    // --- Core Logic ---
-  onAuthStateChanged(auth, async user => {
-    if (!user) {
-      authDiv.style.display = 'block';
-      appDiv.style.display = 'none';
-      adminPanel.style.display = 'none';
-      return;
-    }
-    
-    // 👇 [수정됨] 관리자 이메일 설정 (본인의 관리자 이메일로 변경하세요!)
+
+    // 2. 관리자 이메일 설정 (수정하신 이메일)
     const adminEmail = "test@gmail.com"; 
 
-    // 이메일 인증 체크 (관리자 이메일은 예외 처리)
+    // 3. 이메일 인증 체크 
+    // (이메일 인증이 안 되어있고 && 동시에 관리자 이메일도 아니라면 -> 차단)
     if (!user.emailVerified && user.email !== adminEmail) {
       alert("📩 이메일 인증 후 사용 가능합니다.");
-      await signOut(auth); // 인증 안 된 일반 유저는 로그아웃 처리
+      await signOut(auth); // 강제 로그아웃
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
       return;
     }
 
-    // 로그인 완료 UI 처리
-    authDiv.style.display = 'none';
-    appDiv.style.display = 'block';
-    
-    // ... (이하 기존 코드와 동일)
-
-    // 이메일 인증 체크
-    if (!user.emailVerified) {
-      authDiv.style.display = 'block';
-      appDiv.style.display = 'none';
-      return;
-    }
-
-    // 로그인 완료 UI 처리
+    // 4. 로그인 성공 (여기까지 오면 인증된 유저이거나 관리자임)
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
     
@@ -650,8 +626,8 @@
 
       document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
 
-      // Admin
-      if (isAdmin) {
+      // Admin 패널 (관리자 이메일이거나 admin claim이 있으면 표시)
+      if (isAdmin || user.email === adminEmail) {
         adminPanel.style.display = 'block';
         loadAllUsers();
       }
