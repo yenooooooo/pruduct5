@@ -607,6 +607,19 @@
       appDiv.style.display = 'none';
       return;
     }
+     // 🔒 관리자 아니면 이메일 인증 필수
+  if (!isAdmin && !user.emailVerified) {
+    alert("📩 이메일 인증 후 사용 가능합니다.\n메일함을 확인해주세요.");
+    await signOut(auth);
+    return;
+  }
+  if (isAdmin) {
+    welcome.innerText = `👑 관리자 ${user.email}`;
+    adminPanel.style.display = "block";
+  } else {
+    welcome.innerText = `👋 ${user.email}`;
+    adminPanel.style.display = "none";
+  }
 
     // 로그인 완료 UI 처리
     authDiv.style.display = 'none';
