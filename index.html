@@ -273,9 +273,44 @@ footer{
 </header>
 
 <section class="hero">
-  <h1>하루 하나,<br>인생을 바꾸는 습관</h1>
-  <p>작심삼일을 끝내는 가장 단순한 방법</p>
-  <button class="hero-button" onclick="scrollToAuth()">지금 시작하기</button>
+  <div class="container hero-wrap">
+    <div>
+      <div class="hero-kicker">✨ 하루 하나로 충분해요</div>
+      <h1 class="h1" style="margin-top:14px;">
+        하루 하나,<br/>인생을 바꾸는 습관
+      </h1>
+      <p class="p" style="margin-top:14px; max-width:520px;">
+        작심삼일을 끝내는 가장 단순한 방식. 버튼 한 번으로 기록하고,
+        연속 기록과 리포트로 동기부여를 유지하세요.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
+        <a class="btn" href="#pricing" style="text-decoration:none; display:inline-flex; align-items:center;">가격 보기</a>
+      </div>
+
+      <div class="hero-metrics">
+        <div class="metric"><b>1 Habit</b><span>하루 딱 하나</span></div>
+        <div class="metric"><b>Streak</b><span>연속 기록</span></div>
+        <div class="metric"><b>Report</b><span>주간 리포트</span></div>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <h3 class="h3">오늘의 추천 루틴</h3>
+      <p class="p">로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
+      <div style="margin-top:14px; display:grid; gap:10px;">
+        <div class="card" style="padding:14px;">
+          <b>🚑 생존 체력 팩</b>
+          <p style="margin-top:6px;">직장인을 위한 “죽지 않으려고 하는 운동”</p>
+        </div>
+        <div class="card" style="padding:14px;">
+          <b>✨ 갓생 입문 팩</b>
+          <p style="margin-top:6px;">성공 루틴을 ‘2분짜리’로 쪼개기</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="problem">
