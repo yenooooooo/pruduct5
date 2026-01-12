@@ -326,6 +326,11 @@ function scrollToAuth() {
   document.getElementById("authSection")
     .scrollIntoView({ behavior: "smooth" });
 }
+
+function safeText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
 </script>
 
 <script type="module">
@@ -487,7 +492,7 @@ onAuthStateChanged(auth, async user => {
     if (isPro) {
       if (proCard) proCard.style.display = "none";
       if (statsDiv) statsDiv.style.display = "block";
-      status.innerText = "🌟 PRO 회원입니다";
+      safeText("status", "🌟 PRO 회원입니다");
       loadStats(user.uid); // PRO인 경우 통계 로드
     } else {
       if (proCard) proCard.style.display = "block";
