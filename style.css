@@ -28,6 +28,10 @@
       font-family: 'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       overflow-x: hidden;
       transition: background 0.3s, color 0.3s;
+      background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size: 10px 10px;
+      background-blend-mode: overlay;
     }
 
     ul { list-style: none; padding: 0; margin: 0; }
