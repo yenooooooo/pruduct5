@@ -168,3 +168,29 @@
       .hero-grid, .problem-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
       .problem-bottom { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 80px 20px 40px; /* Reduced vertical padding */
+      }
+      .hero-title {
+        font-size: 32px; /* Smaller font size for mobile */
+      }
+      .hero-desc {
+        font-size: 15px; /* Slightly smaller description for mobile */
+      }
+      .hero-metrics {
+        flex-wrap: wrap; /* Allow metrics to wrap */
+        justify-content: center; /* Center metrics when wrapped */
+      }
+      .metric-card {
+        flex: 1 1 45%; /* Allow cards to take up roughly half width, adjust as needed */
+        max-width: 48%; /* Ensure two cards fit per row with some gap */
+      }
+      .hero-actions {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+      }
+      .hero-actions .btn {
+        width: 100%; /* Make buttons full width */
+      }
+    }
