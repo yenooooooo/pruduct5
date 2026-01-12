@@ -437,6 +437,55 @@ button {
 .btn-ghost{
   background: transparent;
 }
+/* ===== Auth Actions (회원가입/로그인/비번찾기) ===== */
+.auth-actions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+
+.auth-actions .btn{
+  flex:1;
+  padding:14px 14px;
+  border-radius:14px;
+  font-weight:900;
+  border:1px solid rgba(15,23,42,0.10);
+  cursor:pointer;
+}
+
+.btn-primary{
+  border:none !important;
+  color:#fff;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.btn-ghost{
+  background: transparent;
+  color: var(--text-main);
+}
+
+.auth-links{
+  margin-top:10px;
+  text-align:center;
+}
+
+.link-btn{
+  border:none;
+  background:transparent;
+  color: var(--muted);
+  font-weight:800;
+  cursor:pointer;
+  text-decoration: underline;
+}
+
+.auth-hint{
+  margin-top:12px;
+  font-size:12px;
+  color: var(--muted);
+  line-height:1.6;
+  text-align:center;
+}
+
 </style>
 </head>
 <body>
@@ -813,8 +862,7 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } 
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
@@ -902,8 +950,6 @@ const appDiv = document.getElementById('app');
 const habitBtn = document.getElementById('habitBtn');
 const status = document.getElementById('status');
 const welcome = document.getElementById('welcome');
-const today = document.getElementById('today');
-const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const proCard = document.getElementById("proCard");
 const goProBtn = document.getElementById("goProBtn");
@@ -960,7 +1006,7 @@ const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
 
 const todayEl = document.getElementById("today");
 const todayStr = new Date().toISOString().slice(0, 10);
-if (todayEl) todayEl.textContent = `📅 ${todayStr}`;
+if (todayEl) todayEl.textContent = `📅 const email =${todayStr}`;
 
 // Login Handler
 const signupBtn = document.getElementById("signupBtn");
