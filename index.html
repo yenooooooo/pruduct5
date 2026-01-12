@@ -7,6 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&amp;display=swap" rel="stylesheet">
 
   <style>
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 /* ====== Layout Container Fix ====== */
 :root{
   --bg-color:#f8fafc;
@@ -88,16 +93,44 @@ section{
   transform: translateY(-4px);
   transition: 0.25s ease;
 }
-.glass:hover {
-  transform: translateY(-4px);
-  transition: 0.25s ease;
-}
-.glass:hover {
-  transform: translateY(-4px);
-  transition: 0.25s ease;
-}
 
-
+/* ====== Problem Cards ====== */
+.problem-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+.problem-card{
+  padding: 18px 18px;
+  text-align:left;
+}
+.problem-card h3{
+  margin:0 0 8px;
+  font-size: 16px;
+}
+.problem-card p{
+  margin:0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height:1.6;
+}
+.problem-bottom{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+}
+.problem-pill{
+  padding: 12px 14px;
+  border-radius: 16px;
+  border:1px dashed var(--card-border);
+  background: rgba(255,255,255,0.35);
+  color: var(--text-main);
+  font-weight:800;
+  text-align:center;
+}
+.dark-mode .problem-pill{ background: rgba(2,6,23,0.35); }
 
 /* ====== Features ====== */
 .features-grid{
@@ -298,45 +331,60 @@ button {
 </header>
 
 <section class="hero">
-  <div class="container hero-wrap">
-    <div>
-      <div class="hero-kicker">✨ 하루 하나로 충분해요</div>
-      <h1 class="h1" style="margin-top:14px;">
-        하루 하나,<br/>인생을 바꾸는 습관
+  <div class="container hero-grid">
+    <!-- LEFT -->
+    <div class="hero-left">
+      <span class="hero-pill">✨ 하루 하나로 충분해요</span>
+
+      <h1 class="hero-title">
+        하루 하나,<br />
+        인생을 바꾸는 습관
       </h1>
-      <p class="p" style="margin-top:14px; max-width:520px;">
-        작심삼일을 끝내는 가장 단순한 방식. 버튼 한 번으로 기록하고,
-        연속 기록과 리포트로 동기부여를 유지하세요.
+
+      <p class="hero-desc">
+        작심삼일을 끝내는 가장 단순한 방식.<br />
+        버튼 한 번으로 기록하고, 연속 기록과 리포트로 동기부여를 유지하세요.
       </p>
 
       <div class="hero-actions">
-        <button class="btn btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
-        <a class="btn" href="#pricing" style="text-decoration:none; display:inline-flex; align-items:center;">가격 보기</a>
+        <button class="btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
+        <a href="#pricing" class="btn-ghost">가격 보기</a>
       </div>
 
       <div class="hero-metrics">
-        <div class="metric"><b>1 Habit</b><span>하루 딱 하나</span></div>
-        <div class="metric"><b>Streak</b><span>연속 기록</span></div>
-        <div class="metric"><b>Report</b><span>주간 리포트</span></div>
+        <div class="metric-card">
+          <b>1 Habit</b>
+          <span>하루 딱 하나</span>
+        </div>
+        <div class="metric-card">
+          <b>Streak</b>
+          <span>연속 기록</span>
+        </div>
+        <div class="metric-card">
+          <b>Report</b>
+          <span>주간 리포트</span>
+        </div>
       </div>
     </div>
 
-    <div class="hero-card">
-      <h3 class="h3">오늘의 추천 루틴</h3>
-      <p class="p">로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
-      <div style="margin-top:14px; display:grid; gap:10px;">
-        <div class="card" style="padding:14px;">
-          <b>🚑 생존 체력 팩</b>
-          <p style="margin-top:6px;">직장인을 위한 “죽지 않으려고 하는 운동”</p>
-        </div>
-        <div class="card" style="padding:14px;">
-          <b>✨ 갓생 입문 팩</b>
-          <p style="margin-top:6px;">성공 루틴을 ‘2분짜리’로 쪼개기</p>
-        </div>
+    <!-- RIGHT -->
+    <div class="hero-right glass">
+      <h3>오늘의 추천 루틴</h3>
+      <p>로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
+
+      <div class="recommend-card">
+        🚑 <b>생존 체력 팩</b>
+        <span>직장인을 위한 “죽지 않으려고 하는 운동”</span>
+      </div>
+
+      <div class="recommend-card">
+        ✨ <b>갓생 입문 팩</b>
+        <span>성공 루틴을 2분짜리로 쪼개기</span>
       </div>
     </div>
   </div>
 </section>
+
 
 <section class="problem">
   <div class="container">
