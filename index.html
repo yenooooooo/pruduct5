@@ -941,7 +941,6 @@ function showTodaySuggestion() {
 // DOM Elements
 const email = document.getElementById("email");
 const password = document.getElementById("password");
-
 const signinBtn = document.getElementById("signinBtn");
 const resetPwBtn = document.getElementById("resetPwBtn");
 const authHint = document.getElementById("authHint");
@@ -960,6 +959,78 @@ const adminTestBtn = document.getElementById("adminTestBtn");
 const userListDiv = document.getElementById("userList");
 const darkModeToggle = document.getElementById("darkModeToggle");
 const restoreBtn = document.getElementById("restoreStreakBtn");
+// ===== AUTH 버튼 이벤트 (이 블록 하나만 남기세요) =====
+function requireEmailPass() {
+  if (!email?.value || !password?.value) {
+    alert("이메일과 비밀번호를 모두 입력해주세요.");
+    return false;
+  }
+  if (password.value.length < 6) {
+    alert("비밀번호는 6자 이상이어야 합니다.");
+    return false;
+  }
+  return true;
+}
+
+// 1) 회원가입 (가입 후 인증메일 발송 + 로그아웃)
+signupBtn?.addEventListener("click", async () => {
+  if (!requireEmailPass()) return;
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
+    await sendEmailVerification(cred.user);
+
+    alert("✅ 회원가입 완료!\n📩 인증 메일을 보냈어요.\n메일 인증 후 로그인하세요.");
+    authHint && (authHint.innerHTML = "📩 인증 메일을 보냈어요. 메일 인증 후 로그인해주세요.");
+    await signOut(auth);
+  } catch (e) {
+    if (e.code === "auth/email-already-in-use") alert("이미 가입된 이메일입니다. 로그인 해주세요.");
+    else if (e.code === "auth/invalid-email") alert("잘못된 이메일 형식입니다.");
+    else alert("회원가입 실패: " + e.code);
+    console.error(e);
+  }
+});
+
+// 2) 로그인 (이메일 인증 안 했으면 차단)
+signinBtn?.addEventListener("click", async () => {
+  if (!requireEmailPass()) return;
+
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email.value, password.value);
+
+    if (!cred.user.emailVerified) {
+      await sendEmailVerification(cred.user); // 혹시 메일 못받았을 때 대비 재발송
+      await signOut(auth);
+      alert("📩 이메일 인증이 필요합니다.\n인증 메일을 다시 보냈어요.\n메일 인증 후 다시 로그인하세요.");
+      return;
+    }
+
+    alert("✅ 로그인 성공!");
+  } catch (e) {
+    if (e.code === "auth/user-not-found") alert("가입된 계정이 없습니다. 회원가입을 눌러주세요.");
+    else if (e.code === "auth/wrong-password") alert("비밀번호가 틀렸습니다.");
+    else alert("로그인 실패: " + e.code);
+    console.error(e);
+  }
+});
+
+// 3) 비밀번호 찾기
+resetPwBtn?.addEventListener("click", async () => {
+  if (!email?.value) {
+    alert("비밀번호를 찾을 이메일을 먼저 입력해주세요.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email.value);
+    alert("📩 비밀번호 재설정 메일을 보냈습니다! 메일함을 확인하세요.");
+  } catch (e) {
+    if (e.code === "auth/invalid-email") alert("잘못된 이메일 형식입니다.");
+    else if (e.code === "auth/user-not-found") alert("해당 이메일로 가입된 계정이 없습니다.");
+    else alert("재설정 실패: " + e.code);
+    console.error(e);
+  }
+});
 
 async function updateStreakProtectionUI(uid, isPro) {
   if (!restoreBtn) return;
