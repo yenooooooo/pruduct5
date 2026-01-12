@@ -452,6 +452,9 @@
     onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  // 꽃가루 효과 라이브러리 (CDN이 헤더에 없어도 동작하도록 import 방식 변경 시도, 
+  // 만약 헤더에 스크립트를 안 넣었다면 아래 confetti 함수는 에러가 날 수 있으니 헤더 확인 필요. 
+  // 안전하게 window.confetti 체크)
 
   const firebaseConfig = {
     apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
@@ -542,7 +545,7 @@
   const appDiv = document.getElementById('app');
   const emailInput = document.getElementById("email");
   const passInput = document.getElementById("password");
-  
+  const signupBtn = document.getElementById("signupBtn");
   const signinBtn = document.getElementById("signinBtn");
   const resetPwBtn = document.getElementById("resetPwBtn");
   const logoutBtn = document.getElementById("logoutBtn");
@@ -551,7 +554,7 @@
   // PRO & Admin UI
   const proCard = document.getElementById("proCard");
   const statsDiv = document.getElementById("stats");
-  const adminPanel = document.getElementById("adminPanel");
+  // const adminPanel = document.getElementById("adminPanel"); // 동적 제어로 변경됨
   const restoreBtn = document.getElementById("restoreStreakBtn");
   const weeklyReport = document.getElementById("weeklyReport");
 
@@ -572,7 +575,7 @@
     if (!requireEmailPass()) return;
     try {
       const cred = await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
-      // 로그인 클릭 시에는 여기서 체크하지 않고 onAuthStateChanged에서 일괄 처리
+      // 로그인 체크는 onAuthStateChanged에서 수행
     } catch (e) {
       alert("로그인 실패: " + e.message);
     }
@@ -588,10 +591,9 @@
 
   logoutBtn.onclick = () => signOut(auth);
 
-  // --- Core Logic (수정된 부분) ---
-// --- Core Logic ---
-onAuthStateChanged(auth, async user => {
-    // 1. 로그아웃 상태일 때 처리
+  // --- Core Logic (Auth Monitor) ---
+  onAuthStateChanged(auth, async user => {
+    // 1. 로그아웃 상태
     if (!user) {
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
@@ -600,10 +602,10 @@ onAuthStateChanged(auth, async user => {
       return;
     }
 
-    // 2. 관리자 이메일 설정
+    // 2. 관리자 예외 이메일 설정
     const adminEmail = "test@gmail.com"; 
 
-    // 3. 이메일 인증 체크 (관리자는 예외)
+    // 3. 이메일 인증 체크
     if (!user.emailVerified && user.email !== adminEmail) {
       alert("📩 이메일 인증 후 사용 가능합니다.");
       await signOut(auth);
@@ -612,16 +614,13 @@ onAuthStateChanged(auth, async user => {
       return;
     }
 
-    // 4. 로그인 성공 UI 처리
+    // 4. 로그인 성공 UI
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
     
-    // 기본 추천 세팅
     const dayIdx = new Date().getDay();
     const suggestionEl = document.getElementById("todaySuggestion");
-    if(suggestionEl) {
-        suggestionEl.innerHTML = `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
-    }
+    if(suggestionEl) suggestionEl.innerHTML = `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
 
     try {
       const tokenResult = await getIdTokenResult(user, true);
@@ -630,35 +629,31 @@ onAuthStateChanged(auth, async user => {
 
       document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
 
-      // ============================================================
-      // 👇 [여기가 2-1 핵심 수정 부분] 관리자 버튼 및 패널 제어 로직
-      // ============================================================
-      const openBtn = document.getElementById("adminOpenBtn"); // HTML에 추가한 왕관 버튼
-      const panel = document.getElementById("adminPanel");     // 관리자 패널
-
-      // 관리자 권한이 있거나, 지정된 관리자 이메일인 경우
+      // --- [관리자 패널 로직] ---
+      const openBtn = document.getElementById("adminOpenBtn");
+      const panel = document.getElementById("adminPanel");
+      
+      // 관리자 권한 확인
       if (isAdmin || user.email === adminEmail) {
         if(openBtn) {
-            openBtn.style.display = 'block'; // 1. 평소에는 왕관 버튼만 보여줌
-            
-            // 2. 왕관 버튼 클릭 시 패널 열기/닫기 (토글)
+            openBtn.style.display = 'block'; // 왕관 버튼 보이기
             openBtn.onclick = () => {
+                // 패널 토글
                 if (panel.style.display === 'none' || panel.style.display === '') {
-                    panel.style.display = 'block'; // 켜기
-                    loadAllUsers(); // 켤 때 최신 데이터 로딩
+                    panel.style.display = 'block';
+                    loadAllUsers(); // 데이터 로드
                 } else {
-                    panel.style.display = 'none'; // 끄기
+                    panel.style.display = 'none';
                 }
             };
         }
       } else {
-        // 관리자가 아니면 버튼과 패널 모두 숨김
         if(openBtn) openBtn.style.display = 'none';
         if(panel) panel.style.display = 'none';
       }
-      // ============================================================
+      // -------------------------
 
-      // PRO UI Switch
+      // PRO UI
       if (isPro) {
         if(proCard) proCard.style.display = "none";
         if(statsDiv) statsDiv.style.display = "block";
@@ -677,7 +672,6 @@ onAuthStateChanged(auth, async user => {
       await renderCalendar(user.uid, isPro);
       await updateStreakProtectionUI(user.uid, isPro);
       
-      // 7일 달성 팝업
       if (!isPro && streak >= 7) showProModal();
 
     } catch (e) {
@@ -685,7 +679,7 @@ onAuthStateChanged(auth, async user => {
     }
   });
 
-  // --- Habit Actions ---
+  // --- Habit Actions (꽃가루 효과 적용) ---
   habitBtn.onclick = async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -705,15 +699,20 @@ onAuthStateChanged(auth, async user => {
       timestamp: new Date()
     });
 
-  // --- 기존 celebrate 함수를 이걸로 교체하세요 ---
+    celebrate(); // 꽃가루 함수 호출
+    
+    const streak = await getConsecutiveStreak(user.uid);
+    updateTierUI(streak);
+  };
+
+  // 꽃가루 효과 함수
   function celebrate() {
     const btn = document.getElementById("habitBtn");
     
-    // 1. 버튼 애니메이션
+    // 버튼 애니메이션
     btn.style.transform = "scale(0.95)";
     setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
     
-    // 2. 텍스트 변경 및 비활성화
     safeText("status", "🎉 오늘의 미션 클리어! 훌륭합니다.");
     btn.innerHTML = "완료함 ✨";
     btn.style.background = "#ddd";
@@ -721,21 +720,23 @@ onAuthStateChanged(auth, async user => {
     btn.style.cursor = "default";
     btn.disabled = true;
 
-    // 3. [NEW] 꽃가루 발사! (Confetti Effect)
-    const count = 200;
-    const defaults = { origin: { y: 0.7 } };
-
-    function fire(particleRatio, opts) {
-      confetti(Object.assign({}, defaults, opts, {
-        particleCount: Math.floor(count * particleRatio)
-      }));
+    // 꽃가루 발사 (window.confetti가 로드되어 있어야 함)
+    if (typeof confetti === 'function') {
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+        function fire(particleRatio, opts) {
+          confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+          }));
+        }
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+    } else {
+        console.log("Confetti script not loaded");
     }
-
-    fire(0.25, { spread: 26, startVelocity: 55 });
-    fire(0.2, { spread: 60 });
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    fire(0.1, { spread: 120, startVelocity: 45 });
   }
 
   // --- UI Update Functions ---
@@ -764,7 +765,6 @@ onAuthStateChanged(auth, async user => {
     const lockedDiv = document.getElementById("weeklyReportLocked");
     const reportDiv = document.getElementById("weeklyReport");
     
-    // 최근 7일 데이터 조회
     let successCount = 0;
     const days = [];
     const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
@@ -792,7 +792,6 @@ onAuthStateChanged(auth, async user => {
       return;
     }
 
-    // PRO logic
     lockedDiv.style.display = "none";
     const rate = Math.round((successCount/7)*100);
     const listHTML = days.reverse().map(d => `
@@ -880,16 +879,14 @@ onAuthStateChanged(auth, async user => {
     safeText("totalDays", `총 누적 성공: ${snap.size}일`);
   }
 
-  // --- Admin Functions ---
-// --- Admin Functions ---
-async function loadAllUsers() {
+  // --- Admin Functions (모달창 적용 완료) ---
+  async function loadAllUsers() {
     const listDiv = document.getElementById("userList");
     if (!listDiv) return;
 
     listDiv.innerHTML = "<div style='text-align:center; padding:20px;'>데이터 불러오는 중...</div>";
     
     try {
-      // 모든 유저 가져오기
       const snap = await getDocs(collection(db, "users"));
       listDiv.innerHTML = "";
       
@@ -902,11 +899,9 @@ async function loadAllUsers() {
         const data = docSnap.data();
         const uid = docSnap.id;
         
-        // 리스트 아이템 디자인
         const item = document.createElement("div");
         item.style.cssText = "background:white; padding:10px; margin-bottom:8px; border-radius:6px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:6px;";
         
-        // 1. 기본 정보 줄
         item.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
              <span style="font-weight:bold; color:#334155; font-size:11px;">UID: ${uid.slice(0,6)}...</span>
@@ -920,59 +915,43 @@ async function loadAllUsers() {
           </div>
         `;
 
-        // 2. PRO 변경 버튼 이벤트
         item.querySelector(".pro-btn").onclick = async () => {
            if(confirm(`[${uid}] 님의 등급을 변경하시겠습니까?`)) {
                await updateDoc(doc(db, "users", uid), { isPro: !data.isPro });
-               loadAllUsers(); // 목록 새로고침
+               loadAllUsers(); 
            }
         };
 
-        // 3. [NEW] 상세 정보 버튼 이벤트 (모달 열기)
+        // 상세 정보 모달 열기
         item.querySelector(".info-btn").onclick = async () => {
             const modal = document.getElementById("adminUserDetailModal");
             const content = document.getElementById("detailContent");
             
-            // 모달 열고 로딩 표시
             modal.style.display = "flex";
             content.innerHTML = "정보를 가져오는 중입니다...";
 
-            // 해당 유저의 습관 기록(Habits) 컬렉션 가져오기
             const habitsSnap = await getDocs(collection(db, "users", uid, "habits"));
             const totalHabits = habitsSnap.size;
             
-            // 최근 5개 기록만 추리기
             let recentHabitsHTML = "";
             let habitsArr = [];
             habitsSnap.forEach(h => habitsArr.push({date: h.id, ...h.data()}));
-            
-            // 날짜 역순 정렬
             habitsArr.sort((a,b) => new Date(b.date) - new Date(a.date));
             
             habitsArr.slice(0, 5).forEach(h => {
                 recentHabitsHTML += `<li style="margin-bottom:4px;">${h.date}: ${h.name} ${h.done?'✅':'❌'}</li>`;
             });
 
-            // 모달 내용 채우기
             content.innerHTML = `
-                <p><strong>🆔 UID Full:</strong> ${uid}</p>
+                <p><strong>🆔 UID:</strong> ${uid}</p>
                 <p><strong>💎 멤버십:</strong> ${data.isPro ? '<span style="color:blue">PRO 유저</span>' : '무료 유저'}</p>
                 <p><strong>🛡️ 기록 복구권:</strong> ${data.streakProtectionLeft ?? 0}회 남음</p>
                 <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
-                
-                <p><strong>📊 활동 요약:</strong></p>
-                <ul style="padding-left:20px; margin:5px 0;">
-                    <li>총 습관 완료일: <strong>${totalHabits}일</strong></li>
-                </ul>
-
-                <p><strong>🗓️ 최근 활동 (최대 5건):</strong></p>
+                <p><strong>📊 총 성공 일수:</strong> ${totalHabits}일</p>
+                <p><strong>🗓️ 최근 활동:</strong></p>
                 <ul style="padding-left:20px; background:#f8fafc; padding:10px 10px 10px 30px; border-radius:8px;">
                     ${recentHabitsHTML || "<li style='color:#999'>기록 없음</li>"}
                 </ul>
-
-                <p style="margin-top:20px; color:#666; font-size:11px;">
-                    * 더 자세한 정보는 Firebase 콘솔을 확인하세요.
-                </p>
             `;
         };
 
@@ -982,6 +961,21 @@ async function loadAllUsers() {
       console.error(error);
       listDiv.innerHTML = "목록을 불러오는데 실패했습니다.";
     }
+  }
+
+  const cheatBtn = document.getElementById("cheatStreakBtn");
+  if(cheatBtn) {
+    cheatBtn.onclick = async () => {
+       const user = auth.currentUser;
+       if (!user) return alert("로그인 필요");
+       if (!confirm("지난 5일 데이터를 강제 성공 처리할까요?")) return;
+       for(let i=0; i<5; i++) {
+          const k = dateKeyFromOffset(i);
+          await setDoc(doc(db, "users", user.uid, "habits", k), { done: true, cheat: true });
+       }
+       alert("치트 적용 완료! 새로고침하세요.");
+       location.reload();
+    };
   }
 
   // --- Modal Helpers ---
