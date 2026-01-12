@@ -1,15 +1,511 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <meta charset="UTF-8" />
   <title>HabitFlow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard @latest/dist/web/static/pretendard.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ====== Base Variables & Reset ====== */
+    :root {
+      --bg-color: #f8fafc;
+      --text-main: #0f172a;
+      --muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --primary: #6366f1;
+      --secondary: #a855f7;
+      --shadow: 0 20px 25px -5px rgb(0 0 0 / .08), 0 8px 10px -6px rgb(0 0 0 / .06);
+    }
+
+    .dark-mode {
+      --bg-color: #020617;
+      --text-main: #f8fafc;
+      --muted: #94a3b8;
+      --card-bg: rgba(2, 6, 23, 0.55);
+      --card-border: rgba(148, 163, 184, 0.12);
+      --shadow: 0 20px 25px -5px rgb(0 0 0 / .45), 0 8px 10px -6px rgb(0 0 0 / .35);
+    }
+
+    * { box-sizing: border-box; }
+
+
+    /* ====== Layout ====== */
+    section { width: 100%; padding: 84px 20px; }
+    .container { width: 100%; max-width: 1080px; margin: 0 auto; }
     
+    /* Header */
+    header {
+      position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10;
+    }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    .logo-badge { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
+    
+    nav { display: flex; gap: 20px; align-items: center; }
+    nav a { text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; }
+    
+    /* Section Head */
+    .section-head { text-align: center; margin-bottom: 36px; }
+    .section-head .kicker {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 800; letter-spacing: -0.2px;
+      background: rgba(99, 102, 241, 0.12); color: var(--primary);
+    }
+    .section-head h2 { margin: 12px 0 8px; font-size: 28px; letter-spacing: -0.6px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
 
+    /* Glass Effect */
+    .glass {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 22px;
+      transition: 0.25s ease;
+    }
+    .glass:hover { transform: translateY(-4px); }
 
+    /* ====== Hero ====== */
+    .hero {
+      padding: 140px 20px 80px;
+      background: radial-gradient(800px circle at 80% -20%, rgba(168, 85, 247, 0.15), transparent 60%);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
+    .hero-pill {
+      display: inline-block; padding: 8px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.12); color: var(--primary);
+    }
+    .hero-title { font-size: 46px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; }
+    .hero-desc { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    
+    .hero-actions { display: flex; gap: 12px; }
+    .hero-metrics { display: flex; gap: 14px; margin-top: 28px; }
+    .metric-card {
+      padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.5);
+      border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px;
+    }
+    .hero-right { padding: 26px; }
+    .recommend-card {
+      background: rgba(255,255,255,0.8); border-radius: 16px; padding: 16px;
+      margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #000;
+    }
+
+    /* ====== Problems & Features ====== */
+    .problem-grid, .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .problem-card, .feature-card { padding: 18px; text-align: left; }
+    .feature-icon {
+      width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
+      background: rgba(99, 102, 241, 0.12); color: var(--primary); font-size: 20px; margin-bottom: 12px;
+    }
+    .problem-bottom { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .problem-pill {
+      padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--card-border);
+      background: rgba(255, 255, 255, 0.35); color: var(--text-main); font-weight: 800; text-align: center;
+    }
+
+    /* ====== Pricing ====== */
+    .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 18px; }
+    .price-card { padding: 22px; text-align: left; }
+    .price-card.pro { border: 2px solid rgba(99, 102, 241, 0.45); position: relative; }
+    .price-card.pro::before {
+      content: "추천"; position: absolute; top: 14px; right: 14px; font-size: 12px;
+      font-weight: 900; padding: 6px 10px; border-radius: 999px;
+      background: rgba(99, 102, 241, 0.14); color: var(--primary);
+    }
+
+    /* ====== Buttons & Inputs ====== */
+    .btn {
+      appearance: none; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.8);
+      color: var(--text-main); padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      border: none !important; background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25);
+    }
+    .btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--card-border); }
+    
+    input {
+      width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px;
+      border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.5); color: var(--text-main);
+    }
+
+    /* ====== Auth & App UI ====== */
+    .auth-card { max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
+    .auth-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .auth-actions .btn { flex: 1; }
+    .link-btn { border: none; background: transparent; color: var(--muted); font-weight: 800; cursor: pointer; text-decoration: underline; margin-top: 10px; }
+    
+    .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
+    .theme-tag {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border);
+      background: transparent; color: var(--text-main); cursor: pointer; font-size: 13px;
+    }
+    .theme-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .habit {
+      width: 100%; padding: 20px; font-size: 18px; font-weight: 900; margin-top: 16px;
+      border: none; border-radius: 16px; background: var(--text-main); color: var(--bg-color); cursor: pointer;
+    }
+
+    /* ====== Badges ====== */
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; }
+    .tier-bronze { background: #cd7f32; }
+    .tier-silver { background: #c0c0c0; color: #333; }
+    .tier-gold { background: #ffd700; color: #333; }
+    .tier-platinum { background: #e5e4e2; color: #333; border: 1px solid #ccc; }
+    .tier-diamond { background: #b9f2ff; color: #333; }
+    .tier-master { background: linear-gradient(135deg, #ff00cc, #333399); }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 900px) {
+      .hero-grid, .problem-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .problem-bottom { grid-template-columns: 1fr; }
+    }
+    /* ========================= */
+/* ✅ ADMIN CONSOLE (NEW UI) */
+/* ========================= */
+
+#adminFab{
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9995;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  transition: transform .2s ease;
+}
+#adminFab:active{ transform: scale(.96); }
+
+.admin-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.admin-shell{
+  width: min(1200px, 96vw);
+  height: min(760px, 92vh);
+  border-radius: 22px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(15,23,42,0.12);
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+
+.dark-mode .admin-shell{
+  background: rgba(2,6,23,.72);
+  border: 1px solid rgba(148,163,184,0.18);
+}
+
+.admin-sidebar{
+  padding: 16px;
+  border-right: 1px solid rgba(15,23,42,.08);
+  background: rgba(255,255,255,.55);
+}
+.dark-mode .admin-sidebar{
+  background: rgba(2,6,23,.45);
+  border-right: 1px solid rgba(148,163,184,0.12);
+}
+
+.admin-brand{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 14px;
+}
+.admin-dot{
+  width: 12px; height: 12px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+.admin-title{ font-weight: 900; font-size: 14px; }
+.admin-sub{ font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.admin-nav{
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+.admin-tab{
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.08);
+  background: rgba(255,255,255,.6);
+  cursor: pointer;
+  font-weight: 900;
+  color: var(--text-main);
+}
+.dark-mode .admin-tab{
+  background: rgba(2,6,23,.35);
+  border: 1px solid rgba(148,163,184,0.12);
+}
+.admin-tab.active{
+  border: none;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.admin-side-actions{
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+  padding: 12px 6px 6px;
+}
+
+.admin-main{
+  padding: 16px;
+  overflow: auto;
+}
+
+.admin-topbar{
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.admin-h1{
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.4px;
+}
+.admin-hint{ color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+.admin-grid-kpi{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 980px){
+  .admin-shell{ grid-template-columns: 1fr; }
+  .admin-sidebar{ display:none; }
+  .admin-grid-kpi{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 520px){
+  .admin-grid-kpi{ grid-template-columns: 1fr; }
+}
+
+.admin-kpi{ padding: 14px; }
+.admin-kpi-label{ color: var(--muted); font-size: 12px; font-weight: 800; }
+.admin-kpi-value{ font-size: 22px; font-weight: 900; margin-top: 6px; }
+
+.admin-two-col{
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+@media (max-width: 980px){
+  .admin-two-col{ grid-template-columns: 1fr; }
+}
+
+.admin-box-title{
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.admin-toolbar{
+  display: grid;
+  grid-template-columns: 1fr 160px 160px 140px;
+  gap: 10px;
+  align-items: center;
+}
+@media (max-width: 980px){
+  .admin-toolbar{ grid-template-columns: 1fr; }
+}
+
+.admin-input, .admin-select, .admin-textarea{
+  width: 100%;
+  border-radius: 12px;
+  padding: 12px 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.75);
+  color: var(--text-main);
+  outline: none;
+}
+.dark-mode .admin-input, .dark-mode .admin-select, .dark-mode .admin-textarea{
+  background: rgba(2,6,23,.35);
+  border: 1px solid rgba(148,163,184,0.14);
+}
+
+.admin-textarea{ min-height: 110px; resize: vertical; }
+
+.admin-table-head{
+  display: grid;
+  grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr;
+  gap: 10px;
+  padding: 10px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(15,23,42,.08);
+}
+.admin-table-row{
+  display: grid;
+  grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr;
+  gap: 10px;
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(15,23,42,.06);
+  align-items: center;
+  font-size: 13px;
+}
+.admin-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.6);
+}
+.dark-mode .admin-pill{
+  background: rgba(2,6,23,.35);
+  border: 1px solid rgba(148,163,184,0.14);
+}
+
+.admin-list{
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+}
+.admin-muted{ color: var(--muted); }
+
+.admin-form-row{ margin: 10px 0; }
+
+.admin-switch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  font-weight:900;
+  font-size:13px;
+  color: var(--text-main);
+}
+.admin-switch input{ display:none; }
+.admin-switch-ui{
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  position: relative;
+  background: rgba(0,0,0,.15);
+  transition: .2s ease;
+}
+.admin-switch-ui::after{
+  content:"";
+  position:absolute;
+  top:3px; left:3px;
+  width:20px; height:20px;
+  border-radius:999px;
+  background:#fff;
+  transition:.2s ease;
+}
+.admin-switch input:checked + .admin-switch-ui{
+  background: rgba(99,102,241,.55);
+}
+.admin-switch input:checked + .admin-switch-ui::after{
+  left: 21px;
+}
+
+.admin-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.admin-modal-card{
+  width: min(860px, 95vw);
+  height: min(740px, 92vh);
+  background: rgba(255,255,255,.95);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+.dark-mode .admin-modal-card{ background: rgba(2,6,23,.85); }
+
+.admin-modal-head{
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+}
+.admin-x{
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.65);
+  cursor: pointer;
+  font-weight: 900;
+}
+.dark-mode .admin-x{
+  background: rgba(2,6,23,.35);
+  border: 1px solid rgba(148,163,184,0.14);
+}
+
+.admin-modal-tabs{
+  display:flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15,23,42,.08);
+}
+.um-tab{
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.65);
+  cursor:pointer;
+  font-weight: 900;
+  font-size: 12px;
+}
+.dark-mode .um-tab{
+  background: rgba(2,6,23,.35);
+  border: 1px solid rgba(148,163,184,0.14);
+}
+.um-tab.active{
+  border: none;
+  color:#fff;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+.admin-modal-body{
+  padding: 14px 16px;
+  overflow: auto;
+}
+  </style>
 </head>
 <body>
 
@@ -158,7 +654,7 @@
                 AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
                 PRO 회원이 되어 확인해보세요.
              </div>
-             <button id="weeklyGoProBtn" class="btn btn-primary" style="margin-top: 15px; font-size:13px;">리포트 잠금 해제하기</button>
+             <button id="weeklyGoProBtn" class="btn btn-primary" style="margin-top: 15px; font-size:13px;" onclick="showProModal()">리포트 잠금 해제하기</button>
           </div>
         </div>
 
@@ -167,14 +663,6 @@
           <div id="calendarGrid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;"></div>
         </div>
 
-      </div>
-
-      <div id="adminPanel" class="glass" style="display:none; position:fixed; bottom:20px; right:20px; width:300px; padding:20px; z-index:9999; border:2px solid red;">
-        <h3 style="margin-top:0;">👑 관리자 패널</h3>
-        <button id="adminTestBtn" style="margin-bottom:5px;">관리자 테스트</button>
-        <button id="cheatStreakBtn" style="margin-bottom:5px;">5일 연속 성공 치트</button>
-        <div id="userList" style="margin-top:10px; max-height: 200px; overflow-y:auto; background:#eee; padding:5px; border-radius:8px;"></div>
-        <button onclick="document.getElementById('adminPanel').style.display='none'" style="margin-top:10px;">닫기</button>
       </div>
 
     </div>
@@ -207,7 +695,7 @@
             <li>✨ 주간 리포트/AI 분석</li>
             <li>✨ 캘린더/통계/복구권</li>
           </ul>
-          <button id="goProBtn" class="btn btn-primary" style="width:100%; margin-top:14px;">PRO로 업그레이드</button>
+          <button id="goProBtn" class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="showProModal()">PRO로 업그레이드</button>
         </div>
       </div>
     </div>
@@ -220,32 +708,254 @@
     </div>
   </footer>
 
-  <div id="bgm" class="glass" style="position:fixed; bottom:20px; left:20px; padding:12px; width:200px; z-index:100;">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-      <div style="font-weight:700; font-size:14px;">🎵 BGM</div>
-      <button id="bgmToggle" style="padding: 4px 10px; border-radius: 8px; border:none; cursor:pointer; background:var(--primary); color:#fff; font-size:11px;">재생</button>
+<!-- ========================= -->
+<!-- ✅ ADMIN CONSOLE (NEW UI) -->
+<!-- ========================= -->
+
+<!-- 1) 우측 하단 플로팅 버튼 -->
+<button id="adminFab" aria-label="Admin Console">👑</button>
+
+<!-- 2) 관리자 콘솔 오버레이 -->
+<div id="adminOverlay" class="admin-overlay" style="display:none;">
+  <div class="admin-shell">
+    <!-- Left: Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <div class="admin-dot"></div>
+        <div>
+          <div class="admin-title">HabitFlow Admin</div>
+          <div id="adminMe" class="admin-sub">—</div>
+        </div>
+      </div>
+
+      <nav class="admin-nav">
+        <button class="admin-tab active" data-tab="dash">대시보드</button>
+        <button class="admin-tab" data-tab="users">유저</button>
+        <button class="admin-tab" data-tab="notice">공지/팝업</button>
+        <button class="admin-tab" data-tab="logs">운영 로그</button>
+        <button class="admin-tab" data-tab="settings">설정</button>
+      </nav>
+
+      <div class="admin-side-actions">
+        <button id="adminRefresh" class="btn btn-ghost" type="button">새로고침</button>
+        <button id="adminClose" class="btn" type="button">닫기</button>
+      </div>
+    </aside>
+
+    <!-- Right: Main -->
+    <main class="admin-main">
+      <!-- Header -->
+      <div class="admin-topbar">
+        <div>
+          <div id="adminSectionTitle" class="admin-h1">대시보드</div>
+          <div class="admin-hint">운영 상태를 한눈에 확인하고 유저를 관리하세요.</div>
+        </div>
+      </div>
+
+      <!-- CONTENT: DASH -->
+      <section class="admin-panel" data-panel="dash">
+        <div class="admin-grid-kpi">
+          <div class="admin-kpi glass">
+            <div class="admin-kpi-label">최근 7일 활동 유저</div>
+            <div id="kpiWAU" class="admin-kpi-value">—</div>
+          </div>
+          <div class="admin-kpi glass">
+            <div class="admin-kpi-label">PRO 유저 수</div>
+            <div id="kpiPRO" class="admin-kpi-value">—</div>
+          </div>
+          <div class="admin-kpi glass">
+            <div class="admin-kpi-label">휴면 유저(14일+)</div>
+            <div id="kpiDormant" class="admin-kpi-value">—</div>
+          </div>
+          <div class="admin-kpi glass">
+            <div class="admin-kpi-label">가입 유저 총계</div>
+            <div id="kpiTotal" class="admin-kpi-value">—</div>
+          </div>
+        </div>
+
+        <div class="admin-two-col">
+          <div class="glass" style="padding:16px;">
+            <div class="admin-box-title">최근 가입 유저</div>
+            <div id="dashRecentUsers" class="admin-list">불러오는 중...</div>
+          </div>
+
+          <div class="glass" style="padding:16px;">
+            <div class="admin-box-title">운영 메모</div>
+            <div class="admin-muted" style="font-size:13px; line-height:1.6;">
+              - 대시보드 KPI는 Firestore users 컬렉션 기준입니다.<br>
+              - lastActiveAt / createdAt 필드가 있으면 더 정확해집니다.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTENT: USERS -->
+      <section class="admin-panel" data-panel="users" style="display:none;">
+        <div class="admin-toolbar glass" style="padding:12px;">
+          <input id="userSearch" class="admin-input" placeholder="이메일 / UID 검색" />
+          <select id="userFilter" class="admin-select">
+            <option value="all">전체</option>
+            <option value="pro">PRO만</option>
+            <option value="free">무료만</option>
+            <option value="dormant">휴면(14일+)</option>
+            <option value="banned">차단</option>
+          </select>
+          <select id="userSort" class="admin-select">
+            <option value="recent">최근 활동순</option>
+            <option value="created">가입 최신순</option>
+            <option value="success">누적 성공순</option>
+          </select>
+          <button id="userReload" class="btn btn-ghost" type="button">목록 새로고침</button>
+        </div>
+
+        <div class="glass" style="padding:12px; margin-top:12px;">
+          <div class="admin-table-head">
+            <div>유저</div>
+            <div>등급</div>
+            <div>최근활동</div>
+            <div>누적성공</div>
+            <div>상태</div>
+            <div style="text-align:right;">액션</div>
+          </div>
+          <div id="userTable" class="admin-table-body">불러오는 중...</div>
+        </div>
+      </section>
+
+      <!-- CONTENT: NOTICE -->
+      <section class="admin-panel" data-panel="notice" style="display:none;">
+        <div class="glass" style="padding:16px;">
+          <div class="admin-box-title">배너 공지</div>
+          <div class="admin-form-row">
+            <label class="admin-switch">
+              <input id="bannerEnabled" type="checkbox" />
+              <span class="admin-switch-ui"></span>
+              <span>배너 활성화</span>
+            </label>
+          </div>
+          <div class="admin-form-row">
+            <input id="bannerText" class="admin-input" placeholder="배너 문구" />
+          </div>
+          <div class="admin-form-row">
+            <input id="bannerLink" class="admin-input" placeholder="배너 링크(선택)" />
+          </div>
+          <button id="saveBanner" class="btn btn-primary" type="button" style="width:220px;">배너 저장</button>
+        </div>
+
+        <div class="glass" style="padding:16px; margin-top:12px;">
+          <div class="admin-box-title">팝업 공지</div>
+          <div class="admin-form-row">
+            <label class="admin-switch">
+              <input id="popupEnabled" type="checkbox" />
+              <span class="admin-switch-ui"></span>
+              <span>팝업 활성화</span>
+            </label>
+          </div>
+          <div class="admin-form-row">
+            <input id="popupTitle" class="admin-input" placeholder="팝업 제목" />
+          </div>
+          <div class="admin-form-row">
+            <textarea id="popupBody" class="admin-textarea" placeholder="팝업 내용"></textarea>
+          </div>
+          <div class="admin-form-row">
+            <input id="popupCtaText" class="admin-input" placeholder="버튼 문구(선택)" />
+          </div>
+          <div class="admin-form-row">
+            <input id="popupCtaLink" class="admin-input" placeholder="버튼 링크(선택)" />
+          </div>
+          <button id="savePopup" class="btn btn-primary" type="button" style="width:220px;">팝업 저장</button>
+        </div>
+      </section>
+
+      <!-- CONTENT: LOGS -->
+      <section class="admin-panel" data-panel="logs" style="display:none;">
+        <div class="glass" style="padding:16px;">
+          <div class="admin-box-title">운영 로그 (최근 50개)</div>
+          <div id="adminLogs" class="admin-list">불러오는 중...</div>
+        </div>
+      </section>
+
+      <!-- CONTENT: SETTINGS -->
+      <section class="admin-panel" data-panel="settings" style="display:none;">
+        <div class="glass" style="padding:16px;">
+          <div class="admin-box-title">관리자 설정</div>
+          <div class="admin-muted" style="font-size:13px; line-height:1.7;">
+            - 관리자 접근은 <b>Firebase Custom Claims(admin=true)</b>가 가장 안전합니다.<br>
+            - 지금은 데모용으로 “관리자 이메일”도 허용할 수 있습니다(아래 JS에서 설정).<br>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- 3) 유저 상세 모달 -->
+<div id="adminUserModal" class="admin-modal" style="display:none;">
+  <div class="admin-modal-card">
+    <div class="admin-modal-head">
+      <div>
+        <div id="umTitle" style="font-weight:900; font-size:16px;">유저 상세</div>
+        <div id="umSub" class="admin-muted" style="font-size:12px;">—</div>
+      </div>
+      <button id="umClose" class="admin-x">✖</button>
     </div>
-    <div style="margin-top:10px;">
-      <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
-      <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.7;">
-        <span>볼륨</span><span id="bgmVolText">25%</span>
+
+    <div class="admin-modal-tabs">
+      <button class="um-tab active" data-umtab="overview">개요</button>
+      <button class="um-tab" data-umtab="actions">조치</button>
+      <button class="um-tab" data-umtab="notes">메모</button>
+    </div>
+
+    <div class="admin-modal-body">
+      <div class="um-panel" data-umpanel="overview">
+        <div class="admin-grid-kpi" style="grid-template-columns: repeat(2, minmax(0,1fr));">
+          <div class="admin-kpi glass"><div class="admin-kpi-label">등급</div><div id="umPlan" class="admin-kpi-value">—</div></div>
+          <div class="admin-kpi glass"><div class="admin-kpi-label">누적 성공</div><div id="umTotal" class="admin-kpi-value">—</div></div>
+          <div class="admin-kpi glass"><div class="admin-kpi-label">최근 활동</div><div id="umLast" class="admin-kpi-value">—</div></div>
+          <div class="admin-kpi glass"><div class="admin-kpi-label">상태</div><div id="umStatus" class="admin-kpi-value">—</div></div>
+        </div>
+        <div class="glass" style="padding:12px; margin-top:12px;">
+          <div class="admin-box-title">최근 기록(최대 10개)</div>
+          <div id="umHabits" class="admin-list">불러오는 중...</div>
+        </div>
+      </div>
+
+      <div class="um-panel" data-umpanel="actions" style="display:none;">
+        <div class="glass" style="padding:12px;">
+          <div class="admin-box-title">상태 변경</div>
+          <div class="admin-form-row">
+            <select id="umStatusSelect" class="admin-select">
+              <option value="active">ACTIVE</option>
+              <option value="warned">WARNED</option>
+              <option value="banned">BANNED</option>
+            </select>
+          </div>
+          <div class="admin-form-row">
+            <input id="umReason" class="admin-input" placeholder="사유(선택)" />
+          </div>
+          <button id="umSaveStatus" class="btn btn-primary" type="button" style="width:220px;">상태 저장</button>
+        </div>
+
+        <div class="glass" style="padding:12px; margin-top:12px;">
+          <div class="admin-box-title">PRO 토글(데모)</div>
+          <div class="admin-muted" style="font-size:12px; line-height:1.6;">
+            실제 운영은 Custom Claims가 안전하지만, 지금은 <b>users/{uid}.isPro</b>로 데모 토글합니다.
+          </div>
+          <button id="umTogglePro" class="btn btn-ghost" type="button" style="margin-top:10px; width:220px;">PRO 토글</button>
+        </div>
+      </div>
+
+      <div class="um-panel" data-umpanel="notes" style="display:none;">
+        <div class="glass" style="padding:12px;">
+          <div class="admin-box-title">운영자 메모</div>
+          <textarea id="umNoteText" class="admin-textarea" placeholder="메모를 입력하세요"></textarea>
+          <button id="umAddNote" class="btn btn-primary" type="button" style="width:220px; margin-top:10px;">메모 추가</button>
+          <div id="umNotes" class="admin-list" style="margin-top:12px;">불러오는 중...</div>
+        </div>
       </div>
     </div>
-    <audio id="bgmAudio" src="그떄 그날 우리는 말야(1).mp3" preload="auto" loop></audio>
   </div>
+</div>
 
-  <div id="proModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(5px);">
-    <div class="glass" style="padding:40px; max-width:360px; width:90%; text-align:center; background:#fff;">
-      <h2 style="margin-top:0;">👑 PRO로 성장 가속</h2>
-      <p style="color:var(--muted); line-height:1.6; margin-bottom:20px;">
-        연속 기록 보호권<br>
-        월간 캘린더 뷰<br>
-        AI 주간 패턴 분석
-      </p>
-      <button id="proModalBtn" class="btn btn-primary" style="width:100%;">PRO 시작하기</button>
-      <p style="margin-top:16px; font-size:13px; cursor:pointer; color:var(--muted);" onclick="document.getElementById('proModal').style.display='none'">나중에 할게요</p>
-    </div>
-  </div>
 
 <script>
   function scrollToAuth() {
@@ -264,10 +974,633 @@
     onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-  // 꽃가루 효과 라이브러리 (CDN이 헤더에 없어도 동작하도록 import 방식 변경 시도, 
-  // 만약 헤더에 스크립트를 안 넣었다면 아래 confetti 함수는 에러가 날 수 있으니 헤더 확인 필요. 
-  // 안전하게 window.confetti 체크)
 
+  // =========================
+// ✅ ADMIN CONSOLE (NEW UI)
+// =========================
+
+// 🔧 (1) 관리자 이메일 예외 허용 (원하면 삭제 가능)
+const ADMIN_EMAIL_ALLOWLIST = ["test@gmail.com"]; // 너 관리자 이메일로 바꿔
+
+// 🔧 (2) Firestore 문서 위치
+const SETTINGS_DOC = doc(db, "settings", "global");     // 공지/팝업 저장
+const LOGS_COL = collection(db, "adminLogs");           // 운영 로그
+
+// --- Admin UI DOM ---
+const adminFab = document.getElementById("adminFab");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminClose = document.getElementById("adminClose");
+const adminRefresh = document.getElementById("adminRefresh");
+const adminMe = document.getElementById("adminMe");
+
+const adminTabs = Array.from(document.querySelectorAll(".admin-tab"));
+const adminPanels = Array.from(document.querySelectorAll(".admin-panel"));
+const adminSectionTitle = document.getElementById("adminSectionTitle");
+
+// Dashboard elements
+const kpiWAU = document.getElementById("kpiWAU");
+const kpiPRO = document.getElementById("kpiPRO");
+const kpiDormant = document.getElementById("kpiDormant");
+const kpiTotal = document.getElementById("kpiTotal");
+const dashRecentUsers = document.getElementById("dashRecentUsers");
+
+// Users elements
+const userSearch = document.getElementById("userSearch");
+const userFilter = document.getElementById("userFilter");
+const userSort = document.getElementById("userSort");
+const userReload = document.getElementById("userReload");
+const userTable = document.getElementById("userTable");
+
+// Notice elements
+const bannerEnabled = document.getElementById("bannerEnabled");
+const bannerText = document.getElementById("bannerText");
+const bannerLink = document.getElementById("bannerLink");
+const saveBanner = document.getElementById("saveBanner");
+
+const popupEnabled = document.getElementById("popupEnabled");
+const popupTitle = document.getElementById("popupTitle");
+const popupBody = document.getElementById("popupBody");
+const popupCtaText = document.getElementById("popupCtaText");
+const popupCtaLink = document.getElementById("popupCtaLink");
+const savePopup = document.getElementById("savePopup");
+
+// Logs
+const adminLogs = document.getElementById("adminLogs");
+
+// User modal
+const adminUserModal = document.getElementById("adminUserModal");
+const umClose = document.getElementById("umClose");
+const umTitle = document.getElementById("umTitle");
+const umSub = document.getElementById("umSub");
+const umPlan = document.getElementById("umPlan");
+const umTotal = document.getElementById("umTotal");
+const umLast = document.getElementById("umLast");
+const umStatus = document.getElementById("umStatus");
+const umHabits = document.getElementById("umHabits");
+const umStatusSelect = document.getElementById("umStatusSelect");
+const umReason = document.getElementById("umReason");
+const umSaveStatus = document.getElementById("umSaveStatus");
+const umTogglePro = document.getElementById("umTogglePro");
+const umNoteText = document.getElementById("umNoteText");
+const umAddNote = document.getElementById("umAddNote");
+const umNotes = document.getElementById("umNotes");
+
+const umTabs = Array.from(document.querySelectorAll(".um-tab"));
+const umPanels = Array.from(document.querySelectorAll(".um-panel"));
+
+let _isAdminUser = false;
+let _adminEmail = "";
+let _selectedUid = "";
+
+// ---------- Helpers ----------
+function fmtDate(ts){
+  try{
+    if(!ts) return "—";
+    // Firestore Timestamp 대응
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toISOString().slice(0,10);
+  }catch{ return "—"; }
+}
+function daysAgo(ts){
+  if(!ts) return 9999;
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const diff = Date.now() - d.getTime();
+  return Math.floor(diff / (1000*60*60*24));
+}
+function pill(text){
+  return `<span class="admin-pill">${text}</span>`;
+}
+async function writeAdminLog(actionType, targetUid, before, after, note=""){
+  try{
+    await setDoc(doc(LOGS_COL), {
+      createdAt: new Date(),
+      adminEmail: _adminEmail || "unknown",
+      targetUid: targetUid || "",
+      actionType,
+      before: before ?? null,
+      after: after ?? null,
+      note
+    });
+  }catch(e){
+    console.log("log fail", e);
+  }
+}
+
+// ---------- Open/Close ----------
+function openAdmin(){
+  if(!_isAdminUser){
+    alert("관리자 권한이 없습니다.");
+    return;
+  }
+  adminOverlay.style.display = "flex";
+  // 기본 탭 로드
+  switchTab("dash");
+  refreshAllAdmin();
+}
+function closeAdmin(){
+  adminOverlay.style.display = "none";
+}
+
+adminFab?.addEventListener("click", openAdmin);
+adminClose?.addEventListener("click", closeAdmin);
+adminOverlay?.addEventListener("click", (e)=>{
+  if(e.target === adminOverlay) closeAdmin();
+});
+adminRefresh?.addEventListener("click", refreshAllAdmin);
+
+// ---------- Tabs ----------
+function switchTab(tabKey){
+  adminTabs.forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.tab === tabKey);
+  });
+  adminPanels.forEach(p=>{
+    p.style.display = (p.dataset.panel === tabKey) ? "block" : "none";
+  });
+
+  const titleMap = { dash:"대시보드", users:"유저", notice:"공지/팝업", logs:"운영 로그", settings:"설정" };
+  adminSectionTitle.textContent = titleMap[tabKey] || "Admin";
+}
+adminTabs.forEach(btn=>{
+  btn.addEventListener("click", ()=> switchTab(btn.dataset.tab));
+});
+
+// ---------- Refresh ----------
+async function refreshAllAdmin(){
+  await Promise.all([
+    loadDashboard(),
+    loadUsers(),
+    loadNoticeSettings(),
+    loadAdminLogs()
+  ]);
+}
+
+// ======================
+// 1) DASHBOARD
+// ======================
+async function loadDashboard(){
+  try{
+    const usersSnap = await getDocs(collection(db, "users"));
+    const total = usersSnap.size;
+
+    let proCount = 0;
+    let wau = 0;         // 7일 내 활동
+    let dormant = 0;     // 14일+ 활동없음
+
+    // 최근 가입 5명(데모: createdAt 없으면 uid로만 표시)
+    const recent = [];
+
+    usersSnap.forEach(docSnap=>{
+      const u = docSnap.data();
+      const uid = docSnap.id;
+
+      if(u.isPro) proCount++;
+
+      const last = u.lastActiveAt || u.lastActive || u.updatedAt || null;
+      const ago = daysAgo(last);
+
+      if(ago <= 7) wau++;
+      if(ago >= 14) dormant++;
+
+      recent.push({ uid, email: u.email || "(no email)", createdAt: u.createdAt || null, lastActiveAt: last, isPro: !!u.isPro, status: u.status || "active", totalSuccess: u.totalSuccess ?? 0 });
+    });
+
+    // createdAt 기준 정렬 (없으면 그대로)
+    recent.sort((a,b)=>{
+      const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return bd - ad;
+    });
+
+    kpiTotal.textContent = String(total);
+    kpiPRO.textContent = String(proCount);
+    kpiWAU.textContent = String(wau);
+    kpiDormant.textContent = String(dormant);
+
+    dashRecentUsers.innerHTML = recent.slice(0,5).map(r=>{
+      return `
+        <div class="glass" style="padding:10px;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+            <div style="font-weight:900; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              ${r.email}
+            </div>
+            <div style="display:flex; gap:6px;">
+              ${r.isPro ? pill("PRO") : pill("FREE")}
+              ${pill((r.status||"active").toUpperCase())}
+            </div>
+          </div>
+          <div class="admin-muted" style="font-size:12px; margin-top:6px;">
+            uid: ${r.uid.slice(0,8)}… · 최근활동: ${fmtDate(r.lastActiveAt)}
+          </div>
+        </div>
+      `;
+    }).join("") || "<div class='admin-muted'>유저가 없습니다.</div>";
+  }catch(e){
+    console.error(e);
+    dashRecentUsers.innerHTML = "<div class='admin-muted'>대시보드 로드 실패</div>";
+  }
+}
+
+// ======================
+// 2) USERS
+// ======================
+userReload?.addEventListener("click", loadUsers);
+userSearch?.addEventListener("input", ()=> loadUsers());
+userFilter?.addEventListener("change", ()=> loadUsers());
+userSort?.addEventListener("change", ()=> loadUsers());
+
+async function loadUsers(){
+  try{
+    const qSnap = await getDocs(collection(db, "users"));
+    const rows = [];
+    qSnap.forEach(docSnap=>{
+      const u = docSnap.data();
+      rows.push({
+        uid: docSnap.id,
+        email: u.email || "(no email)",
+        isPro: !!u.isPro,
+        status: u.status || "active",
+        lastActiveAt: u.lastActiveAt || u.lastActive || u.updatedAt || null,
+        totalSuccess: u.totalSuccess ?? 0,
+        createdAt: u.createdAt || null
+      });
+    });
+
+    // 검색
+    const keyword = (userSearch?.value || "").trim().toLowerCase();
+    let filtered = rows.filter(r=>{
+      if(!keyword) return true;
+      return r.email.toLowerCase().includes(keyword) || r.uid.toLowerCase().includes(keyword);
+    });
+
+    // 필터
+    const f = userFilter?.value || "all";
+    if(f === "pro") filtered = filtered.filter(r=> r.isPro);
+    if(f === "free") filtered = filtered.filter(r=> !r.isPro);
+    if(f === "banned") filtered = filtered.filter(r=> (r.status||"") === "banned");
+    if(f === "dormant") filtered = filtered.filter(r=> daysAgo(r.lastActiveAt) >= 14);
+
+    // 정렬
+    const s = userSort?.value || "recent";
+    filtered.sort((a,b)=>{
+      if(s === "success") return (b.totalSuccess||0) - (a.totalSuccess||0);
+      if(s === "created"){
+        const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        return bd - ad;
+      }
+      // recent
+      const al = a.lastActiveAt?.toDate ? a.lastActiveAt.toDate().getTime() : (a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0);
+      const bl = b.lastActiveAt?.toDate ? b.lastActiveAt.toDate().getTime() : (b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0);
+      return bl - al;
+    });
+
+    userTable.innerHTML = filtered.map(r=>{
+      const plan = r.isPro ? "PRO" : "FREE";
+      const last = fmtDate(r.lastActiveAt);
+      const st = (r.status || "active").toUpperCase();
+
+      return `
+        <div class="admin-table-row">
+          <div style="min-width:0;">
+            <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.email}</div>
+            <div class="admin-muted" style="font-size:12px;">uid: ${r.uid.slice(0,10)}…</div>
+          </div>
+          <div>${pill(plan)}</div>
+          <div>${last}</div>
+          <div>${r.totalSuccess ?? 0}</div>
+          <div>${pill(st)}</div>
+          <div style="text-align:right;">
+            <button class="btn btn-ghost" data-open-uid="${r.uid}" type="button" style="padding:8px 10px;">상세</button>
+          </div>
+        </div>
+      `;
+    }).join("") || "<div class='admin-muted' style='padding:12px;'>조건에 맞는 유저가 없습니다.</div>";
+
+    // 상세 버튼 이벤트
+    userTable.querySelectorAll("[data-open-uid]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        openUserModal(btn.getAttribute("data-open-uid"));
+      });
+    });
+  }catch(e){
+    console.error(e);
+    userTable.innerHTML = "<div class='admin-muted' style='padding:12px;'>유저 목록 로드 실패</div>";
+  }
+}
+
+// ======================
+// 3) NOTICE SETTINGS
+// ======================
+saveBanner?.addEventListener("click", saveBannerSettings);
+savePopup?.addEventListener("click", savePopupSettings);
+
+async function loadNoticeSettings(){
+  try{
+    const snap = await getDoc(SETTINGS_DOC);
+    const data = snap.exists() ? snap.data() : {};
+
+    const banner = data.banner || {};
+    bannerEnabled.checked = !!banner.enabled;
+    bannerText.value = banner.text || "";
+    bannerLink.value = banner.link || "";
+
+    const popup = data.popup || {};
+    popupEnabled.checked = !!popup.enabled;
+    popupTitle.value = popup.title || "";
+    popupBody.value = popup.body || "";
+    popupCtaText.value = popup.ctaText || "";
+    popupCtaLink.value = popup.ctaLink || "";
+  }catch(e){
+    console.error(e);
+  }
+}
+
+async function saveBannerSettings(){
+  try{
+    const beforeSnap = await getDoc(SETTINGS_DOC);
+    const before = beforeSnap.exists() ? beforeSnap.data() : {};
+
+    await setDoc(SETTINGS_DOC, {
+      ...before,
+      banner: {
+        enabled: !!bannerEnabled.checked,
+        text: bannerText.value.trim(),
+        link: bannerLink.value.trim()
+      }
+    }, { merge:true });
+
+    await writeAdminLog("SAVE_BANNER", "", before?.banner, {
+      enabled: !!bannerEnabled.checked,
+      text: bannerText.value.trim(),
+      link: bannerLink.value.trim()
+    });
+
+    alert("배너 저장 완료");
+  }catch(e){
+    console.error(e);
+    alert("배너 저장 실패");
+  }
+}
+
+async function savePopupSettings(){
+  try{
+    const beforeSnap = await getDoc(SETTINGS_DOC);
+    const before = beforeSnap.exists() ? beforeSnap.data() : {};
+
+    await setDoc(SETTINGS_DOC, {
+      ...before,
+      popup: {
+        enabled: !!popupEnabled.checked,
+        title: popupTitle.value.trim(),
+        body: popupBody.value.trim(),
+        ctaText: popupCtaText.value.trim(),
+        ctaLink: popupCtaLink.value.trim()
+      }
+    }, { merge:true });
+
+    await writeAdminLog("SAVE_POPUP", "", before?.popup, {
+      enabled: !!popupEnabled.checked,
+      title: popupTitle.value.trim(),
+      body: popupBody.value.trim(),
+      ctaText: popupCtaText.value.trim(),
+      ctaLink: popupCtaLink.value.trim()
+    });
+
+    alert("팝업 저장 완료");
+  }catch(e){
+    console.error(e);
+    alert("팝업 저장 실패");
+  }
+}
+
+// ======================
+// 4) ADMIN LOGS
+// ======================
+async function loadAdminLogs(){
+  try{
+    // 최근 50개: Firestore 쿼리(orderBy/limit) 쓰려면 import가 필요함.
+    // 간단하게 전체 읽고 정렬(데모). 로그가 많아지면 orderBy+limit로 바꾸면 됨.
+    const snap = await getDocs(LOGS_COL);
+    const logs = [];
+    snap.forEach(d=> logs.push({ id: d.id, ...d.data() }));
+    logs.sort((a,b)=>{
+      const at = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt||0).getTime();
+      const bt = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt||0).getTime();
+      return bt - at;
+    });
+
+    adminLogs.innerHTML = logs.slice(0,50).map(l=>{
+      return `
+        <div class="glass" style="padding:10px;">
+          <div style="display:flex; justify-content:space-between; gap:10px;">
+            <div style="font-weight:900; font-size:12px;">${l.actionType || "LOG"}</div>
+            <div class="admin-muted" style="font-size:12px;">${fmtDate(l.createdAt)}</div>
+          </div>
+          <div class="admin-muted" style="font-size:12px; margin-top:6px; line-height:1.6;">
+            admin: ${l.adminEmail || "-"}<br>
+            target: ${l.targetUid ? l.targetUid.slice(0,10)+"…" : "-"}<br>
+            note: ${l.note || "-"}
+          </div>
+        </div>
+      `;
+    }).join("") || "<div class='admin-muted'>로그가 없습니다.</div>";
+  }catch(e){
+    console.error(e);
+    adminLogs.innerHTML = "<div class='admin-muted'>로그 로드 실패</div>";
+  }
+}
+
+// ======================
+// 5) USER MODAL
+// ======================
+umClose?.addEventListener("click", ()=> adminUserModal.style.display="none");
+adminUserModal?.addEventListener("click", (e)=>{
+  if(e.target === adminUserModal) adminUserModal.style.display="none";
+});
+
+umTabs.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const key = btn.dataset.umtab;
+    umTabs.forEach(b=> b.classList.toggle("active", b === btn));
+    umPanels.forEach(p=> p.style.display = (p.dataset.umpanel === key) ? "block" : "none");
+  });
+});
+
+async function openUserModal(uid){
+  _selectedUid = uid;
+  adminUserModal.style.display = "flex";
+  umTitle.textContent = "유저 상세";
+  umSub.textContent = `uid: ${uid}`;
+
+  // 기본 탭: overview
+  umTabs.forEach((b,i)=> b.classList.toggle("active", i===0));
+  umPanels.forEach(p=> p.style.display = (p.dataset.umpanel==="overview") ? "block" : "none");
+
+  await loadUserModalData(uid);
+}
+
+async function loadUserModalData(uid){
+  try{
+    const uref = doc(db, "users", uid);
+    const usnap = await getDoc(uref);
+    const u = usnap.exists() ? usnap.data() : {};
+
+    umPlan.textContent = u.isPro ? "PRO" : "FREE";
+    umTotal.textContent = String(u.totalSuccess ?? 0);
+    umLast.textContent = fmtDate(u.lastActiveAt || u.lastActive || u.updatedAt || null);
+    umStatus.textContent = (u.status || "active").toUpperCase();
+    umStatusSelect.value = (u.status || "active");
+    umReason.value = "";
+
+    // 최근 habits 10개 (데모: 전부 가져와 정렬)
+    const hsnap = await getDocs(collection(db, "users", uid, "habits"));
+    const habits = [];
+    hsnap.forEach(d=>{
+      habits.push({ date: d.id, ...d.data() });
+    });
+    habits.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+    umHabits.innerHTML = habits.slice(0,10).map(h=>{
+      return `
+        <div class="glass" style="padding:10px;">
+          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+            <div style="font-weight:900;">${h.date}</div>
+            <div>${h.done ? "✅" : "❌"}</div>
+          </div>
+          <div class="admin-muted" style="font-size:12px; margin-top:6px;">
+            ${h.name || "(no name)"}
+          </div>
+        </div>
+      `;
+    }).join("") || "<div class='admin-muted'>기록이 없습니다.</div>";
+
+    // notes
+    await loadUserNotes(uid);
+
+  }catch(e){
+    console.error(e);
+    umHabits.innerHTML = "<div class='admin-muted'>불러오기 실패</div>";
+  }
+}
+
+// 상태 저장
+umSaveStatus?.addEventListener("click", async ()=>{
+  if(!_selectedUid) return;
+  const uid = _selectedUid;
+
+  try{
+    const uref = doc(db, "users", uid);
+    const beforeSnap = await getDoc(uref);
+    const before = beforeSnap.exists() ? beforeSnap.data() : {};
+
+    const nextStatus = umStatusSelect.value;
+    const reason = umReason.value.trim();
+
+    await setDoc(uref, {
+      status: nextStatus,
+      statusReason: reason,
+      statusUpdatedAt: new Date()
+    }, { merge:true });
+
+    await writeAdminLog("SET_STATUS", uid, {status: before.status, statusReason: before.statusReason}, {status: nextStatus, statusReason: reason});
+
+    alert("상태 저장 완료");
+    await loadUsers();
+    await loadUserModalData(uid);
+  }catch(e){
+    console.error(e);
+    alert("상태 저장 실패");
+  }
+});
+
+// PRO 토글(데모: users.isPro)
+umTogglePro?.addEventListener("click", async ()=>{
+  if(!_selectedUid) return;
+  const uid = _selectedUid;
+
+  try{
+    const uref = doc(db, "users", uid);
+    const beforeSnap = await getDoc(uref);
+    const before = beforeSnap.exists() ? beforeSnap.data() : {};
+    const next = !before.isPro;
+
+    await setDoc(uref, { isPro: next }, { merge:true });
+    await writeAdminLog("TOGGLE_PRO", uid, {isPro: before.isPro}, {isPro: next});
+
+    alert(`PRO 변경 완료: ${next ? "PRO" : "FREE"}`);
+    await loadUsers();
+    await loadUserModalData(uid);
+  }catch(e){
+    console.error(e);
+    alert("PRO 변경 실패");
+  }
+});
+
+// notes
+async function loadUserNotes(uid){
+  try{
+    const nsnap = await getDocs(collection(db, "users", uid, "adminNotes"));
+    const notes = [];
+    nsnap.forEach(d=> notes.push({ id:d.id, ...d.data() }));
+    notes.sort((a,b)=>{
+      const at = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt||0).getTime();
+      const bt = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt||0).getTime();
+      return bt - at;
+    });
+
+    umNotes.innerHTML = notes.map(n=>{
+      return `
+        <div class="glass" style="padding:10px;">
+          <div style="display:flex; justify-content:space-between; gap:10px;">
+            <div style="font-weight:900; font-size:12px;">${n.adminEmail || "-"}</div>
+            <div class="admin-muted" style="font-size:12px;">${fmtDate(n.createdAt)}</div>
+          </div>
+          <div style="margin-top:6px; font-size:13px; line-height:1.6;">${(n.text||"").replaceAll("<","&lt;")}</div>
+        </div>
+      `;
+    }).join("") || "<div class='admin-muted'>메모가 없습니다.</div>";
+  }catch(e){
+    console.error(e);
+    umNotes.innerHTML = "<div class='admin-muted'>메모 로드 실패</div>";
+  }
+}
+
+umAddNote?.addEventListener("click", async ()=>{
+  if(!_selectedUid) return;
+  const text = (umNoteText.value || "").trim();
+  if(!text) return alert("메모를 입력하세요.");
+
+  try{
+    const nid = doc(collection(db, "users", _selectedUid, "adminNotes"));
+    await setDoc(nid, {
+      text,
+      createdAt: new Date(),
+      adminEmail: _adminEmail || "unknown"
+    });
+
+    await writeAdminLog("ADD_NOTE", _selectedUid, null, {text});
+    umNoteText.value = "";
+    await loadUserNotes(_selectedUid);
+  }catch(e){
+    console.error(e);
+    alert("메모 추가 실패");
+  }
+});
+
+// ======================
+// ✅ 관리자 권한 판별: onAuthStateChanged 안에서 호출해야 함
+// ======================
+function setAdminAccess(user, tokenResult){
+  const isAdminClaim = tokenResult?.claims?.admin === true;
+  const isAllowlisted = ADMIN_EMAIL_ALLOWLIST.includes(user.email);
+
+  _isAdminUser = isAdminClaim || isAllowlisted;
+  _adminEmail = user.email || "";
+
+  // 관리자면 FAB 버튼 노출
+  adminFab.style.display = _isAdminUser ? "block" : "none";
+  adminMe.textContent = _isAdminUser ? _adminEmail : "No Access";
+}
   const firebaseConfig = {
     apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
     authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
@@ -331,6 +1664,8 @@
     const isPro = tokenResult.claims.pro === true;
     const habitInput = document.getElementById("habitName");
     const dayIdx = new Date().getDay();
+    setAdminAccess(user, tokenResult);
+
 
     document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
 
@@ -351,6 +1686,8 @@
     }
     if (el) el.classList.add('active');
   };
+  
+  window.showProModal = () => document.getElementById("proModal").style.display = "flex";
 
   // --- DOM Elements ---
   const authDiv = document.getElementById('auth');
@@ -366,7 +1703,6 @@
   // PRO & Admin UI
   const proCard = document.getElementById("proCard");
   const statsDiv = document.getElementById("stats");
-  // const adminPanel = document.getElementById("adminPanel"); // 동적 제어로 변경됨
   const restoreBtn = document.getElementById("restoreStreakBtn");
   const weeklyReport = document.getElementById("weeklyReport");
 
@@ -386,7 +1722,7 @@
   signinBtn.onclick = async () => {
     if (!requireEmailPass()) return;
     try {
-      const cred = await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
+      await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
       // 로그인 체크는 onAuthStateChanged에서 수행
     } catch (e) {
       alert("로그인 실패: " + e.message);
@@ -417,7 +1753,7 @@
     // 2. 관리자 예외 이메일 설정
     const adminEmail = "test@gmail.com"; 
 
-    // 3. 이메일 인증 체크
+    // 3. 이메일 인증 체크 (관리자 계정은 패스)
     if (!user.emailVerified && user.email !== adminEmail) {
       alert("📩 이메일 인증 후 사용 가능합니다.");
       await signOut(auth);
@@ -789,9 +2125,6 @@
        location.reload();
     };
   }
-
-  // --- Modal Helpers ---
-  window.showProModal = () => document.getElementById("proModal").style.display = "flex";
   
   // --- Dark Mode ---
   const toggle = document.getElementById("darkModeToggle");
@@ -800,83 +2133,39 @@
     localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
   };
   if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
-
 </script>
 
 <script>
-  // BGM Logic (Vanilla JS)
-  const audio = document.getElementById("bgmAudio");
-  const bgmBtn = document.getElementById("bgmToggle");
-  const vol = document.getElementById("bgmVol");
-  const volText = document.getElementById("bgmVolText");
+  // BGM Player Logic (Vanilla JS)
+  (() => {
+    const audio = document.getElementById("bgmAudio");
+    const bgmBtn = document.getElementById("bgmToggle");
+    const vol = document.getElementById("bgmVol");
+    const volText = document.getElementById("bgmVolText");
 
-  if (audio && bgmBtn) {
-    audio.volume = 0.25;
-    bgmBtn.onclick = () => {
-      if (audio.paused) {
-        audio.play().then(() => bgmBtn.textContent = "일시정지").catch(() => alert("자동 재생 권한이 필요합니다."));
-      } else {
-        audio.pause();
-        bgmBtn.textContent = "재생";
-      }
-    };
-    vol.oninput = () => {
-      audio.volume = vol.value;
-      volText.textContent = Math.round(vol.value * 100) + "%";
-    };
-  }
+    if (audio && bgmBtn) {
+      audio.volume = 0.25;
+
+      bgmBtn.onclick = () => {
+        if (audio.paused) {
+          audio.play().then(() => {
+            bgmBtn.textContent = "일시정지";
+          }).catch((e) => {
+            alert("브라우저 정책상 자동재생이 막혀있어요. 버튼을 다시 눌러주세요!");
+            console.error(e);
+          });
+        } else {
+          audio.pause();
+          bgmBtn.textContent = "재생";
+        }
+      };
+
+      vol.oninput = () => {
+        audio.volume = vol.value;
+        volText.textContent = Math.round(vol.value * 100) + "%";
+      };
+    }
+  })();
 </script>
-<button id="adminOpenBtn" style="
-    display:none; position:fixed; bottom:20px; right:20px; z-index:9990;
-    width:50px; height:50px; border-radius:50%; border:none;
-    background:#ef4444; color:white; font-size:24px; cursor:pointer;
-    box-shadow:0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;
-">👑</button>
-
-<div id="adminPanel" class="glass" style="
-    display:none; position:fixed; bottom:80px; right:20px; width:340px; 
-    padding:20px; z-index:9999; border:2px solid #ef4444; background:rgba(255,255,255,0.95);
-">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-    <h3 style="margin:0; color:#ef4444;">👑 관리자 모드</h3>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" 
-            style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
-  </div>
-  
-  <div style="display:flex; gap:5px; margin-bottom:15px;">
-    <button id="adminTestBtn" style="flex:1; padding:8px; font-size:11px; cursor:pointer;">기능 테스트</button>
-    <button id="cheatStreakBtn" style="flex:1; padding:8px; font-size:11px; cursor:pointer;">치트키(5일)</button>
-  </div>
-
-  <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">👤 유저 목록 (최근 가입순)</div>
-  <div id="userList" style="
-      height: 250px; overflow-y:auto; background:#f1f5f9; 
-      padding:10px; border-radius:8px; border:1px solid #cbd5e1;
-  "></div>
-</div>
-
-<div id="adminUserDetailModal" style="
-    display:none; position:fixed; inset:0; z-index:10000;
-    background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
-">
-  <div style="
-      background:white; width:90%; max-width:500px; height:80vh; 
-      border-radius:16px; display:flex; flex-direction:column; overflow:hidden;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  ">
-    <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
-      <h3 style="margin:0;">👤 고객 상세 정보</h3>
-      <button onclick="document.getElementById('adminUserDetailModal').style.display='none'" 
-              style="border:none; background:none; font-size:20px; cursor:pointer;">✖</button>
-    </div>
-    <div id="detailContent" style="padding:20px; overflow-y:auto; flex:1; font-family:monospace; font-size:13px; line-height:1.6;">
-      </div>
-    <div style="padding:15px; border-top:1px solid #eee; text-align:right;">
-        <button onclick="document.getElementById('adminUserDetailModal').style.display='none'"
-                style="padding:10px 20px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;">닫기</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
