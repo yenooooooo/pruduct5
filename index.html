@@ -297,6 +297,20 @@ section {
           </div>
         </div>
 
+        <div id="calendarSection" style="display:none; margin-top:20px;">
+          <h3>🗓️ 이번 달 습관</h3>
+          <div id="calendarGrid"
+            style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+          </div>
+        </div>
+
+        <div id="calendarSection" style="display:none; margin-top:20px;">
+          <h3>🗓️ 이번 달 습관</h3>
+          <div id="calendarGrid"
+            style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+          </div>
+        </div>
+
         <button class="logout" id="logoutBtn" style="background:none; color:#94a3b8; font-size:0.8rem; text-decoration:underline;">로그아웃</button>
       </div>
     </div>
@@ -444,6 +458,7 @@ const adminPanel = document.getElementById("adminPanel");
 const adminTestBtn = document.getElementById("adminTestBtn");
 const userListDiv = document.getElementById("userList");
 const darkModeToggle = document.getElementById("darkModeToggle");
+const restoreBtn = document.getElementById("restoreStreakBtn");
 
 // ✅ 주간 리포트 요소
 const weeklyReport = document.getElementById("weeklyReport");
