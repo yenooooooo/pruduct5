@@ -84,6 +84,18 @@ section{
   -webkit-backdrop-filter: blur(18px);
   border-radius: 22px;
 }
+.glass:hover {
+  transform: translateY(-4px);
+  transition: 0.25s ease;
+}
+.glass:hover {
+  transform: translateY(-4px);
+  transition: 0.25s ease;
+}
+.glass:hover {
+  transform: translateY(-4px);
+  transition: 0.25s ease;
+}
 
 
 
@@ -260,6 +272,10 @@ section{
  @media (max-width: 520px){
   .flow-grid{ grid-template-columns: 1fr; }
 }
+button {
+  border-radius: 14px;
+  font-weight: 800;
+}
 </style>
 </head>
 <body>
@@ -323,18 +339,34 @@ section{
 </section>
 
 <section class="problem">
-  <h2 style="text-align:center;">왜 습관은 항상 실패할까?</h2>
-  <ul>
-    <li>❌ 목표가 너무 많다</li>
-    <li>❌ 기록이 귀찮다</li>
-    <li>❌ 성취가 눈에 안 보인다</li>
-  </ul>
-  <h3 style="text-align:center;">HabitFlow는 다릅니다</h3>
-  <ul>
-    <li>✅ 하루 딱 하나</li>
-    <li>✅ 버튼 한 번</li>
-    <li>✅ 연속 기록 시각화</li>
-  </ul>
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">WHY</span>
+      <h2>왜 습관은 항상 실패할까?</h2>
+      <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="problem-card glass">
+        <h3>🎯 목표가 너무 많다</h3>
+        <p>욕심이 커질수록 시작이 어려워져요. 우리는 하루 1개만 남깁니다.</p>
+      </div>
+      <div class="problem-card glass">
+        <h3>📝 기록이 귀찮다</h3>
+        <p>기록이 번거로우면 중도 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
+      </div>
+      <div class="problem-card glass">
+        <h3>📉 성취가 눈에 안 보인다</h3>
+        <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
+      </div>
+    </div>
+
+    <div class="problem-bottom">
+      <div class="problem-pill">✅ 하루 딱 하나</div>
+      <div class="problem-pill">✅ 버튼 한 번</div>
+      <div class="problem-pill">✅ 연속 기록 시각화</div>
+    </div>
+  </div>
 </section>
 
 <!-- FEATURES -->
@@ -482,7 +514,7 @@ section{
         </div>
       </div>
 
-      <div id="app" style="display:none">
+      <div id="app" class="glass" style="width:100%; max-width:420px; display:none">
         <h2 id="welcome" style="font-size: 1.5rem;"></h2>
         <div id="tierBadge" style="display:none; margin: 10px 0;">
           <span id="tierText" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;"></span>
