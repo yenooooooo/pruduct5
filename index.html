@@ -497,7 +497,7 @@ onAuthStateChanged(auth, async user => {
     } else {
       if (proCard) proCard.style.display = "block";
       if (statsDiv) statsDiv.style.display = "none";
-      status.innerText = "무료 회원 (하루 1습관)";
+      safeText("status", "무료 회원 (하루 1습관)");
     }
 
     // ✅ 주간 리포트 업데이트
