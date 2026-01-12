@@ -228,7 +228,6 @@ section {
       <h3>PRO</h3>
       <p>₩3,900 / 월</p>
       <p>습관 무제한 + 통계</p>
-      <button id="goProBtn">PRO로 업그레이드</button>
     </div>
   </div>
 </section>
@@ -255,10 +254,10 @@ section {
         <div id="themeSection">
            <p style="font-size: 0.9rem; font-weight: 700;">🎁 오늘의 루틴 팩</p>
            <div class="tag-container">
-              <button class="theme-tag" onclick="selectTheme('survival')">🚑 생존</button>
-              <button class="theme-tag" onclick="selectTheme('godsaeng')">✨ 갓생</button>
-              <button class="theme-tag" onclick="selectTheme('detox')">📱 디톡스</button>
-              <button class="theme-tag" onclick="selectTheme('custom')">➕ 커스텀</button>
+              <button class="theme-tag" onclick="selectTheme(this, 'survival')">🚑 생존</button>
+              <button class="theme-tag" onclick="selectTheme(this, 'godsaeng')">✨ 갓생</button>
+              <button class="theme-tag" onclick="selectTheme(this, 'detox')">📱 디톡스</button>
+              <button class="theme-tag" onclick="selectTheme(this, 'custom')">➕ 커스텀</button>
            </div>
         </div>
         
@@ -364,38 +363,34 @@ const themeData = {
 };
 
 // 2. 테마 선택 함수 (전역 범위 호출을 위해 window에 할당)
-window.selectTheme = async (themeType) => {
+window.selectTheme = async (el, themeType) => {
   const user = auth.currentUser;
   const tokenResult = await user.getIdTokenResult();
   const isPro = tokenResult.claims.pro === true;
   const habitInput = document.getElementById("habitName");
   const dayIdx = new Date().getDay();
 
-  // 모든 태그 활성화 해제
-  document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
+  // 기존 활성화 제거
+  document.querySelectorAll('.theme-tag')
+    .forEach(tag => tag.classList.remove('active'));
 
   if (themeType === 'custom') {
     if (!isPro) {
-      alert("🔒 '직접 입력'은 PRO 전용 기능입니다.\n기본 제공 테마를 이용하거나 PRO로 업그레이드하세요!");
+      alert("🔒 커스텀 습관은 PRO 전용입니다.");
       return;
     }
-    // PRO인 경우 직접 입력 가능하게 변경
     habitInput.readOnly = false;
     habitInput.value = "";
     habitInput.placeholder = "원하는 습관을 입력하세요";
     habitInput.style.background = "#fff";
-    habitInput.style.cursor = "text";
     habitInput.focus();
   } else {
-    // 무료 테마 선택 시
     habitInput.readOnly = true;
     habitInput.style.background = "#eee";
-    habitInput.style.cursor = "not-allowed";
     habitInput.value = themeData[themeType][dayIdx];
-    
-    // 선택된 태그 강조
-    event.target.classList.add('active');
   }
+
+  if (el) el.classList.add('active');
 };
 
 // DOM Elements
