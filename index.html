@@ -588,36 +588,39 @@
   logoutBtn.onclick = () => signOut(auth);
 
   // --- Core Logic (수정된 부분) ---
-  onAuthStateChanged(auth, async user => {
-    // 1. 로그아웃 상태일 때
+// --- Core Logic ---
+onAuthStateChanged(auth, async user => {
+    // 1. 로그아웃 상태일 때 처리
     if (!user) {
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
-      adminPanel.style.display = 'none';
+      if(document.getElementById("adminPanel")) document.getElementById("adminPanel").style.display = 'none';
+      if(document.getElementById("adminOpenBtn")) document.getElementById("adminOpenBtn").style.display = 'none';
       return;
     }
 
-    // 2. 관리자 이메일 설정 (수정하신 이메일)
+    // 2. 관리자 이메일 설정
     const adminEmail = "test@gmail.com"; 
 
-    // 3. 이메일 인증 체크 
-    // (이메일 인증이 안 되어있고 && 동시에 관리자 이메일도 아니라면 -> 차단)
+    // 3. 이메일 인증 체크 (관리자는 예외)
     if (!user.emailVerified && user.email !== adminEmail) {
       alert("📩 이메일 인증 후 사용 가능합니다.");
-      await signOut(auth); // 강제 로그아웃
+      await signOut(auth);
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
       return;
     }
 
-    // 4. 로그인 성공 (여기까지 오면 인증된 유저이거나 관리자임)
+    // 4. 로그인 성공 UI 처리
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
     
     // 기본 추천 세팅
     const dayIdx = new Date().getDay();
-    document.getElementById("todaySuggestion").innerHTML = 
-      `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
+    const suggestionEl = document.getElementById("todaySuggestion");
+    if(suggestionEl) {
+        suggestionEl.innerHTML = `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
+    }
 
     try {
       const tokenResult = await getIdTokenResult(user, true);
@@ -626,21 +629,43 @@
 
       document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
 
-      // Admin 패널 (관리자 이메일이거나 admin claim이 있으면 표시)
+      // ============================================================
+      // 👇 [여기가 2-1 핵심 수정 부분] 관리자 버튼 및 패널 제어 로직
+      // ============================================================
+      const openBtn = document.getElementById("adminOpenBtn"); // HTML에 추가한 왕관 버튼
+      const panel = document.getElementById("adminPanel");     // 관리자 패널
+
+      // 관리자 권한이 있거나, 지정된 관리자 이메일인 경우
       if (isAdmin || user.email === adminEmail) {
-        adminPanel.style.display = 'block';
-        loadAllUsers();
+        if(openBtn) {
+            openBtn.style.display = 'block'; // 1. 평소에는 왕관 버튼만 보여줌
+            
+            // 2. 왕관 버튼 클릭 시 패널 열기/닫기 (토글)
+            openBtn.onclick = () => {
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    panel.style.display = 'block'; // 켜기
+                    loadAllUsers(); // 켤 때 최신 데이터 로딩
+                } else {
+                    panel.style.display = 'none'; // 끄기
+                }
+            };
+        }
+      } else {
+        // 관리자가 아니면 버튼과 패널 모두 숨김
+        if(openBtn) openBtn.style.display = 'none';
+        if(panel) panel.style.display = 'none';
       }
+      // ============================================================
 
       // PRO UI Switch
       if (isPro) {
-        proCard.style.display = "none";
-        statsDiv.style.display = "block";
+        if(proCard) proCard.style.display = "none";
+        if(statsDiv) statsDiv.style.display = "block";
         safeText("status", "🌟 PRO 멤버십 이용 중");
         loadStats(user.uid);
       } else {
-        proCard.style.display = "block";
-        statsDiv.style.display = "none";
+        if(proCard) proCard.style.display = "block";
+        if(statsDiv) statsDiv.style.display = "none";
         safeText("status", "🌱 무료 회원 (하루 1습관)");
       }
 
@@ -651,7 +676,7 @@
       await renderCalendar(user.uid, isPro);
       await updateStreakProtectionUI(user.uid, isPro);
       
-      // 7일 달성 팝업 (무료회원 대상)
+      // 7일 달성 팝업
       if (!isPro && streak >= 7) showProModal();
 
     } catch (e) {
@@ -838,43 +863,107 @@
   }
 
   // --- Admin Functions ---
-  async function loadAllUsers() {
+// --- Admin Functions ---
+async function loadAllUsers() {
     const listDiv = document.getElementById("userList");
-    listDiv.innerHTML = "로딩 중...";
-    const snap = await getDocs(collection(db, "users"));
-    listDiv.innerHTML = "";
-    
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const div = document.createElement("div");
-      div.style.padding = "8px";
-      div.style.borderBottom = "1px solid #ccc";
-      div.innerHTML = `
-        <span style="font-size:11px;">${docSnap.id.slice(0,5)}...</span> 
-        <b>${data.isPro ? "PRO" : "FREE"}</b>
-        <button class="tgl" style="font-size:10px; margin-left:5px;">변경</button>
-      `;
-      div.querySelector(".tgl").onclick = async () => {
-         await updateDoc(doc(db, "users", docSnap.id), { isPro: !data.isPro });
-         alert("등급 변경됨. 새로고침 하세요.");
-      };
-      listDiv.appendChild(div);
-    });
-  }
+    if (!listDiv) return;
 
-  const cheatBtn = document.getElementById("cheatStreakBtn");
-  if(cheatBtn) {
-    cheatBtn.onclick = async () => {
-       const user = auth.currentUser;
-       if (!user) return alert("로그인 필요");
-       if (!confirm("지난 5일 데이터를 강제 성공 처리할까요?")) return;
-       for(let i=0; i<5; i++) {
-          const k = dateKeyFromOffset(i);
-          await setDoc(doc(db, "users", user.uid, "habits", k), { done: true, cheat: true });
-       }
-       alert("치트 적용 완료! 새로고침하세요.");
-       location.reload();
-    };
+    listDiv.innerHTML = "<div style='text-align:center; padding:20px;'>데이터 불러오는 중...</div>";
+    
+    try {
+      // 모든 유저 가져오기
+      const snap = await getDocs(collection(db, "users"));
+      listDiv.innerHTML = "";
+      
+      if (snap.empty) {
+          listDiv.innerHTML = "가입된 유저가 없습니다.";
+          return;
+      }
+
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const uid = docSnap.id;
+        
+        // 리스트 아이템 디자인
+        const item = document.createElement("div");
+        item.style.cssText = "background:white; padding:10px; margin-bottom:8px; border-radius:6px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:6px;";
+        
+        // 1. 기본 정보 줄
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+             <span style="font-weight:bold; color:#334155; font-size:11px;">UID: ${uid.slice(0,6)}...</span>
+             <span class="badge" style="background:${data.isPro ? '#6366f1' : '#94a3b8'}">${data.isPro ? 'PRO' : 'FREE'}</span>
+          </div>
+          <div style="display:flex; gap:5px; margin-top:4px;">
+             <button class="info-btn" style="flex:1; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer; border-radius:4px; font-size:11px; padding:4px;">🔍 상세 정보</button>
+             <button class="pro-btn" style="flex:1; border:none; background:${data.isPro ? '#fb7185' : '#6366f1'}; color:white; cursor:pointer; border-radius:4px; font-size:11px; padding:4px;">
+                ${data.isPro ? 'PRO 해제' : 'PRO 부여'}
+             </button>
+          </div>
+        `;
+
+        // 2. PRO 변경 버튼 이벤트
+        item.querySelector(".pro-btn").onclick = async () => {
+           if(confirm(`[${uid}] 님의 등급을 변경하시겠습니까?`)) {
+               await updateDoc(doc(db, "users", uid), { isPro: !data.isPro });
+               loadAllUsers(); // 목록 새로고침
+           }
+        };
+
+        // 3. [NEW] 상세 정보 버튼 이벤트 (모달 열기)
+        item.querySelector(".info-btn").onclick = async () => {
+            const modal = document.getElementById("adminUserDetailModal");
+            const content = document.getElementById("detailContent");
+            
+            // 모달 열고 로딩 표시
+            modal.style.display = "flex";
+            content.innerHTML = "정보를 가져오는 중입니다...";
+
+            // 해당 유저의 습관 기록(Habits) 컬렉션 가져오기
+            const habitsSnap = await getDocs(collection(db, "users", uid, "habits"));
+            const totalHabits = habitsSnap.size;
+            
+            // 최근 5개 기록만 추리기
+            let recentHabitsHTML = "";
+            let habitsArr = [];
+            habitsSnap.forEach(h => habitsArr.push({date: h.id, ...h.data()}));
+            
+            // 날짜 역순 정렬
+            habitsArr.sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            habitsArr.slice(0, 5).forEach(h => {
+                recentHabitsHTML += `<li style="margin-bottom:4px;">${h.date}: ${h.name} ${h.done?'✅':'❌'}</li>`;
+            });
+
+            // 모달 내용 채우기
+            content.innerHTML = `
+                <p><strong>🆔 UID Full:</strong> ${uid}</p>
+                <p><strong>💎 멤버십:</strong> ${data.isPro ? '<span style="color:blue">PRO 유저</span>' : '무료 유저'}</p>
+                <p><strong>🛡️ 기록 복구권:</strong> ${data.streakProtectionLeft ?? 0}회 남음</p>
+                <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+                
+                <p><strong>📊 활동 요약:</strong></p>
+                <ul style="padding-left:20px; margin:5px 0;">
+                    <li>총 습관 완료일: <strong>${totalHabits}일</strong></li>
+                </ul>
+
+                <p><strong>🗓️ 최근 활동 (최대 5건):</strong></p>
+                <ul style="padding-left:20px; background:#f8fafc; padding:10px 10px 10px 30px; border-radius:8px;">
+                    ${recentHabitsHTML || "<li style='color:#999'>기록 없음</li>"}
+                </ul>
+
+                <p style="margin-top:20px; color:#666; font-size:11px;">
+                    * 더 자세한 정보는 Firebase 콘솔을 확인하세요.
+                </p>
+            `;
+        };
+
+        listDiv.appendChild(item);
+      });
+    } catch (error) {
+      console.error(error);
+      listDiv.innerHTML = "목록을 불러오는데 실패했습니다.";
+    }
   }
 
   // --- Modal Helpers ---
@@ -913,6 +1002,57 @@
     };
   }
 </script>
+<button id="adminOpenBtn" style="
+    display:none; position:fixed; bottom:20px; right:20px; z-index:9990;
+    width:50px; height:50px; border-radius:50%; border:none;
+    background:#ef4444; color:white; font-size:24px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;
+">👑</button>
+
+<div id="adminPanel" class="glass" style="
+    display:none; position:fixed; bottom:80px; right:20px; width:340px; 
+    padding:20px; z-index:9999; border:2px solid #ef4444; background:rgba(255,255,255,0.95);
+">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+    <h3 style="margin:0; color:#ef4444;">👑 관리자 모드</h3>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" 
+            style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
+  </div>
+  
+  <div style="display:flex; gap:5px; margin-bottom:15px;">
+    <button id="adminTestBtn" style="flex:1; padding:8px; font-size:11px; cursor:pointer;">기능 테스트</button>
+    <button id="cheatStreakBtn" style="flex:1; padding:8px; font-size:11px; cursor:pointer;">치트키(5일)</button>
+  </div>
+
+  <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">👤 유저 목록 (최근 가입순)</div>
+  <div id="userList" style="
+      height: 250px; overflow-y:auto; background:#f1f5f9; 
+      padding:10px; border-radius:8px; border:1px solid #cbd5e1;
+  "></div>
+</div>
+
+<div id="adminUserDetailModal" style="
+    display:none; position:fixed; inset:0; z-index:10000;
+    background:rgba(0,0,0,0.5); align-items:center; justify-content:center;
+">
+  <div style="
+      background:white; width:90%; max-width:500px; height:80vh; 
+      border-radius:16px; display:flex; flex-direction:column; overflow:hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  ">
+    <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0;">👤 고객 상세 정보</h3>
+      <button onclick="document.getElementById('adminUserDetailModal').style.display='none'" 
+              style="border:none; background:none; font-size:20px; cursor:pointer;">✖</button>
+    </div>
+    <div id="detailContent" style="padding:20px; overflow-y:auto; flex:1; font-family:monospace; font-size:13px; line-height:1.6;">
+      </div>
+    <div style="padding:15px; border-top:1px solid #eee; text-align:right;">
+        <button onclick="document.getElementById('adminUserDetailModal').style.display='none'"
+                style="padding:10px 20px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;">닫기</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
