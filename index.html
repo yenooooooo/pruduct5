@@ -4,491 +4,199 @@
   <meta charset="UTF-8" />
   <title>HabitFlow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css">
 
   <style>
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-/* ====== Layout Container Fix ====== */
-:root{
-  --bg-color:#f8fafc;
-  --text-main:#0f172a;
-  --muted:#64748b;
-  --card-bg: rgba(255,255,255,0.72);
-  --card-border: rgba(15,23,42,0.08);
-  --primary:#6366f1;
-  --secondary:#a855f7;
-  --shadow: 0 20px 25px -5px rgb(0 0 0 / .08), 0 8px 10px -6px rgb(0 0 0 / .06);
-}
+    /* ====== Base Variables & Reset ====== */
+    :root {
+      --bg-color: #f8fafc;
+      --text-main: #0f172a;
+      --muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --primary: #6366f1;
+      --secondary: #a855f7;
+      --shadow: 0 20px 25px -5px rgb(0 0 0 / .08), 0 8px 10px -6px rgb(0 0 0 / .06);
+    }
 
-.dark-mode{
-  --bg-color:#020617;
-  --text-main:#f8fafc;
-  --muted:#94a3b8;
-  --card-bg: rgba(2,6,23,0.55);
-  --card-border: rgba(148,163,184,0.12);
-  --shadow: 0 20px 25px -5px rgb(0 0 0 / .45), 0 8px 10px -6px rgb(0 0 0 / .35);
-}
+    .dark-mode {
+      --bg-color: #020617;
+      --text-main: #f8fafc;
+      --muted: #94a3b8;
+      --card-bg: rgba(2, 6, 23, 0.55);
+      --card-border: rgba(148, 163, 184, 0.12);
+      --shadow: 0 20px 25px -5px rgb(0 0 0 / .45), 0 8px 10px -6px rgb(0 0 0 / .35);
+    }
 
-*{ box-sizing:border-box; }
-body{
-  margin:0;
-  background:var(--bg-color);
-  color:var(--text-main);
-  font-family:'Pretendard',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  overflow-x:hidden;
-}
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Pretendard', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
 
-/* ✅ 핵심: section은 전체폭, 실제 내용폭은 .container가 담당 */
-section{
-  width:100%;
-  padding: 84px 20px;
-}
-.container{
-  width:100%;
-  max-width: 1080px;
-  margin: 0 auto;
-}
+    ul { list-style: none; padding: 0; margin: 0; }
+    button { font-family: inherit; }
 
-/* Titles */
-.section-head{
-  text-align:center;
-  margin-bottom: 26px;
-}
-.section-head .kicker{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:-0.2px;
-  background: rgba(99,102,241,0.12);
-  color: var(--primary);
-}
-.section-head h2{
-  margin:12px 0 8px;
-  font-size: 28px;
-  letter-spacing:-0.6px;
-}
-.section-head p{
-  margin:0;
-  color: var(--muted);
-  font-size: 15px;
-  line-height:1.7;
-}
+    /* ====== Layout ====== */
+    section { width: 100%; padding: 84px 20px; }
+    .container { width: 100%; max-width: 1080px; margin: 0 auto; }
+    
+    /* Header */
+    header {
+      position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10;
+    }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    .logo-badge { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
+    
+    nav { display: flex; gap: 20px; align-items: center; }
+    nav a { text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; }
+    
+    /* Section Head */
+    .section-head { text-align: center; margin-bottom: 36px; }
+    .section-head .kicker {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 800; letter-spacing: -0.2px;
+      background: rgba(99, 102, 241, 0.12); color: var(--primary);
+    }
+    .section-head h2 { margin: 12px 0 8px; font-size: 28px; letter-spacing: -0.6px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
 
-/* Glass card */
-.glass{
-  background: var(--card-bg);
-  border:1px solid var(--card-border);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-radius: 22px;
-}
-.glass:hover {
-  transform: translateY(-4px);
-  transition: 0.25s ease;
-}
+    /* Glass Effect */
+    .glass {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 22px;
+      transition: 0.25s ease;
+    }
+    .glass:hover { transform: translateY(-4px); }
 
-/* ====== Problem Cards ====== */
-.problem-grid{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 16px;
-  margin-top: 18px;
-}
-.problem-card{
-  padding: 18px 18px;
-  text-align:left;
-}
-.problem-card h3{
-  margin:0 0 8px;
-  font-size: 16px;
-}
-.problem-card p{
-  margin:0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height:1.6;
-}
-.problem-bottom{
-  margin-top: 18px;
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 12px;
-}
-.problem-pill{
-  padding: 12px 14px;
-  border-radius: 16px;
-  border:1px dashed var(--card-border);
-  background: rgba(255,255,255,0.35);
-  color: var(--text-main);
-  font-weight:800;
-  text-align:center;
-}
-.dark-mode .problem-pill{ background: rgba(2,6,23,0.35); }
+    /* ====== Hero ====== */
+    .hero {
+      padding: 140px 20px 80px;
+      background: radial-gradient(800px circle at 80% -20%, rgba(168, 85, 247, 0.15), transparent 60%);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
+    .hero-pill {
+      display: inline-block; padding: 8px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.12); color: var(--primary);
+    }
+    .hero-title { font-size: 46px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; }
+    .hero-desc { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    
+    .hero-actions { display: flex; gap: 12px; }
+    .hero-metrics { display: flex; gap: 14px; margin-top: 28px; }
+    .metric-card {
+      padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.5);
+      border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px;
+    }
+    .hero-right { padding: 26px; }
+    .recommend-card {
+      background: rgba(255,255,255,0.8); border-radius: 16px; padding: 16px;
+      margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #000;
+    }
 
-/* ====== Features ====== */
-.features-grid{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 18px;
-  margin-top: 18px;
-}
-.feature-card{
-  padding: 22px;
-  text-align:left;
-  position:relative;
-  overflow:hidden;
-}
-.feature-icon{
-  width:44px; height:44px;
-  display:grid; place-items:center;
-  border-radius: 14px;
-  background: rgba(99,102,241,0.12);
-  color: var(--primary);
-  font-size: 20px;
-  margin-bottom: 12px;
-}
-.feature-card h3{
-  margin:0 0 8px;
-  font-size:16px;
-}
-.feature-card p{
-  margin:0;
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.6;
-}
-.feature-card::after{
-  content:"";
-  position:absolute;
-  right:-60px; top:-60px;
-  width:160px; height:160px;
-  background: radial-gradient(circle at 30% 30%, rgba(168,85,247,.22), transparent 60%);
-  transform: rotate(10deg);
-}
+    /* ====== Problems ====== */
+    .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .problem-card { padding: 18px; text-align: left; }
+    .problem-bottom { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .problem-pill {
+      padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--card-border);
+      background: rgba(255, 255, 255, 0.35); color: var(--text-main); font-weight: 800; text-align: center;
+    }
 
-/* ====== PRO Section ====== */
-.pro-wrap{
-  padding: 28px;
-  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(168,85,247,0.16));
-  border: 1px solid var(--card-border);
-}
-.pro-grid{
-  display:grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 18px;
-  align-items:center;
-  margin-top: 18px;
-}
-.pro-list{
-  list-style:none;
-  padding:0;
-  margin:0;
-  display:grid;
-  gap:10px;
-  text-align:left;
-}
-.pro-list li{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  color: var(--text-main);
-  font-weight:700;
-}
-.pro-list li span{
-  color: var(--primary);
-}
-.pro-badge{
-  padding: 18px;
-  text-align:left;
-}
-.pro-badge .price{
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing:-0.6px;
-}
-.pro-badge .sub{
-  color: var(--muted);
-  margin-top: 6px;
-  font-size: 13px;
-}
+    /* ====== Features ====== */
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+    .feature-card { padding: 22px; text-align: left; position: relative; overflow: hidden; }
+    .feature-icon {
+      width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
+      background: rgba(99, 102, 241, 0.12); color: var(--primary); font-size: 20px; margin-bottom: 12px;
+    }
 
-/* ====== Flow ====== */
-.flow-grid{
-  display:grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: 14px;
-  margin-top: 18px;
-}
-.step-card{
-  padding: 18px;
-  text-align:left;
-}
-.step-no{
-  width:30px; height:30px;
-  border-radius: 10px;
-  display:grid; place-items:center;
-  background: rgba(99,102,241,0.14);
-  color: var(--primary);
-  font-weight: 900;
-  margin-bottom: 10px;
-}
-.step-card h3{ margin:0 0 6px; font-size:15px; }
-.step-card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.6; }
+    /* ====== PRO ====== */
+    .pro-wrap { padding: 28px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.16), rgba(168, 85, 247, 0.16)); border: 1px solid var(--card-border); }
+    .pro-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; align-items: center; margin-top: 18px; }
+    .pro-list li { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; font-weight: 700; }
+    .pro-list li span { color: var(--primary); }
+    .pro-badge { padding: 18px; text-align: left; }
 
-/* ====== Pricing ====== */
-.pricing-grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 16px;
-  margin-top: 18px;
-}
-.price-card{
-  padding: 22px;
-  text-align:left;
-}
-.price-card .plan{
-  font-weight: 900;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-.price-card .amount{
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing:-0.6px;
-  margin-bottom: 8px;
-}
-.price-card .desc{
-  color: var(--muted);
-  font-size: 13px;
-  line-height:1.7;
-  margin-bottom: 14px;
-}
-.price-card ul{
-  margin:0;
-  padding-left: 18px;
-  color: var(--text-main);
-  font-size: 13px;
-  line-height:1.7;
-}
-.price-card.pro{
-  border: 2px solid rgba(99,102,241,0.45);
-  position:relative;
-}
-.price-card.pro::before{
-  content:"추천";
-  position:absolute;
-  top: 14px; right: 14px;
-  font-size:12px;
-  font-weight:900;
-  padding:6px 10px;
-  border-radius:999px;
-  background: rgba(99,102,241,0.14);
-  color: var(--primary);
-}
+    /* ====== Flow & Pricing ====== */
+    .flow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; }
+    .step-card { padding: 18px; text-align: left; }
+    .step-no {
+      width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center;
+      background: rgba(99, 102, 241, 0.14); color: var(--primary); font-weight: 900; margin-bottom: 10px;
+    }
+    
+    .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 18px; }
+    .price-card { padding: 22px; text-align: left; }
+    .price-card.pro { border: 2px solid rgba(99, 102, 241, 0.45); position: relative; }
+    .price-card.pro::before {
+      content: "추천"; position: absolute; top: 14px; right: 14px; font-size: 12px;
+      font-weight: 900; padding: 6px 10px; border-radius: 999px;
+      background: rgba(99, 102, 241, 0.14); color: var(--primary);
+    }
 
-/* Responsive */
- @media (max-width: 900px){
-  .problem-grid{ grid-template-columns: 1fr; }
-  .problem-bottom{ grid-template-columns: 1fr; }
-  .features-grid{ grid-template-columns: 1fr; }
-  .pro-grid{ grid-template-columns: 1fr; }
-  .flow-grid{ grid-template-columns: 1fr 1fr; }
-  .pricing-grid{ grid-template-columns: 1fr; }
-}
- @media (max-width: 520px){
-  .flow-grid{ grid-template-columns: 1fr; }
-}
-button {
-  border-radius: 14px;
-  font-weight: 800;
-}
-.hero {
-  padding: 120px 20px 80px;
-  background: radial-gradient(
-    800px circle at 80% -20%,
-    rgba(168, 85, 247, 0.15),
-    transparent 60%
-  );
-}
+    /* ====== Buttons & Inputs ====== */
+    .btn {
+      appearance: none; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.8);
+      color: var(--text-main); padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      border: none !important; background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25);
+    }
+    .btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--card-border); }
+    
+    input {
+      width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px;
+      border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.5); color: var(--text-main);
+    }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 48px;
-  align-items: center;
-}
+    /* ====== Auth & App UI ====== */
+    .auth-card { max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
+    .auth-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .auth-actions .btn { flex: 1; }
+    .link-btn { border: none; background: transparent; color: var(--muted); font-weight: 800; cursor: pointer; text-decoration: underline; margin-top: 10px; }
+    
+    .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
+    .theme-tag {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border);
+      background: transparent; color: var(--text-main); cursor: pointer; font-size: 13px;
+    }
+    .theme-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-.hero-pill {
-  display: inline-block;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 800;
-  background: rgba(99, 102, 241, 0.12);
-  color: var(--primary);
-}
+    .habit {
+      width: 100%; padding: 20px; font-size: 18px; font-weight: 900; margin-top: 16px;
+      border: none; border-radius: 16px; background: var(--text-main); color: var(--bg-color); cursor: pointer;
+    }
 
-.hero-title {
-  font-size: 46px;
-  line-height: 1.2;
-  letter-spacing: -1px;
-  margin: 18px 0;
-}
+    /* ====== Badges ====== */
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; }
+    .tier-bronze { background: #cd7f32; }
+    .tier-silver { background: #c0c0c0; color: #333; }
+    .tier-gold { background: #ffd700; color: #333; }
+    .tier-platinum { background: #e5e4e2; color: #333; border: 1px solid #ccc; }
+    .tier-diamond { background: #b9f2ff; color: #333; }
+    .tier-master { background: linear-gradient(135deg, #ff00cc, #333399); }
 
-.hero-desc {
-  font-size: 16px;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.hero-actions {
-  margin-top: 24px;
-  display: flex;
-  gap: 12px;
-}
-
-.btn-primary {
-  padding: 14px 22px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff;
-  font-weight: 900;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-ghost {
-  padding: 14px 22px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  font-weight: 800;
-  text-decoration: none;
-  color: var(--text-main);
-}
-
-.hero-metrics {
-  display: flex;
-  gap: 14px;
-  margin-top: 28px;
-}
-
-.metric-card {
-  padding: 14px 18px;
-  border-radius: 16px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
-
-.hero-right {
-  padding: 26px;
-}
-
-.recommend-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-}
-.auth-actions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
-.auth-hint{
-  margin:12px 0 0;
-  font-size:13px;
-  color: var(--muted);
-  text-align:center;
-}
-.btn{
-  appearance:none;
-  border:1px solid var(--card-border);
-  background: rgba(255,255,255,0.8);
-  color: var(--text-main);
-  padding:14px 14px;
-  border-radius:14px;
-  font-weight:900;
-  cursor:pointer;
-  width:100%;
-  transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
-}
-.btn:active{ transform: scale(.98); }
-.btn-primary{
-  border:none;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color:#fff;
-  box-shadow: 0 14px 30px rgba(99,102,241,0.25);
-}
-.btn-ghost{
-  background: transparent;
-}
-/* ===== Auth Actions (회원가입/로그인/비번찾기) ===== */
-.auth-actions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
-
-.auth-actions .btn{
-  flex:1;
-  padding:14px 14px;
-  border-radius:14px;
-  font-weight:900;
-  border:1px solid rgba(15,23,42,0.10);
-  cursor:pointer;
-}
-
-.btn-primary{
-  border:none !important;
-  color:#fff;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
-.btn-ghost{
-  background: transparent;
-  color: var(--text-main);
-}
-
-.auth-links{
-  margin-top:10px;
-  text-align:center;
-}
-
-.link-btn{
-  border:none;
-  background:transparent;
-  color: var(--muted);
-  font-weight:800;
-  cursor:pointer;
-  text-decoration: underline;
-}
-
-.auth-hint{
-  margin-top:12px;
-  font-size:12px;
-  color: var(--muted);
-  line-height:1.6;
-  text-align:center;
-}
-
-</style>
+    /* ====== Responsive ====== */
+    @media (max-width: 900px) {
+      .hero-grid, .problem-grid, .features-grid, .pro-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .flow-grid { grid-template-columns: 1fr 1fr; }
+      .problem-bottom { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -498,267 +206,111 @@ button {
         <div class="logo-badge"></div>
         HabitFlow
       </div>
-  
       <nav>
-        <a href="#features">기능</a>
-        <a href="#pro">PRO</a>
-        <a href="#pricing">가격</a>
-        <button class="btn btn-primary" onclick="scrollToAuth()">시작하기</button>
-        <button id="darkModeToggle" class="btn btn-ghost">🌓</button>
+        <a href="#features" class="pc-only">기능</a>
+        <a href="#pricing" class="pc-only">가격</a>
+        <button class="btn btn-primary" onclick="scrollToAuth()" style="padding: 8px 16px; font-size: 14px;">시작하기</button>
+        <button id="darkModeToggle" class="btn btn-ghost" style="padding: 8px;">🌓</button>
       </nav>
     </div>
   </header>  
 
-<section class="hero">
-  <div class="container hero-grid">
-    <!-- LEFT -->
-    <div class="hero-left">
-      <span class="hero-pill">✨ 하루 하나로 충분해요</span>
-
-      <h1 class="hero-title">
-        하루 하나,<br />
-        인생을 바꾸는 습관
-      </h1>
-
-      <p class="hero-desc">
-        작심삼일을 끝내는 가장 단순한 방식.<br />
-        버튼 한 번으로 기록하고, 연속 기록과 리포트로 동기부여를 유지하세요.
-      </p>
-
-      <div class="hero-actions">
-        <button class="btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
-        <a href="#pricing" class="btn-ghost">가격 보기</a>
-      </div>
-
-      <div class="hero-metrics">
-        <div class="metric-card">
-          <b>1 Habit</b>
-          <span>하루 딱 하나</span>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-left">
+        <span class="hero-pill">✨ 하루 하나로 충분해요</span>
+        <h1 class="hero-title">하루 하나,<br />인생을 바꾸는 습관</h1>
+        <p class="hero-desc">
+          작심삼일을 끝내는 가장 단순한 방식.<br />
+          버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
+          <a href="#pricing" class="btn btn-ghost">가격 보기</a>
         </div>
-        <div class="metric-card">
-          <b>Streak</b>
-          <span>연속 기록</span>
-        </div>
-        <div class="metric-card">
-          <b>Report</b>
-          <span>주간 리포트</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="hero-right glass">
-      <h3>오늘의 추천 루틴</h3>
-      <p>로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
-
-      <div class="recommend-card">
-        🚑 <b>생존 체력 팩</b>
-        <span>직장인을 위한 “죽지 않으려고 하는 운동”</span>
-      </div>
-
-      <div class="recommend-card">
-        ✨ <b>갓생 입문 팩</b>
-        <span>성공 루틴을 2분짜리로 쪼개기</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<section class="problem">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">WHY</span>
-      <h2>왜 습관은 항상 실패할까?</h2>
-      <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
-    </div>
-
-    <div class="problem-grid">
-      <div class="problem-card glass">
-        <h3>🎯 목표가 너무 많다</h3>
-        <p>욕심이 커질수록 시작이 어려워져요. 우리는 하루 1개만 남깁니다.</p>
-      </div>
-      <div class="problem-card glass">
-        <h3>📝 기록이 귀찮다</h3>
-        <p>기록이 번거로우면 중도 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
-      </div>
-      <div class="problem-card glass">
-        <h3>📉 성취가 눈에 안 보인다</h3>
-        <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
-      </div>
-    </div>
-
-    <div class="problem-bottom">
-      <div class="problem-pill">✅ 하루 딱 하나</div>
-      <div class="problem-pill">✅ 버튼 한 번</div>
-      <div class="problem-pill">✅ 연속 기록 시각화</div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">FEATURES</span>
-      <h2>핵심 기능</h2>
-      <p>습관을 “할 수 있게 만드는” 최소 기능만 남겼습니다.</p>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-card glass">
-        <div class="feature-icon">📅</div>
-        <h3>하루 1습관</h3>
-        <p>오늘 할 단 하나만 선택. 목표 과부하를 끊습니다.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon">🔥</div>
-        <h3>연속 기록</h3>
-        <p>성공이 쌓이는 느낌이 곧 동기입니다. 스트릭으로 확인하세요.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon">☁️</div>
-        <h3>자동 저장</h3>
-        <p>클라우드에 저장되어 어디서든 이어서 할 수 있어요.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRO -->
-<section id="pro">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">PRO</span>
-      <h2>HabitFlow PRO</h2>
-      <p>“습관이 무너지는 패턴”을 잡아주는 분석 기능을 제공합니다.</p>
-    </div>
-
-    <div class="pro-wrap glass">
-      <div class="pro-grid">
-        <ul class="pro-list">
-          <li><span>✔</span> 습관 무제한 (커스텀 포함)</li>
-          <li><span>✔</span> 주간 리포트 (AI 분석/패턴)</li>
-          <li><span>✔</span> 히스토리/통계 확장</li>
-        </ul>
-
-        <div class="pro-badge glass">
-          <div class="price">₩3,900 <span style="font-size:14px; font-weight:800; color:var(--muted)">/ 월</span></div>
-          <div class="sub">연속 기록이 7일을 넘는 순간, 효과가 확실히 달라집니다.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FLOW -->
-<section class="flow">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">HOW</span>
-      <h2>사용 방법</h2>
-      <p>딱 4단계. 복잡한 기능은 의도적으로 없앴습니다.</p>
-    </div>
-
-    <div class="flow-grid">
-      <div class="step-card glass">
-        <div class="step-no">1</div>
-        <h3>로그인</h3>
-        <p>이메일로 간편 시작</p>
-      </div>
-      <div class="step-card glass">
-        <div class="step-no">2</div>
-        <h3>오늘의 습관 선택</h3>
-        <p>테마에서 추천을 고르거나(PRO는 커스텀)</p>
-      </div>
-      <div class="step-card glass">
-        <div class="step-no">3</div>
-        <h3>버튼 클릭</h3>
-        <p>완료 한 번으로 기록 끝</p>
-      </div>
-      <div class="step-card glass">
-        <div class="step-no">4</div>
-        <h3>연속 기록 확인</h3>
-        <p>스트릭/티어/리포트로 동기 유지</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">PRICING</span>
-      <h2>가격</h2>
-      <p>무료로 시작하고, 패턴 분석이 필요할 때 PRO로 업그레이드하세요.</p>
-    </div>
-
-    <div class="pricing-grid">
-      <div class="price-card glass">
-        <div class="plan">무료</div>
-        <div class="amount">₩0</div>
-        <div class="desc">가볍게 루틴을 만들고 싶은 분에게</div>
-        <ul>
-          <li>하루 1습관</li>
-          <li>기본 테마 추천</li>
-          <li>기본 스트릭 확인</li>
-        </ul>
-      </div>
-
-      <div class="price-card glass pro" id="proCard">
-        <div class="plan">PRO</div>
-        <div class="amount">₩3,900</div>
-        <div class="desc">습관이 무너지는 “패턴”을 잡고 싶은 분에게</div>
-        <ul>
-          <li>습관 무제한 + 커스텀</li>
-          <li>주간 리포트/분석</li>
-          <li>확장 통계/히스토리</li>
-        </ul>
-        <button id="goProBtn" style="
-          margin-top:14px; width:100%; border:none; cursor:pointer;
-          padding:14px 14px; border-radius:14px;
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color:#fff; font-weight:900;
-        ">PRO로 업그레이드</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="authSection" style="padding-top: 0;"> <div id="mainContainer">
-    
-    <div class="auth-card glass-card">
-      <div id="auth">
- ...
-        <div style="margin-top: 24px;">
-           <input id="email" placeholder="이메일 주소">
-           <input id="password" type="password" placeholder="비밀번호">
-           <div class="auth-actions">
-            <button id="signupBtn" class="btn btn-primary" type="button">회원가입</button>
-            <button id="signinBtn" class="btn btn-ghost" type="button">로그인</button>
-          </div>
-          
-          <div class="auth-links">
-            <button id="resetPwBtn" class="link-btn" type="button">비밀번호 찾기</button>
-          </div>
-          
-          <p id="authHint" class="auth-hint">
-            처음이면 <b>회원가입</b> → 메일 인증 후 로그인하세요.
-          </p>
+        <div class="hero-metrics">
+          <div class="metric-card"><b>1 Habit</b><span>하루 딱 하나</span></div>
+          <div class="metric-card"><b>Streak</b><span>연속 기록</span></div>
+          <div class="metric-card"><b>Report</b><span>주간 리포트</span></div>
         </div>
       </div>
 
-      <div id="app" class="glass" style="width:100%; max-width:420px; display:none">
-        <h2 id="welcome" style="font-size: 1.5rem;"></h2>
-        <div id="tierBadge" style="display:none; margin: 10px 0;">
-          <span id="tierText" style="padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem;"></span>
-          <p id="streakCount" style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;"></p>
+      <div class="hero-right glass">
+        <h3>오늘의 추천 루틴</h3>
+        <p>로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
+        <div class="recommend-card">
+          <div>🚑 <b>생존 체력 팩</b></div>
+          <span style="font-size:12px; color:#555">직장인을 위한 “죽지 않으려고 하는 운동”</span>
         </div>
-        <div id="themeSection">
-           <p style="font-size: 0.9rem; font-weight: 700;">🎁 오늘의 루틴 팩</p>
+        <div class="recommend-card">
+          <div>✨ <b>갓생 입문 팩</b></div>
+          <span style="font-size:12px; color:#555">성공 루틴을 2분짜리로 쪼개기</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="problem">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">WHY</span>
+        <h2>왜 습관은 항상 실패할까?</h2>
+        <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card glass">
+          <h3>🎯 목표가 너무 많다</h3>
+          <p>욕심이 커질수록 시작이 어려워져요. 하루 1개만 남깁니다.</p>
+        </div>
+        <div class="problem-card glass">
+          <h3>📝 기록이 귀찮다</h3>
+          <p>기록이 번거로우면 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
+        </div>
+        <div class="problem-card glass">
+          <h3>📉 성취가 눈에 안 보인다</h3>
+          <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="authSection" style="padding-top: 40px; min-height: 80vh;">
+    <div class="container" style="display:flex; justify-content:center;">
+      
+      <div id="auth" class="auth-card glass">
+        <h2>HabitFlow 시작하기</h2>
+        <p style="color:var(--muted); margin-bottom:24px;">이메일로 간편하게 시작하세요</p>
+        
+        <input id="email" placeholder="이메일 주소">
+        <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
+        
+        <div class="auth-actions">
+           <button id="signupBtn" class="btn btn-primary" type="button">회원가입</button>
+           <button id="signinBtn" class="btn btn-ghost" type="button">로그인</button>
+        </div>
+        
+        <div style="margin-top:16px;">
+          <button id="resetPwBtn" class="link-btn" type="button">비밀번호 찾기</button>
+        </div>
+        
+        <p id="authHint" style="margin-top:20px; font-size:13px; color:var(--muted);">
+          처음이면 <b>회원가입</b> → 메일 인증 후 로그인하세요.
+        </p>
+      </div>
+
+      <div id="app" class="glass" style="width:100%; max-width:480px; padding:30px; display:none; text-align:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 id="welcome" style="margin:0; font-size: 1.2rem;"></h2>
+          <button id="logoutBtn" style="background:none; border:none; color:var(--muted); font-size:0.8rem; text-decoration:underline; cursor:pointer;">로그아웃</button>
+        </div>
+
+        <div id="tierBadge" style="display:none; margin: 20px 0;">
+          <span id="tierText" class="badge"></span>
+          <p id="streakCount" style="font-size: 0.9rem; margin-top: 8px; font-weight:700;"></p>
+        </div>
+
+        <div id="themeSection" style="margin-top:24px;">
+           <p style="font-size: 0.9rem; font-weight: 700; margin-bottom:10px;">🎁 오늘의 루틴 팩 선택</p>
            <div class="tag-container">
               <button class="theme-tag" onclick="selectTheme(this, 'survival')">🚑 생존</button>
               <button class="theme-tag" onclick="selectTheme(this, 'godsaeng')">✨ 갓생</button>
@@ -767,739 +319,385 @@ button {
            </div>
         </div>
         
-        <div id="todaySuggestion" style="
-          margin-top:12px;
-          font-size:0.85rem;
-          opacity:0.75;
-        ">
+        <div id="todaySuggestion" style="margin-top:16px; font-size:0.9rem; padding:12px; background:rgba(99,102,241,0.1); border-radius:12px; color:var(--text-main);">
+          테마를 선택하면 오늘 할 일이 추천됩니다.
         </div>
         
-        <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center;">
-        <button id="habitBtn" class="habit">오늘 습관 완료</button>
-        <p id="status"></p>
+        <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center; font-weight:700;">
+        <button id="habitBtn" class="habit">오늘 습관 완료 ✅</button>
+        <p id="status" style="margin-top:12px; font-size:14px; color:var(--primary); font-weight:700; min-height:20px;"></p>
         
-        <div id="stats" style="display:none;">
-          <h3>📊 나의 습관 통계</h3>
-          <p id="totalDays"></p>
+        <div id="stats" style="display:none; margin-top:20px; padding:16px; background:rgba(255,255,255,0.5); border-radius:12px;">
+          <h3 style="margin:0 0 10px; font-size:16px;">📊 나의 습관 통계</h3>
+          <p id="totalDays" style="margin:0; font-weight:700;"></p>
         </div>
 
-        <button id="restoreStreakBtn"
-          style="margin-top:10px; padding:10px; border-radius:10px;
-                 background:#f59e0b; color:white; border:none; display:none;">
+        <button id="restoreStreakBtn" style="margin-top:10px; width:100%; padding:12px; border-radius:12px; background:#f59e0b; color:white; border:none; font-weight:800; display:none; cursor:pointer;">
           🔥 연속 기록 복구 (PRO)
         </button>
-        <div id="weeklyReport" style="display:none; width: 100%; margin-top: 20px; text-align: left;">
+
+        <div id="weeklyReport" style="display:none; width: 100%; margin-top: 30px; text-align: left;">
           <div id="weeklyReportBody"></div>
-          <div id="weeklyReportLocked" style="display:none; padding: 20px; border: 2px dashed #ddd; border-radius: 15px; text-align: center;">
-              <div>
-                  <span style="font-size: 2rem;">🔒</span>
-                  <div>
-                      <b>-일 연속 성공</b> 중입니다!<br>
-                      AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
-                      PRO 회원이 되어 확인해보세요.
-                  </div>
-                  <button id="weeklyGoProBtn" style="margin-top: 15px; padding: 10px 20px; border: none; background: var(--primary); color: white; border-radius: 10px; cursor: pointer;">리포트 잠금 해제하기</button>
-              </div>
+          <div id="weeklyReportLocked" style="display:none; padding: 24px; border: 2px dashed var(--card-border); border-radius: 16px; text-align: center;">
+             <span style="font-size: 2rem; display:block; margin-bottom:10px;">🔒</span>
+             <div>
+                <b>-일 연속 성공</b> 중입니다!<br>
+                AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
+                PRO 회원이 되어 확인해보세요.
+             </div>
+             <button id="weeklyGoProBtn" class="btn btn-primary" style="margin-top: 15px; font-size:13px;">리포트 잠금 해제하기</button>
           </div>
         </div>
 
-        <button class="logout" id="logoutBtn" style="background:none; color:#94a3b8; font-size:0.8rem; text-decoration:underline;">로그아웃</button>
+        <div id="calendarSection" style="display:none; margin-top:30px; text-align:left;">
+          <h3 style="font-size:16px; margin-bottom:10px;">📅 이번 달 기록</h3>
+          <div id="calendarGrid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;"></div>
+        </div>
+
+      </div>
+
+      <div id="adminPanel" class="glass" style="display:none; position:fixed; bottom:20px; right:20px; width:300px; padding:20px; z-index:9999; border:2px solid red;">
+        <h3 style="margin-top:0;">👑 관리자 패널</h3>
+        <button id="adminTestBtn" style="margin-bottom:5px;">관리자 테스트</button>
+        <button id="cheatStreakBtn" style="margin-bottom:5px;">5일 연속 성공 치트</button>
+        <div id="userList" style="margin-top:10px; max-height: 200px; overflow-y:auto; background:#eee; padding:5px; border-radius:8px;"></div>
+        <button onclick="document.getElementById('adminPanel').style.display='none'" style="margin-top:10px;">닫기</button>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">PRICING</span>
+        <h2>가격</h2>
+        <p>무료로 시작하고, 패턴 분석이 필요할 때 PRO로 업그레이드하세요.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card glass">
+          <div class="plan">무료</div>
+          <div class="amount">₩0</div>
+          <div class="desc">가볍게 루틴을 만들고 싶은 분에게</div>
+          <ul>
+            <li>✅ 하루 1습관</li>
+            <li>✅ 기본 테마 추천</li>
+            <li>✅ 기본 스트릭 확인</li>
+          </ul>
+        </div>
+        <div class="price-card glass pro" id="proCard">
+          <div class="plan">PRO</div>
+          <div class="amount">₩3,900</div>
+          <div class="desc">습관이 무너지는 “패턴”을 잡고 싶은 분에게</div>
+          <ul>
+            <li>✨ 습관 무제한 + 커스텀</li>
+            <li>✨ 주간 리포트/AI 분석</li>
+            <li>✨ 캘린더/통계/복구권</li>
+          </ul>
+          <button id="goProBtn" class="btn btn-primary" style="width:100%; margin-top:14px;">PRO로 업그레이드</button>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div id="adminPanel" class="glass-card" style="display:none;">
-      <h3 style="margin-top:0;">👑 관리자 패널</h3>
-      <button id="adminTestBtn">관리자 테스트</button>
-      <button id="cheatStreakBtn">5일 연속 성공 치트</button>
-      <div id="userList" style="margin-top:20px; max-height: 200px; overflow-y:auto;"></div>
+  <footer>
+    <div class="container" style="text-align:center; padding-bottom:40px; color:var(--muted); font-size:14px;">
+      <p>© 2026 HabitFlow. All rights reserved.</p>
+      <p>support@habitflow.app</p>
     </div>
+  </footer>
 
-  </div>
-</section>
-
-<footer>
-  <p>© 2026 HabitFlow</p>
-  <p>support @habitflow.app</p>
-</footer>
-
-<div id="bgm">
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-    <div style="font-weight:700; font-size:14px;">🎵 BGM</div>
-    <button id="bgmToggle" style="
-      padding: 8px 10px; border-radius: 10px; border: none; cursor:pointer;
-      background:#667eea; color:#fff; font-weight:700; font-size:12px;
-    ">재생</button>
+  <div id="bgm" class="glass" style="position:fixed; bottom:20px; left:20px; padding:12px; width:200px; z-index:100;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="font-weight:700; font-size:14px;">🎵 BGM</div>
+      <button id="bgmToggle" style="padding: 4px 10px; border-radius: 8px; border:none; cursor:pointer; background:var(--primary); color:#fff; font-size:11px;">재생</button>
+    </div>
+    <div style="margin-top:10px;">
+      <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
+      <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.7;">
+        <span>볼륨</span><span id="bgmVolText">25%</span>
+      </div>
+    </div>
+    <audio id="bgmAudio" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lo-fi-116528.mp3" preload="auto" loop></audio>
   </div>
 
-  <div style="margin-top:10px;">
-    <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
-    <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.7;">
-      <span>볼륨</span><span id="bgmVolText">25%</span>
+  <div id="proModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(5px);">
+    <div class="glass" style="padding:40px; max-width:360px; width:90%; text-align:center; background:#fff;">
+      <h2 style="margin-top:0;">👑 PRO로 성장 가속</h2>
+      <p style="color:var(--muted); line-height:1.6; margin-bottom:20px;">
+        연속 기록 보호권<br>
+        월간 캘린더 뷰<br>
+        AI 주간 패턴 분석
+      </p>
+      <button id="proModalBtn" class="btn btn-primary" style="width:100%;">PRO 시작하기</button>
+      <p style="margin-top:16px; font-size:13px; cursor:pointer; color:var(--muted);" onclick="document.getElementById('proModal').style.display='none'">나중에 할게요</p>
     </div>
   </div>
-  <audio id="bgmAudio" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lo-fi-116528.mp3" preload="auto" loop></audio>
-</div>
 
 <script>
-function scrollToAuth() {
-  document.getElementById("authSection")
-    .scrollIntoView({ behavior: "smooth" });
-}
-
-function safeText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
+  function scrollToAuth() {
+    document.getElementById("authSection").scrollIntoView({ behavior: "smooth" });
+  }
+  function safeText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
 </script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  getIdTokenResult,
-  sendPasswordResetEmail,
-  sendEmailVerification
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
-  authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
-  projectId: "giiiddd-36340523-3f595",
-  storageBucket: "giiiddd-36340523-3f595.firebasestorage.app",
-  messagingSenderId: "698901018936",
-  appId: "1:698901018936:web:2fb12a7a03cbd844c1e9cd"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
+    authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
+    projectId: "giiiddd-36340523-3f595",
+    storageBucket: "giiiddd-36340523-3f595.firebasestorage.app",
+    messagingSenderId: "698901018936",
+    appId: "1:698901018936:web:2fb12a7a03cbd844c1e9cd"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-// 1. 테마별 요일 습관 데이터 (0:일 ~ 6:토)
-const themeData = {
-  survival: [
-    "🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", 
-    "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋", "🚶 30분 산책"
-  ],
-  godsaeng: [
-    "📅 다음 주 계획 짜기", "🛏️ 이불 정리하기", "💰 가계부 적기", 
-    "📚 책 2페이지 읽기", "🗣️ 영단어 1개 외우기", "📝 감사 일기 3줄", "🧹 방 청소하기"
-  ],
-  detox: [
-    "📝 내일 할 일 손기록", "📵 기상 후 10분 노폰", "🍽️ 식사 중 영상 금지", 
-    "🎧 이어폰 없이 걷기", "📱 스크린 타임 확인", "🧘 5분 명상", "📵 디지털 프리 1시간"
-  ]
-};
+  // --- Theme Data ---
+  const themeData = {
+    survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋", "🚶 30분 산책"],
+    godsaeng: ["📅 다음 주 계획 짜기", "🛏️ 이불 정리하기", "💰 가계부 적기", "📚 책 2페이지 읽기", "🗣️ 영단어 1개 외우기", "📝 감사 일기 3줄", "🧹 방 청소하기"],
+    detox: ["📝 내일 할 일 손기록", "📵 기상 후 10분 노폰", "🍽️ 식사 중 영상 금지", "🎧 이어폰 없이 걷기", "📱 스크린 타임 확인", "🧘 5분 명상", "📵 디지털 프리 1시간"]
+  };
 
-// 2. 테마 선택 함수 (전역 범위 호출을 위해 window에 할당)
-window.selectTheme = async (el, themeType) => {
-  const user = auth.currentUser;
-  const tokenResult = await user.getIdTokenResult();
-  const isPro = tokenResult.claims.pro === true;
-  const habitInput = document.getElementById("habitName");
-  const dayIdx = new Date().getDay();
+  // --- Helper Functions ---
+  function dateKeyFromOffset(daysAgo) {
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    return d.toISOString().slice(0, 10);
+  }
 
-  // 기존 활성화 제거
-  document.querySelectorAll('.theme-tag')
-    .forEach(tag => tag.classList.remove('active'));
-
-  if (themeType === 'custom') {
-    if (!isPro) {
-      alert("🔒 커스텀 습관은 PRO 전용입니다.");
-      return;
+  async function getConsecutiveStreak(uid) {
+    let count = 0;
+    let date = new Date();
+    while (true) {
+      const key = date.toISOString().slice(0, 10);
+      const snap = await getDoc(doc(db, "users", uid, "habits", key));
+      if (!snap.exists()) break;
+      count++;
+      date.setDate(date.getDate() - 1);
     }
-    habitInput.readOnly = false;
-    habitInput.value = "";
-    habitInput.placeholder = "원하는 습관을 입력하세요";
-    habitInput.style.background = "#fff";
-    habitInput.focus();
-  } else {
-    habitInput.readOnly = true;
-    habitInput.style.background = "#eee";
-    habitInput.value = themeData[themeType][dayIdx];
+    return count;
   }
 
-  if (el) el.classList.add('active');
-};
-
-function showTodaySuggestion() {
-  const dayIdx = new Date().getDay();
-  const suggestion =
-    themeData.survival[dayIdx]; // 기본 추천은 생존팩
-
-  const el = document.getElementById("todaySuggestion");
-  if (!el) return;
-
-  el.innerHTML = `
-    👉 오늘 추천 습관: <b>${suggestion}</b><br>
-    <span style="font-size:0.75rem;">(오늘 요일 기준 자동 추천)</span>
-  `;
-}
-
-// DOM Elements
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const signinBtn = document.getElementById("signinBtn");
-const resetPwBtn = document.getElementById("resetPwBtn");
-const authHint = document.getElementById("authHint");
-const authDiv = document.getElementById('auth');
-const appDiv = document.getElementById('app');
-const habitBtn = document.getElementById('habitBtn');
-const status = document.getElementById('status');
-const welcome = document.getElementById('welcome');
-const logoutBtn = document.getElementById('logoutBtn');
-const proCard = document.getElementById("proCard");
-const goProBtn = document.getElementById("goProBtn");
-const statsDiv = document.getElementById("stats");
-const totalDays = document.getElementById("totalDays");
-const adminPanel = document.getElementById("adminPanel");
-const adminTestBtn = document.getElementById("adminTestBtn");
-const userListDiv = document.getElementById("userList");
-const darkModeToggle = document.getElementById("darkModeToggle");
-const restoreBtn = document.getElementById("restoreStreakBtn");
-// ===== AUTH 버튼 이벤트 (이 블록 하나만 남기세요) =====
-function requireEmailPass() {
-  if (!email?.value || !password?.value) {
-    alert("이메일과 비밀번호를 모두 입력해주세요.");
-    return false;
+  function requireEmailPass() {
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    if (!emailEl?.value || !passEl?.value) {
+      alert("이메일과 비밀번호를 모두 입력해주세요.");
+      return false;
+    }
+    if (passEl.value.length < 6) {
+      alert("비밀번호는 6자 이상이어야 합니다.");
+      return false;
+    }
+    return true;
   }
-  if (password.value.length < 6) {
-    alert("비밀번호는 6자 이상이어야 합니다.");
-    return false;
-  }
-  return true;
-}
 
-// 1) 회원가입 (가입 후 인증메일 발송 + 로그아웃)
-signupBtn?.addEventListener("click", async () => {
-  if (!requireEmailPass()) return;
+  // --- Window Global Functions ---
+  window.selectTheme = async (el, themeType) => {
+    const user = auth.currentUser;
+    if (!user) return alert("로그인이 필요합니다.");
 
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email.value, password.value);
-    await sendEmailVerification(cred.user);
+    const tokenResult = await getIdTokenResult(user);
+    const isPro = tokenResult.claims.pro === true;
+    const habitInput = document.getElementById("habitName");
+    const dayIdx = new Date().getDay();
 
-    alert("✅ 회원가입 완료!\n📩 인증 메일을 보냈어요.\n메일 인증 후 로그인하세요.");
-    authHint && (authHint.innerHTML = "📩 인증 메일을 보냈어요. 메일 인증 후 로그인해주세요.");
-    await signOut(auth);
-  } catch (e) {
-    if (e.code === "auth/email-already-in-use") alert("이미 가입된 이메일입니다. 로그인 해주세요.");
-    else if (e.code === "auth/invalid-email") alert("잘못된 이메일 형식입니다.");
-    else alert("회원가입 실패: " + e.code);
-    console.error(e);
-  }
-});
+    document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
 
-// 2) 로그인 (이메일 인증 안 했으면 차단)
-signinBtn?.addEventListener("click", async () => {
-  if (!requireEmailPass()) return;
+    if (themeType === 'custom') {
+      if (!isPro) {
+        alert("🔒 커스텀 습관은 PRO 전용입니다.");
+        return;
+      }
+      habitInput.readOnly = false;
+      habitInput.value = "";
+      habitInput.placeholder = "원하는 습관을 입력하세요";
+      habitInput.style.background = "#fff";
+      habitInput.focus();
+    } else {
+      habitInput.readOnly = true;
+      habitInput.style.background = "var(--bg-color)";
+      habitInput.value = themeData[themeType][dayIdx];
+    }
+    if (el) el.classList.add('active');
+  };
 
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email.value, password.value);
+  // --- DOM Elements ---
+  const authDiv = document.getElementById('auth');
+  const appDiv = document.getElementById('app');
+  const emailInput = document.getElementById("email");
+  const passInput = document.getElementById("password");
+  const signupBtn = document.getElementById("signupBtn");
+  const signinBtn = document.getElementById("signinBtn");
+  const resetPwBtn = document.getElementById("resetPwBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const habitBtn = document.getElementById('habitBtn');
+  
+  // PRO & Admin UI
+  const proCard = document.getElementById("proCard");
+  const statsDiv = document.getElementById("stats");
+  const adminPanel = document.getElementById("adminPanel");
+  const restoreBtn = document.getElementById("restoreStreakBtn");
+  const weeklyReport = document.getElementById("weeklyReport");
 
-    if (!cred.user.emailVerified) {
-      await sendEmailVerification(cred.user); // 혹시 메일 못받았을 때 대비 재발송
+  // --- Auth Event Listeners ---
+  signupBtn.onclick = async () => {
+    if (!requireEmailPass()) return;
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value);
+      await sendEmailVerification(cred.user);
+      alert("✅ 회원가입 완료! 인증 메일을 확인해주세요.");
       await signOut(auth);
-      alert("📩 이메일 인증이 필요합니다.\n인증 메일을 다시 보냈어요.\n메일 인증 후 다시 로그인하세요.");
+    } catch (e) {
+      alert("가입 실패: " + e.message);
+    }
+  };
+
+  signinBtn.onclick = async () => {
+    if (!requireEmailPass()) return;
+    try {
+      const cred = await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
+      if (!cred.user.emailVerified) {
+         await signOut(auth);
+         alert("📩 이메일 인증이 필요합니다. 메일함을 확인해주세요.");
+      } else {
+         alert("✅ 로그인 성공!");
+      }
+    } catch (e) {
+      alert("로그인 실패: " + e.message);
+    }
+  };
+
+  resetPwBtn.onclick = async () => {
+    if (!emailInput.value) return alert("이메일을 입력해주세요.");
+    try {
+      await sendPasswordResetEmail(auth, emailInput.value);
+      alert("비밀번호 재설정 메일을 보냈습니다.");
+    } catch(e) { alert("오류: " + e.message); }
+  };
+
+  logoutBtn.onclick = () => signOut(auth);
+
+  // --- Core Logic ---
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      authDiv.style.display = 'block';
+      appDiv.style.display = 'none';
+      adminPanel.style.display = 'none';
+      return;
+    }
+    
+    // 이메일 인증 체크
+    if (!user.emailVerified) {
+      authDiv.style.display = 'block';
+      appDiv.style.display = 'none';
       return;
     }
 
-    alert("✅ 로그인 성공!");
-  } catch (e) {
-    if (e.code === "auth/user-not-found") alert("가입된 계정이 없습니다. 회원가입을 눌러주세요.");
-    else if (e.code === "auth/wrong-password") alert("비밀번호가 틀렸습니다.");
-    else alert("로그인 실패: " + e.code);
-    console.error(e);
-  }
-});
+    // 로그인 완료 UI 처리
+    authDiv.style.display = 'none';
+    appDiv.style.display = 'block';
+    
+    // 기본 추천 세팅
+    const dayIdx = new Date().getDay();
+    document.getElementById("todaySuggestion").innerHTML = 
+      `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
 
-// 3) 비밀번호 찾기
-resetPwBtn?.addEventListener("click", async () => {
-  if (!email?.value) {
-    alert("비밀번호를 찾을 이메일을 먼저 입력해주세요.");
-    return;
-  }
+    try {
+      const tokenResult = await getIdTokenResult(user, true);
+      const isAdmin = tokenResult.claims.admin === true;
+      const isPro = tokenResult.claims.pro === true;
 
-  try {
-    await sendPasswordResetEmail(auth, email.value);
-    alert("📩 비밀번호 재설정 메일을 보냈습니다! 메일함을 확인하세요.");
-  } catch (e) {
-    if (e.code === "auth/invalid-email") alert("잘못된 이메일 형식입니다.");
-    else if (e.code === "auth/user-not-found") alert("해당 이메일로 가입된 계정이 없습니다.");
-    else alert("재설정 실패: " + e.code);
-    console.error(e);
-  }
-});
+      document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
 
-async function updateStreakProtectionUI(uid, isPro) {
-  if (!restoreBtn) return;
+      // Admin
+      if (isAdmin) {
+        adminPanel.style.display = 'block';
+        loadAllUsers();
+      }
 
-  if (!isPro) {
-    restoreBtn.style.display = "none";
-    return;
-  }
+      // PRO UI Switch
+      if (isPro) {
+        proCard.style.display = "none";
+        statsDiv.style.display = "block";
+        safeText("status", "🌟 PRO 멤버십 이용 중");
+        loadStats(user.uid);
+      } else {
+        proCard.style.display = "block";
+        statsDiv.style.display = "none";
+        safeText("status", "🌱 무료 회원 (하루 1습관)");
+      }
 
-  const snap = await getDoc(doc(db, "users", uid));
-  const left = snap.data()?.streakProtectionLeft ?? 2;
+      // Load Data
+      const streak = await getConsecutiveStreak(user.uid);
+      updateTierUI(streak);
+      await updateWeeklyReport(user.uid, isPro);
+      await renderCalendar(user.uid, isPro);
+      await updateStreakProtectionUI(user.uid, isPro);
+      
+      // 7일 달성 팝업 (무료회원 대상)
+      if (!isPro && streak >= 7) showProModal();
 
-  restoreBtn.style.display = left > 0 ? "block" : "none";
-  restoreBtn.textContent = `🔥 연속 기록 복구 (${left}회 남음)`;
-}
-
-restoreBtn.onclick = async () => {
-  const user = auth.currentUser;
-  const ref = doc(db, "users", user.uid);
-  const snap = await getDoc(ref);
-  let left = snap.data()?.streakProtectionLeft ?? 2;
-
-  if (left <= 0) {
-    alert("이번 달 복구권을 모두 사용했습니다.");
-    return;
-  }
-
-  const yesterday = dateKeyFromOffset(1);
-  await setDoc(doc(db, "users", user.uid, "habits", yesterday), {
-    done: true,
-    restored: true
+    } catch (e) {
+      console.error("Auth init error:", e);
+    }
   });
 
-  await updateDoc(ref, { streakProtectionLeft: left - 1 });
-  alert("🔥 어제 기록이 복구되었습니다!");
-  location.reload();
-};
-
-// ✅ 주간 리포트 요소
-const weeklyReport = document.getElementById("weeklyReport");
-const weeklyReportBody = document.getElementById("weeklyReportBody");
-const weeklyReportLocked = document.getElementById("weeklyReportLocked");
-const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
-
-const todayEl = document.getElementById("today");
-const todayStr = new Date().toISOString().slice(0, 10);
-if (todayEl) todayEl.textContent = `📅 const email =${todayStr}`;
-
-() {
-  if (!email?.value || !password?.value) {
-    alert("이메일과 비밀번호를 모두 입력해주세요.");
-    return false;
-  }
-  if (password.value.length < 6) {
-    alert("비밀번호는 6자 이상이어야 합니다.");
-    return false;
-  }
-  return true;
-}
-
-// Logout Handler
-logoutBtn.onclick = () => signOut(auth);
-
-// Auth State Monitor
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    authDiv.style.display = 'block';
-    appDiv.style.display = 'none';
-    if (adminPanel) adminPanel.style.display = 'none'; // 로그아웃시 관리자 패널 숨김
-    return;}
-    if (user && !user.emailVerified) {
-  alert("📩 이메일 인증 후 사용 가능합니다. 메일함을 확인해주세요.");
-  await signOut(auth);
-  return;
-}
-
-  authDiv.style.display = 'none';
-  appDiv.style.display = 'block';
-  showTodaySuggestion(); // Call the new function here
-
-  try {
-    const tokenResult = await getIdTokenResult(user, true);
-    const isAdmin = tokenResult.claims.admin === true;
-    const isPro = tokenResult.claims.pro === true;
-
-    console.log("admin?", isAdmin, "pro?", isPro);
-
-    // Admin UI
-    if (isAdmin) {
-      if (adminPanel) adminPanel.style.display = "block";
-      welcome.innerText = `👑 관리자 ${user.email}`;
-      loadAllUsers();
-    } else {
-      if (adminPanel) adminPanel.style.display = "none";
-      welcome.innerText = `👋 ${user.email}`;
-    }
-
-    // PRO UI
-    if (isPro) {
-      if (proCard) proCard.style.display = "none";
-      if (statsDiv) statsDiv.style.display = "block";
-      safeText("status", "🌟 PRO 회원입니다");
-      loadStats(user.uid); // PRO인 경우 통계 로드
-    } else {
-      if (proCard) proCard.style.display = "block";
-      if (statsDiv) statsDiv.style.display = "none";
-      safeText("status", "무료 회원 (하루 1습관)");
-    }
-
-    // ✅ 주간 리포트 업데이트
-    await updateWeeklyReport(user.uid, isPro);
-
-    // ✅ 7일 연속 달성 시 PRO 팝업(무료 유저만)
-    await maybeShow7DayPopup(user.uid, isPro);
+  // --- Habit Actions ---
+  habitBtn.onclick = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
     
-    // 티어 UI 업데이트
+    const habitName = document.getElementById("habitName").value;
+    if (habitName === "테마를 선택하세요" || !habitName.trim()) {
+      alert("테마를 선택하거나 습관을 입력하세요!");
+      return;
+    }
+    
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const ref = doc(db, "users", user.uid, "habits", todayStr);
+    
+    await setDoc(ref, {
+      done: true,
+      name: habitName,
+      timestamp: new Date()
+    });
+
+    celebrate();
+    
     const streak = await getConsecutiveStreak(user.uid);
     updateTierUI(streak);
-
-    // ✅ 연속 기록 복구 버튼 UI 업데이트
-    await updateStreakProtectionUI(user.uid, isPro);
-
-    // ✅ 이번 달 습관 캘린더 렌더링
-    await renderCalendar(user.uid, isPro);
-  } catch (e) {
-    console.error("Token error:", e);
-  }
-});
-
-// 2. 습관 완료 버튼 로직 확장
-if (habitBtn) {
-  habitBtn.onclick = async () => {
-  const user = auth.currentUser;
-  if(!user) return;
-
-  const habitName = document.getElementById("habitName").value;
-  if(habitName === "테마를 선택하세요" || !habitName) {
-    alert("습관을 선택하거나 입력해주세요!");
-    return;
-  }
-
-  const ref = doc(db, "users", user.uid, "habits", todayStr);
-  
-  await setDoc(ref, {
-    done: true,
-    name: habitName, // 어떤 습관을 완료했는지 이름 저장
-    timestamp: new Date()
-  });
-
-  // [추가] 연속 성공 횟수 가져오기 및 티어 업데이트
-  const streak = await getConsecutiveStreak(user.uid); // 기존에 만든 함수 호출
-  updateTierUI(streak);
-  
-  // [추가] 지능형 리마인드 예약 (스케줄러 호출)
-  // 사용자가 '지금' 완료했다면, 내일 이 시간에도 완료할 확률이 높음!
-  const now = new Date();
-  const nextTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
-  // 아래는 제가(모델이) 나중에 처리할 수 있도록 스케줄링 도구를 사용하는 부분입니다.
-  // 실제 서비스 시에는 백엔드 알림 API를 호출하거나 아래 도구를 사용합니다.
-  scheduleNextReminder(habitName);
-
-  celebrate(); // 파티 효과
-};
-
-if (goProBtn) {
-  goProBtn.onclick = () => {
-    alert("👑 이 버튼은 관리자 확인용입니다.\nPRO 권한은 서버(관리자)에서만 부여됩니다.");
   };
-}
 
-if (adminTestBtn) {
-  adminTestBtn.onclick = () => alert("👑 관리자 전용 기능 정상 작동!");
-}
-
-// Dark Mode Logic
-function setDarkMode(isDark) {
-  if (isDark) {
-    document.body.classList.add('dark-mode');
-    localStorage.setItem('darkMode', 'enabled');
-  } else {
-    document.body.classList.remove('dark-mode');
-    localStorage.setItem('darkMode', 'disabled');
-  }
-}
-
-const savedDarkMode = localStorage.getItem('darkMode');
-if (savedDarkMode === 'enabfunction requireEmailPassled') {
-  setDarkMode(true);
-} else if (savedDarkMode === 'disabled') {
-  setDarkMode(false);
-} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-  setDarkMode(true);
-}
-
-darkModeToggle.onclick = () => {
-  setDarkMode(!document.body.classList.contains('dark-mode'));
-};
-
-// Functions
-function dateKeyFromOffset(daysAgo) {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  return d.toISOString().slice(0, 10);
-}
-
-async function getConsecutiveStreak(uid) {
-  let count = 0;
-  let date = new Date();
-
-  while (true) {
-    const key = date.toISOString().slice(0, 10);
-    const snap = await getDoc(doc(db, "users", uid, "habits", key));
-    if (!snap.exists()) break;
-    count++;
-    date.setDate(date.getDate() - 1);
-  }
-  return count;
-}
-
-// [수정됨] AI 분석 로직이 포함된 리포트 함수
-async function updateWeeklyReport(uid, isPro) {
-  if (!weeklyReport || !weeklyReportBody || !weeklyReportLocked) return;
-
-  // 1. 최근 7일 데이터 수집 및 분석 준비
-  let successCount = 0;
-  const days = [];
-  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
-  
-  // 요일별 실패 횟수 카운팅 (0:일 ~ 6:토)
-  const failCountsPerDay = [0, 0, 0, 0, 0, 0, 0]; 
-
-  for (let i = 0; i < 7; i++) {
-    const key = dateKeyFromOffset(i);
-    const snap = await getDoc(doc(db, "users", uid, "habits", key));
-    const done = snap.exists();
-    
-    // 날짜 객체 생성하여 요일 인덱스 추출
-    const dateObj = new Date(key);
-    const dayIdx = dateObj.getDay(); 
-
-    if (done) {
-      successCount++;
-    } else {
-      failCountsPerDay[dayIdx]++; // 실패한 요일 카운트 증가
-    }
-    
-    days.push({ key, done, dayName: dayNames[dayIdx] });
+  function celebrate() {
+    const btn = document.getElementById("habitBtn");
+    btn.style.transform = "scale(1.05)";
+    setTimeout(() => { btn.style.transform = "scale(1)"; }, 200);
+    safeText("status", "🎉 오늘의 습관 완료! 내일도 만나요.");
+    btn.textContent = "완료되었습니다 👍";
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
   }
 
-  const streak = await getConsecutiveStreak(uid);
-
-  // 2. 표시 조건: 3일 이상 연속 성공 시 '맛보기'로라도 틀을 보여줌 (동기부여 위해 7일->3일로 완화 추천)
-  if (streak < 3) {
-    weeklyReport.style.display = "none";
-    return;
-  }
-  weeklyReport.style.display = "block";
-
-  // 3. 무료 회원일 경우 (잠금 화면)
-  if (!isPro) {
-    weeklyReportBody.innerHTML = "";
-    weeklyReportLocked.style.display = "block";
-
-    // 텍스트를 더 자극적으로 변경
-    weeklyReportLocked.querySelector("div > div:nth-child(2)").innerHTML = 
-      `<b>${streak}일 연속 성공</b> 중입니다!<br>
-      AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
-      PRO 회원이 되어 확인해보세요.`;
-
-    if (weeklyGoProBtn) {
-      weeklyGoProBtn.onclick = () => {
-        showProModal();
-      };
-    }
-    return;
-  }
-
-  // 4. PRO 회원일 경우 (AI 분석 결과 출력)
-  weeklyReportLocked.style.display = "none";
-
-  const rate = Math.round((successCount / 7) * 100);
-  
-  // 가장 많이 실패한 요일 찾기 (최대값 인덱스 찾기)
-  let maxFailures = -1;
-  let worstDayIdx = -1;
-  
-  failCountsPerDay.forEach((count, idx) => {
-    if (count > maxFailures) {
-      maxFailures = count;
-      worstDayIdx = idx;
-    }
-  });
-  
-  const worstDayName = (maxFailures > 0) ? dayNames[worstDayIdx] : null;
-
-  // AI 조언 생성 로직
-  let aiAdvice = "";
-  if (rate === 100) {
-    aiAdvice = "완벽합니다! 이대로면 <b>'습관 마스터'</b> 칭호까지 얼마 안 남았어요.";
-  } else if (worstDayName) {
-    if (worstDayName === "금") aiAdvice = "<b>불금</b>이라 마음이 뜨기 쉽군요. 금요일 목표는 조금 더 작게 잡아볼까요?";
-    else if (worstDayName === "월") aiAdvice = "<b>월요병</b>이 습관까지 방해하고 있어요. 일요일 밤에 미리 준비해두면 어떨까요?";
-    else if (worstDayName === "토" || worstDayName === "일") aiAdvice = "주말에는 루틴이 깨지기 쉽죠. <b>오전 중에 미리 해치우는 전략</b>이 필요합니다!";
-    else aiAdvice = `회원님은 주로 <b>${worstDayName}요일</b>에 에너지가 떨어집니다. 이날은 알림을 10분 일찍 맞춰보세요.`;
-  } else {
-    aiAdvice = "조금만 더 분발하세요! 꾸준함이 재능을 이깁니다.";
-  }
-
-  // 리스트 HTML 생성
-  const listHTML = days.reverse().map(d => 
-    `<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; color:var(--text-color);">
-       <span>${d.key} (${d.dayName})</span>
-       <span>${d.done ? "✅ 성공" : "<span style='color:#e53e3e; opacity:0.6;'>실패</span>"}</span>
-     </div>`
-  ).join("");
-
-  // 최종 HTML 주입
-  weeklyReportBody.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-      <span style="font-weight:900; font-size:16px;">이번 주 성공률 <span style="color:#6366f1;">${rate}%</span></span>
-      <span style="font-size:12px; opacity:0.7;">🔥 ${streak}일 연속</span>
-    </div>
-
-    <div class="ai-coach-card">
-      <div class="ai-coach-badge">🤖 AI Habit Coach</div>
-      <div class="ai-advice-text">
-        ${rate === 100 
-          ? aiAdvice 
-          : `회원님은 특히 <span class="worst-day-highlight">${worstDayName}요일</span>에 약하시네요.<br>👉 ${aiAdvice}`}
-      </div>
-    </div>
-    <div style="margin-top:12px; padding:12px; border-radius:10px; background:var(--bg-color); border:1px solid var(--input-border);">
-      <div style="font-size:12px; opacity:0.6; margin-bottom:8px;">상세 기록</div>
-      ${listHTML}
-    </div>
-  `;
-}
-
-async function maybeShow7DayPopup(uid, isPro) {
-  if (isPro) return;
-
-  const streak = await getConsecutiveStreak(uid);
-  if (streak < 7) return;
-
-  // ✅ 같은 주에 팝업 반복 방지 (주차 키)
-  const now = new Date();
-  const weekKey = `${now.getFullYear()}-${Math.ceil((now.getDate()) / 7)}-${now.getMonth()+1}`;
-  const storageKey = `hf_7day_popup_${uid}_${weekKey}`;
-
-  if (localStorage.getItem(storageKey) === "shown") return;
-  localStorage.setItem(storageKey, "shown");
-
-  showProModal();
-
-  // 스크롤로 리포트 영역 보여주기
-  if (weeklyReport) weeklyReport.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-
-async function loadStats(uid){
-  let count=0;
-  let date=new Date();
-  while(true){
-    const key=date.toISOString().slice(0,10);
-    const snap=await getDoc(doc(db,"users",uid,"habits",key));
-    if(!snap.exists()) break;
-    count++; date.setDate(date.getDate()-1);
-  }
-  safeText("totalDays", `🔥 연속 성공 ${count}일`);
-}
-
-async function loadAllUsers() {
-  if (!userListDiv) return;
-
-  userListDiv.innerHTML = "불러오는 중...";
-
-  try {
-    const snap = await getDocs(collection(db, "users"));
-    userListDiv.innerHTML = "";
-
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const uid = docSnap.id;
-
-      const box = document.createElement("div");
-      box.style.background = "#fff";
-      box.style.padding = "12px";
-      box.style.borderRadius = "10px";
-      box.style.marginBottom = "10px";
-      box.style.color = "#333";
-
-      box.innerHTML = `
-        <div style="font-size:12px; word-break:break-all;"><b>UID</b>: ${uid}</div>
-        <div style="margin:5px 0;"><b>PRO</b>: ${data.isPro ? "✅" : "❌"}</div>
-        <button class="toggleProBtn" style="padding:5px 10px; cursor:pointer;">
-          ${data.isPro ? "PRO 해제" : "PRO 부여"}
-        </button>
-      `;
-
-      box.querySelector(".toggleProBtn").onclick = async () => {
-        await updateDoc(doc(db, "users", uid), {
-          isPro: !data.isPro
-        });
-        alert("변경 완료");
-        loadAllUsers();
-      };
-
-      userListDiv.appendChild(box);
-    });
-  } catch (error) {
-    console.error("User load error:", error);
-          userListDiv.innerHTML = "권한이 없거나 불러오기 실패";
-      }
-    }
-    
-    async function renderCalendar(uid, isPro) {
-      const grid = document.getElementById("calendarGrid");
-      const section = document.getElementById("calendarSection");
-      if (!grid || !section) return;
-    
-      if (!isPro) {
-        section.style.display = "none";
-        alert("PRO로 업그레이드하세요");
-        return;
-      }    
-      section.style.display = "block";
-      grid.innerHTML = "";
-    
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
-    
-      for (let d = 1; d <= 31; d++) {
-        const date = new Date(year, month, d);
-        if (date.getMonth() !== month) break;
-    
-        const key = date.toISOString().slice(0, 10);
-        const snap = await getDoc(doc(db, "users", uid, "habits", key));
-    
-        const cell = document.createElement("div");
-        cell.style.padding = "10px";
-        cell.style.borderRadius = "8px";
-        cell.style.textAlign = "center";
-        cell.style.fontSize = "12px";
-        cell.style.background = snap.exists() ? "#22c55e" : "#e5e7eb";
-        cell.style.color = snap.exists() ? "white" : "#64748b";
-        cell.textContent = d;
-    
-        grid.appendChild(cell);
-      }
-    }
-// 습관 완료 시 간단한 이펙트 함수
-function celebrate() {
-  const btn = document.getElementById("habitBtn");
-  btn.style.transform = "scale(1.1)";
-  setTimeout(() => { btn.style.transform = "scale(1)"; }, 200);
-  
-  // 브라우저 기본 알림 대신 커스텀 메시지
-  status.innerHTML = `<span style="color:#22c55e; font-weight:bold; font-size:1.2em;">🎉 미션 완료! 내일도 함께해요.</span>`;
-}
-
-// ===== 티어 UI =====
-  function updateTierUI(streak){
+  // --- UI Update Functions ---
+  function updateTierUI(streak) {
     const tierBadge = document.getElementById("tierBadge");
     const tierText = document.getElementById("tierText");
     const streakCount = document.getElementById("streakCount");
-    if (!tierBadge || !tierText || !streakCount) return;
 
     tierBadge.style.display = "block";
     streakCount.textContent = `🔥 현재 ${streak}일 연속 성공 중!`;
@@ -1513,118 +711,206 @@ function celebrate() {
     else if (streak >= 3) { label = "🥈 SILVER"; cls = "tier-silver"; }
 
     tierText.textContent = label;
-    tierText.className = ""; // reset
-    tierText.classList.add("badge", cls);
+    tierText.className = "badge " + cls;
   }
 
-// 습관 완료 버튼 클릭 시 알림 예약 (가상 로직)
-function scheduleNextReminder(habitName) {
-  console.log(`[AI 알림 예약] 내일 이 시간에 '${habitName}' 알림을 보냅니다.`);
-  // 실제 서비스 시 알림 API 호출 위치
-}
+  async function updateWeeklyReport(uid, isPro) {
+    const reportBody = document.getElementById("weeklyReportBody");
+    const lockedDiv = document.getElementById("weeklyReportLocked");
+    const reportDiv = document.getElementById("weeklyReport");
+    
+    // 최근 7일 데이터 조회
+    let successCount = 0;
+    const days = [];
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    
+    for (let i = 0; i < 7; i++) {
+       const key = dateKeyFromOffset(i);
+       const snap = await getDoc(doc(db, "users", uid, "habits", key));
+       const done = snap.exists();
+       const d = new Date(key);
+       if (done) successCount++;
+       days.push({ key, done, dayName: dayNames[d.getDay()] });
+    }
 
-function showProModal() {
-  const modal = document.getElementById("proModal");
-  if (modal) modal.style.display = "flex";
-}
+    const streak = await getConsecutiveStreak(uid);
+    if (streak < 3) {
+      reportDiv.style.display = "none";
+      return;
+    }
+    reportDiv.style.display = "block";
 
-// [추가 코드] 5일 연속 성공 치트키 로직
-const cheatStreakBtn = document.getElementById("cheatStreakBtn");
-
-if (cheatStreakBtn) {
-  cheatStreakBtn.onclick = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      alert("로그인이 필요합니다!");
+    if (!isPro) {
+      reportBody.innerHTML = "";
+      lockedDiv.style.display = "block";
+      document.querySelector("#weeklyReportLocked b").textContent = `${streak}일 연속 성공`;
       return;
     }
 
-    const confirmCheat = confirm("🧪 테스트 모드: 지난 5일간의 데이터를 '성공'으로 강제 조작하시겠습니까?");
-    if (!confirmCheat) return;
+    // PRO logic
+    lockedDiv.style.display = "none";
+    const rate = Math.round((successCount/7)*100);
+    const listHTML = days.reverse().map(d => `
+       <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+         <span>${d.dayName} (${d.key.slice(5)})</span>
+         <span>${d.done ? "✅" : "❌"}</span>
+       </div>
+    `).join('');
 
-    try {
-      // 0일전(오늘) ~ 4일전(과거)까지 총 5일 루프
-      for (let i = 0; i < 5; i++) {
-        // dateKeyFromOffset 함수는 기존 코드에 있으므로 그대로 사용
-        const dateStr = dateKeyFromOffset(i); 
-        
-        // Firestore에 { done: true } 저장
-        await setDoc(doc(db, "users", user.uid, "habits", dateStr), {
-          done: true
-        });
-        console.log(`${dateStr} 처리 완료`);
-      }
+    reportBody.innerHTML = `
+      <div style="background:rgba(99,102,241,0.1); padding:16px; border-radius:12px; margin-bottom:12px;">
+         <div style="font-weight:700; margin-bottom:8px;">🤖 AI Habit Coach</div>
+         <div style="font-size:13px; line-height:1.5;">
+            이번 주 성공률은 <b>${rate}%</b>입니다.<br>
+            ${rate === 100 ? "완벽합니다! 갓생 그 자체시네요." : "주말에 조금 더 신경써보면 어떨까요?"}
+         </div>
+      </div>
+      <div style="padding:10px; background:#fff; border-radius:12px; border:1px solid #eee;">
+         ${listHTML}
+      </div>
+    `;
+  }
 
-      alert("🎉 5일 연속 성공 데이터 생성 완료!\n새로고침하여 리포트를 확인하세요.");
-      location.reload(); // 화면 새로고침해서 결과 바로 반영
-
-    } catch (error) {
-      console.error("치트키 에러:", error);
-      alert("에러 발생: " + error.message);
+  async function renderCalendar(uid, isPro) {
+    const section = document.getElementById("calendarSection");
+    const grid = document.getElementById("calendarGrid");
+    
+    if (!isPro) {
+      section.style.display = "none";
+      return;
     }
+    section.style.display = "block";
+    grid.innerHTML = "";
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    for (let d = 1; d <= lastDay; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const snap = await getDoc(doc(db, "users", uid, "habits", dateStr));
+      
+      const cell = document.createElement("div");
+      cell.textContent = d;
+      cell.style.padding = "6px";
+      cell.style.borderRadius = "6px";
+      cell.style.fontSize = "12px";
+      cell.style.textAlign = "center";
+      
+      if (snap.exists()) {
+        cell.style.background = "#22c55e";
+        cell.style.color = "white";
+      } else {
+        cell.style.background = "rgba(0,0,0,0.05)";
+        cell.style.color = "var(--muted)";
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  async function updateStreakProtectionUI(uid, isPro) {
+    if (!isPro) return;
+    const snap = await getDoc(doc(db, "users", uid));
+    const left = snap.data()?.streakProtectionLeft ?? 2;
+    
+    if (left > 0) {
+      restoreBtn.style.display = "block";
+      restoreBtn.textContent = `🔥 연속 기록 복구 (${left}회 남음)`;
+      restoreBtn.onclick = async () => {
+         const yesterday = dateKeyFromOffset(1);
+         await setDoc(doc(db, "users", uid, "habits", yesterday), { done: true, restored: true });
+         await updateDoc(doc(db, "users", uid), { streakProtectionLeft: left - 1 });
+         alert("🔥 어제 기록이 복구되었습니다!");
+         location.reload();
+      };
+    } else {
+      restoreBtn.style.display = "none";
+    }
+  }
+
+  async function loadStats(uid) {
+    let count = 0;
+    const snap = await getDocs(collection(db, "users", uid, "habits"));
+    safeText("totalDays", `총 누적 성공: ${snap.size}일`);
+  }
+
+  // --- Admin Functions ---
+  async function loadAllUsers() {
+    const listDiv = document.getElementById("userList");
+    listDiv.innerHTML = "로딩 중...";
+    const snap = await getDocs(collection(db, "users"));
+    listDiv.innerHTML = "";
+    
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.style.padding = "8px";
+      div.style.borderBottom = "1px solid #ccc";
+      div.innerHTML = `
+        <span style="font-size:11px;">${docSnap.id.slice(0,5)}...</span> 
+        <b>${data.isPro ? "PRO" : "FREE"}</b>
+        <button class="tgl" style="font-size:10px; margin-left:5px;">변경</button>
+      `;
+      div.querySelector(".tgl").onclick = async () => {
+         await updateDoc(doc(db, "users", docSnap.id), { isPro: !data.isPro });
+         alert("등급 변경됨. 새로고침 하세요.");
+      };
+      listDiv.appendChild(div);
+    });
+  }
+
+  const cheatBtn = document.getElementById("cheatStreakBtn");
+  if(cheatBtn) {
+    cheatBtn.onclick = async () => {
+       const user = auth.currentUser;
+       if (!user) return alert("로그인 필요");
+       if (!confirm("지난 5일 데이터를 강제 성공 처리할까요?")) return;
+       for(let i=0; i<5; i++) {
+          const k = dateKeyFromOffset(i);
+          await setDoc(doc(db, "users", user.uid, "habits", k), { done: true, cheat: true });
+       }
+       alert("치트 적용 완료! 새로고침하세요.");
+       location.reload();
+    };
+  }
+
+  // --- Modal Helpers ---
+  window.showProModal = () => document.getElementById("proModal").style.display = "flex";
+  
+  // --- Dark Mode ---
+  const toggle = document.getElementById("darkModeToggle");
+  toggle.onclick = () => {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
   };
-}
+  if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
+
 </script>
 
 <script>
-(() => {
+  // BGM Logic (Vanilla JS)
   const audio = document.getElementById("bgmAudio");
-  const btn = document.getElementById("bgmToggle");
+  const bgmBtn = document.getElementById("bgmToggle");
   const vol = document.getElementById("bgmVol");
   const volText = document.getElementById("bgmVolText");
 
-  if (!audio || !btn || !vol || !volText) return;
-
-  // Set initial volume
-  audio.volume = Number(vol.value);
-
-  btn.addEventListener("click", async () => {
-    try {
+  if (audio && bgmBtn) {
+    audio.volume = 0.25;
+    bgmBtn.onclick = () => {
       if (audio.paused) {
-        await audio.play();
-        btn.textContent = "일시정지";
+        audio.play().then(() => bgmBtn.textContent = "일시정지").catch(() => alert("자동 재생 권한이 필요합니다."));
       } else {
         audio.pause();
-        btn.textContent = "재생";
+        bgmBtn.textContent = "재생";
       }
-    } catch (e) {
-      alert("브라우저 정책상 자동재생이 막혀있어요. 버튼을 다시 눌러주세요!");
-      console.log(e);
-    }
-  });
-
-  vol.addEventListener("input", () => {
-    audio.volume = Number(vol.value);
-    volText.textContent = Math.round(audio.volume * 100) + "%" ;
-  });
-})();
+    };
+    vol.oninput = () => {
+      audio.volume = vol.value;
+      volText.textContent = Math.round(vol.value * 100) + "%";
+    };
+  }
 </script>
-<div id="proModal" style="
-  display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,0.5);
-  align-items:center; justify-content:center;
-  z-index:999;">
-  <div style="
-    background:white; padding:30px;
-    border-radius:20px; max-width:360px; width:90%;
-    text-align:center;">
-    <h2>👑 PRO로 성장 가속</h2>
-    <p style="opacity:0.7;">
-      연속 기록 보호<br>
-      월간 캘린더<br>
-      AI 주간 리포트
-    </p>
-    <button id="proModalBtn"
-      style="margin-top:15px; width:100%;
-      padding:14px; border-radius:12px;
-      background:#6366f1; color:white; border:none;">
-      PRO 시작하기
-    </button>
-    <p style="margin-top:10px; font-size:12px; cursor:pointer;"
-       onclick="document.getElementById('proModal').style.display='none'">
-      나중에
-    </p>
-  </div>
-</div>
+
 </body>
 </html>
