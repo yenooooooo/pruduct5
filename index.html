@@ -100,6 +100,41 @@ section {
   clip-path: ellipse(150% 100% at 50% 0%); /* 아래쪽이 둥근 곡선 */
   padding: 0 20px;
 }
+
+/* Auth Form Customization */
+#auth input {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+#auth input::placeholder {
+  color: #aaa;
+}
+
+#auth button {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#auth button:hover {
+  background: var(--secondary);
+}
+
   .tier-bronze { background: #cd7f32; color: white; }
 .tier-silver { background: #c0c0c0; color: #333; }
 .tier-gold { background: #ffd700; color: #333; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
@@ -180,10 +215,11 @@ section {
       <p>₩0</p>
       <p>하루 1습관</p>
     </div>
-    <div class="card highlight">
+    <div id="proCard" class="card highlight">
       <h3>PRO</h3>
       <p>₩3,900 / 월</p>
       <p>습관 무제한 + 통계</p>
+      <button id="goProBtn">PRO로 업그레이드</button>
     </div>
   </div>
 </section>
@@ -225,14 +261,30 @@ section {
           <h3>📊 나의 습관 통계</h3>
           <p id="totalDays"></p>
         </div>
-        <div id="weeklyReport" style="display:none;">...</div>
+        <div id="weeklyReport" style="display:none; width: 100%; margin-top: 20px; text-align: left;">
+          <div id="weeklyReportBody"></div>
+          <div id="weeklyReportLocked" style="display:none; padding: 20px; border: 2px dashed #ddd; border-radius: 15px; text-align: center;">
+              <div>
+                  <span style="font-size: 2rem;">🔒</span>
+                  <div>
+                      <b>-일 연속 성공</b> 중입니다!<br>
+                      AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
+                      PRO 회원이 되어 확인해보세요.
+                  </div>
+                  <button id="weeklyGoProBtn" style="margin-top: 15px; padding: 10px 20px; border: none; background: var(--primary); color: white; border-radius: 10px; cursor: pointer;">리포트 잠금 해제하기</button>
+              </div>
+          </div>
+        </div>
 
         <button class="logout" id="logoutBtn" style="background:none; color:#94a3b8; font-size:0.8rem; text-decoration:underline;">로그아웃</button>
       </div>
     </div>
 
     <div id="adminPanel" class="glass-card" style="display:none;">
-       ...
+      <h3 style="margin-top:0;">👑 관리자 패널</h3>
+      <button id="adminTestBtn">관리자 테스트</button>
+      <button id="cheatStreakBtn">5일 연속 성공 치트</button>
+      <div id="userList" style="margin-top:20px; max-height: 200px; overflow-y:auto;"></div>
     </div>
 
   </div>
@@ -363,7 +415,6 @@ const weeklyReportBody = document.getElementById("weeklyReportBody");
 const weeklyReportLocked = document.getElementById("weeklyReportLocked");
 const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
 
-// 안전하게 today 텍스트 넣기 (요소 없으면 그냥 스킵)
 const todayEl = document.getElementById("today");
 const todayStr = new Date().toISOString().slice(0, 10);
 if (todayEl) todayEl.textContent = `📅 ${todayStr}`;
@@ -404,7 +455,7 @@ onAuthStateChanged(auth, async user => {
   if (!user) {
     authDiv.style.display = 'block';
     appDiv.style.display = 'none';
-    adminPanel.style.display = 'none'; // 로그아웃시 관리자 패널 숨김
+    if (adminPanel) adminPanel.style.display = 'none'; // 로그아웃시 관리자 패널 숨김
     return;
   }
 
@@ -420,23 +471,23 @@ onAuthStateChanged(auth, async user => {
 
     // Admin UI
     if (isAdmin) {
-      adminPanel.style.display = "block";
+      if (adminPanel) adminPanel.style.display = "block";
       welcome.innerText = `👑 관리자 ${user.email}`;
       loadAllUsers();
     } else {
-      adminPanel.style.display = "none";
+      if (adminPanel) adminPanel.style.display = "none";
       welcome.innerText = `👋 ${user.email}`;
     }
 
     // PRO UI
     if (isPro) {
-      proCard.style.display = "none";
-      statsDiv.style.display = "block";
+      if (proCard) proCard.style.display = "none";
+      if (statsDiv) statsDiv.style.display = "block";
       status.innerText = "🌟 PRO 회원입니다";
       loadStats(user.uid); // PRO인 경우 통계 로드
     } else {
-      proCard.style.display = "block";
-      statsDiv.style.display = "none";
+      if (proCard) proCard.style.display = "block";
+      if (statsDiv) statsDiv.style.display = "none";
       status.innerText = "무료 회원 (하루 1습관)";
     }
 
@@ -445,6 +496,10 @@ onAuthStateChanged(auth, async user => {
 
     // ✅ 7일 연속 달성 시 PRO 팝업(무료 유저만)
     await maybeShow7DayPopup(user.uid, isPro);
+    
+    // 티어 UI 업데이트
+    const streak = await getConsecutiveStreak(user.uid);
+    updateTierUI(streak);
   } catch (e) {
     console.error("Token error:", e);
   }
@@ -485,9 +540,11 @@ habitBtn.onclick = async () => {
   celebrate(); // 파티 효과
 };
 
-goProBtn.onclick = () => {
-  alert("👑 이 버튼은 관리자 확인용입니다.\nPRO 권한은 서버(관리자)에서만 부여됩니다.");
-};
+if (goProBtn) {
+  goProBtn.onclick = () => {
+    alert("👑 이 버튼은 관리자 확인용입니다.\nPRO 권한은 서버(관리자)에서만 부여됩니다.");
+  };
+}
 
 if (adminTestBtn) {
   adminTestBtn.onclick = () => alert("👑 관리자 전용 기능 정상 작동!");
@@ -631,14 +688,14 @@ async function updateWeeklyReport(uid, isPro) {
   const listHTML = days.reverse().map(d => 
     `<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; color:var(--text-color);">
        <span>${d.key} (${d.dayName})</span>
-       <span>${d.done ? "✅ 성공" : "<span style='color:#e53e3e; opacity:0.6;'>Failed</span>"}</span>
+       <span>${d.done ? "✅ 성공" : "<span style='color:#e53e3e; opacity:0.6;'>실패</span>"}</span>
      </div>`
   ).join("");
 
   // 최종 HTML 주입
   weeklyReportBody.innerHTML = `
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-      <span style="font-weight:900; font-size:16px;">이번 주 성공률 <span style="color:#667eea;">${rate}%</span></span>
+      <span style="font-weight:900; font-size:16px;">이번 주 성공률 <span style="color:#6366f1;">${rate}%</span></span>
       <span style="font-size:12px; opacity:0.7;">🔥 ${streak}일 연속</span>
     </div>
 
@@ -750,6 +807,9 @@ function celebrate() {
 
 // ===== 티어 UI =====
   function updateTierUI(streak){
+    const tierBadge = document.getElementById("tierBadge");
+    const tierText = document.getElementById("tierText");
+    const streakCount = document.getElementById("streakCount");
     if (!tierBadge || !tierText || !streakCount) return;
 
     tierBadge.style.display = "block";
@@ -767,6 +827,12 @@ function celebrate() {
     tierText.className = ""; // reset
     tierText.classList.add("badge", cls);
   }
+
+// 습관 완료 버튼 클릭 시 알림 예약 (가상 로직)
+function scheduleNextReminder(habitName) {
+  console.log(`[AI 알림 예약] 내일 이 시간에 '${habitName}' 알림을 보냅니다.`);
+  // 실제 서비스 시 알림 API 호출 위치
+}
 
 // [추가 코드] 5일 연속 성공 치트키 로직
 const cheatStreakBtn = document.getElementById("cheatStreakBtn");
