@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <meta charset="UTF-8" />
   <title>HabitFlow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -704,20 +705,37 @@ onAuthStateChanged(auth, async user => {
       timestamp: new Date()
     });
 
-    celebrate();
-    
-    const streak = await getConsecutiveStreak(user.uid);
-    updateTierUI(streak);
-  };
-
+  // --- 기존 celebrate 함수를 이걸로 교체하세요 ---
   function celebrate() {
     const btn = document.getElementById("habitBtn");
-    btn.style.transform = "scale(1.05)";
-    setTimeout(() => { btn.style.transform = "scale(1)"; }, 200);
-    safeText("status", "🎉 오늘의 습관 완료! 내일도 만나요.");
-    btn.textContent = "완료되었습니다 👍";
+    
+    // 1. 버튼 애니메이션
+    btn.style.transform = "scale(0.95)";
+    setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
+    
+    // 2. 텍스트 변경 및 비활성화
+    safeText("status", "🎉 오늘의 미션 클리어! 훌륭합니다.");
+    btn.innerHTML = "완료함 ✨";
+    btn.style.background = "#ddd";
+    btn.style.color = "#888";
+    btn.style.cursor = "default";
     btn.disabled = true;
-    btn.style.opacity = "0.7";
+
+    // 3. [NEW] 꽃가루 발사! (Confetti Effect)
+    const count = 200;
+    const defaults = { origin: { y: 0.7 } };
+
+    function fire(particleRatio, opts) {
+      confetti(Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(count * particleRatio)
+      }));
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
   }
 
   // --- UI Update Functions ---
