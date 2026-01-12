@@ -124,9 +124,16 @@ nav a:hover{background:var(--surface-2); color:var(--text)}
 }
 
 /* Sections */
-section{padding:86px 0}
-.section-title{ text-align:center; margin-bottom:26px }
-.section-sub{ text-align:center; margin:0 auto; max-width:680px; color:var(--muted); }
+section{
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+section > *{
+  width:100%;
+  max-width: var(--container);
+  padding: 0 20px;
+}
 
 /* Hero */
 .hero{
