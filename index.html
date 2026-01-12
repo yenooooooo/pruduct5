@@ -578,6 +578,9 @@ onAuthStateChanged(auth, async user => {
 
     // ✅ 연속 기록 복구 버튼 UI 업데이트
     await updateStreakProtectionUI(user.uid, isPro);
+
+    // ✅ 이번 달 습관 캘린더 렌더링
+    await renderCalendar(user.uid, isPro);
   } catch (e) {
     console.error("Token error:", e);
   }
@@ -869,10 +872,46 @@ async function loadAllUsers() {
     });
   } catch (error) {
     console.error("User load error:", error);
-    userListDiv.innerHTML = "권한이 없거나 불러오기 실패";
-  }
-}
-
+          userListDiv.innerHTML = "권한이 없거나 불러오기 실패";
+      }
+    }
+    
+    async function renderCalendar(uid, isPro) {
+      const grid = document.getElementById("calendarGrid");
+      const section = document.getElementById("calendarSection");
+      if (!grid || !section) return;
+    
+      if (!isPro) {
+        section.style.display = "none";
+        return;
+      }
+    
+      section.style.display = "block";
+      grid.innerHTML = "";
+    
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+    
+      for (let d = 1; d <= 31; d++) {
+        const date = new Date(year, month, d);
+        if (date.getMonth() !== month) break;
+    
+        const key = date.toISOString().slice(0, 10);
+        const snap = await getDoc(doc(db, "users", uid, "habits", key));
+    
+        const cell = document.createElement("div");
+        cell.style.padding = "10px";
+        cell.style.borderRadius = "8px";
+        cell.style.textAlign = "center";
+        cell.style.fontSize = "12px";
+        cell.style.background = snap.exists() ? "#22c55e" : "#e5e7eb";
+        cell.style.color = snap.exists() ? "white" : "#64748b";
+        cell.textContent = d;
+    
+        grid.appendChild(cell);
+      }
+    }
 // 습관 완료 시 간단한 이펙트 함수
 function celebrate() {
   const btn = document.getElementById("habitBtn");
