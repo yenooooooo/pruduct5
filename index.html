@@ -261,6 +261,13 @@ section {
            </div>
         </div>
         
+        <div id="todaySuggestion" style="
+          margin-top:12px;
+          font-size:0.85rem;
+          opacity:0.75;
+        ">
+        </div>
+        
         <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center;">
         <button id="habitBtn" class="habit">오늘 습관 완료</button>
         <p id="status"></p>
@@ -398,6 +405,20 @@ window.selectTheme = async (el, themeType) => {
   if (el) el.classList.add('active');
 };
 
+function showTodaySuggestion() {
+  const dayIdx = new Date().getDay();
+  const suggestion =
+    themeData.survival[dayIdx]; // 기본 추천은 생존팩
+
+  const el = document.getElementById("todaySuggestion");
+  if (!el) return;
+
+  el.innerHTML = `
+    👉 오늘 추천 습관: <b>${suggestion}</b><br>
+    <span style="font-size:0.75rem;">(오늘 요일 기준 자동 추천)</span>
+  `;
+}
+
 // DOM Elements
 const email = document.getElementById('email');
 const password = document.getElementById('password');
@@ -470,6 +491,7 @@ onAuthStateChanged(auth, async user => {
 
   authDiv.style.display = 'none';
   appDiv.style.display = 'block';
+  showTodaySuggestion(); // Call the new function here
 
   try {
     const tokenResult = await getIdTokenResult(user, true);
@@ -757,7 +779,7 @@ async function loadStats(uid){
     if(!snap.exists()) break;
     count++; date.setDate(date.getDate()-1);
   }
-  if(totalDays) totalDays.innerText=`🔥 연속 성공 ${count}일`;
+  safeText("totalDays", `🔥 연속 성공 ${count}일`);
 }
 
 async function loadAllUsers() {
