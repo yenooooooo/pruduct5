@@ -460,6 +460,43 @@ const userListDiv = document.getElementById("userList");
 const darkModeToggle = document.getElementById("darkModeToggle");
 const restoreBtn = document.getElementById("restoreStreakBtn");
 
+async function updateStreakProtectionUI(uid, isPro) {
+  if (!restoreBtn) return;
+
+  if (!isPro) {
+    restoreBtn.style.display = "none";
+    return;
+  }
+
+  const snap = await getDoc(doc(db, "users", uid));
+  const left = snap.data()?.streakProtectionLeft ?? 2;
+
+  restoreBtn.style.display = left > 0 ? "block" : "none";
+  restoreBtn.textContent = `🔥 연속 기록 복구 (${left}회 남음)`;
+}
+
+restoreBtn.onclick = async () => {
+  const user = auth.currentUser;
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  let left = snap.data()?.streakProtectionLeft ?? 2;
+
+  if (left <= 0) {
+    alert("이번 달 복구권을 모두 사용했습니다.");
+    return;
+  }
+
+  const yesterday = dateKeyFromOffset(1);
+  await setDoc(doc(db, "users", user.uid, "habits", yesterday), {
+    done: true,
+    restored: true
+  });
+
+  await updateDoc(ref, { streakProtectionLeft: left - 1 });
+  alert("🔥 어제 기록이 복구되었습니다!");
+  location.reload();
+};
+
 // ✅ 주간 리포트 요소
 const weeklyReport = document.getElementById("weeklyReport");
 const weeklyReportBody = document.getElementById("weeklyReportBody");
@@ -552,6 +589,9 @@ onAuthStateChanged(auth, async user => {
     // 티어 UI 업데이트
     const streak = await getConsecutiveStreak(user.uid);
     updateTierUI(streak);
+
+    // ✅ 연속 기록 복구 버튼 UI 업데이트
+    await updateStreakProtectionUI(user.uid, isPro);
   } catch (e) {
     console.error("Token error:", e);
   }
