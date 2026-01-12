@@ -256,16 +256,20 @@ footer{
 <body>
 
 <header>
-  <div class="logo">HabitFlow</div>
-  <nav>
-    <a href="#features">기능</a>
-    <a href="#pro">PRO</a>
-    <a href="#pricing">가격</a>
-    <button class="btn-start" onclick="scrollToAuth()">시작하기</button>
-    <button id="darkModeToggle" style="background: #333; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;">
-      🌓
-    </button>
-  </nav>
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-badge"></div>
+      HabitFlow
+    </div>
+
+    <nav>
+      <a href="#features">기능</a>
+      <a href="#pro">PRO</a>
+      <a href="#pricing">가격</a>
+      <button class="btn btn-primary" onclick="scrollToAuth()">시작하기</button>
+      <button id="darkModeToggle" class="btn btn-ghost">🌓</button>
+    </nav>
+  </div>
 </header>
 
 <section class="hero">
