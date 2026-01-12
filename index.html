@@ -939,9 +939,9 @@ function showTodaySuggestion() {
 }
 
 // DOM Elements
-const email = document.getElementById('email');
-const password = document.getElementById('password');
-const signupBtn = document.getElementById("signupBtn");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
 const signinBtn = document.getElementById("signinBtn");
 const resetPwBtn = document.getElementById("resetPwBtn");
 const authHint = document.getElementById("authHint");
@@ -1007,12 +1007,6 @@ const weeklyGoProBtn = document.getElementById("weeklyGoProBtn");
 const todayEl = document.getElementById("today");
 const todayStr = new Date().toISOString().slice(0, 10);
 if (todayEl) todayEl.textContent = `📅 const email =${todayStr}`;
-
-// Login Handler
-const signupBtn = document.getElementById("signupBtn");
-const signinBtn = document.getElementById("signinBtn");
-const resetPwBtn = document.getElementById("resetPwBtn");
-const authHint = document.getElementById("authHint");
 
 function requireEmailPass() {
   if (!email?.value || !password?.value) {
@@ -1162,7 +1156,8 @@ onAuthStateChanged(auth, async user => {
 });
 
 // 2. 습관 완료 버튼 로직 확장
-habitBtn.onclick = async () => {
+if (habitBtn) {
+  habitBtn.onclick = async () => {
   const user = auth.currentUser;
   if(!user) return;
 
