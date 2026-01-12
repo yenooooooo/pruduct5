@@ -600,26 +600,39 @@
       adminPanel.style.display = 'none';
       return;
     }
+    // --- Core Logic ---
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      authDiv.style.display = 'block';
+      appDiv.style.display = 'none';
+      adminPanel.style.display = 'none';
+      return;
+    }
     
+    // 👇 [수정됨] 관리자 이메일 설정 (본인의 관리자 이메일로 변경하세요!)
+    const adminEmail = "test@gmail.com"; 
+
+    // 이메일 인증 체크 (관리자 이메일은 예외 처리)
+    if (!user.emailVerified && user.email !== adminEmail) {
+      alert("📩 이메일 인증 후 사용 가능합니다.");
+      await signOut(auth); // 인증 안 된 일반 유저는 로그아웃 처리
+      authDiv.style.display = 'block';
+      appDiv.style.display = 'none';
+      return;
+    }
+
+    // 로그인 완료 UI 처리
+    authDiv.style.display = 'none';
+    appDiv.style.display = 'block';
+    
+    // ... (이하 기존 코드와 동일)
+
     // 이메일 인증 체크
     if (!user.emailVerified) {
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
       return;
     }
-     // 🔒 관리자 아니면 이메일 인증 필수
-  if (!isAdmin && !user.emailVerified) {
-    alert("📩 이메일 인증 후 사용 가능합니다.\n메일함을 확인해주세요.");
-    await signOut(auth);
-    return;
-  }
-  if (isAdmin) {
-    welcome.innerText = `👑 관리자 ${user.email}`;
-    adminPanel.style.display = "block";
-  } else {
-    welcome.innerText = `👋 ${user.email}`;
-    adminPanel.style.display = "none";
-  }
 
     // 로그인 완료 UI 처리
     authDiv.style.display = 'none';
