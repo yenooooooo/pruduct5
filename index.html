@@ -7,256 +7,294 @@
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&amp;display=swap" rel="stylesheet">
 
   <style>
+/* ====== Layout Container Fix ====== */
 :root{
-  /* Brand */
+  --bg-color:#f8fafc;
+  --text-main:#0f172a;
+  --muted:#64748b;
+  --card-bg: rgba(255,255,255,0.72);
+  --card-border: rgba(15,23,42,0.08);
   --primary:#6366f1;
   --secondary:#a855f7;
-
-  /* Neutral */
-  --bg:#f8fafc;
-  --surface:#ffffff;
-  --surface-2:#f1f5f9;
-  --text:#0f172a;
-  --muted:#64748b;
-  --border:rgba(15,23,42,.10);
-
-  /* Effects */
-  --shadow: 0 18px 40px rgba(2,6,23,.10);
-  --shadow-strong: 0 28px 70px rgba(2,6,23,.16);
-  --radius: 22px;
-  --radius-lg: 28px;
-
-  /* Layout */
-  --container: 1080px;
+  --shadow: 0 20px 25px -5px rgb(0 0 0 / .08), 0 8px 10px -6px rgb(0 0 0 / .06);
 }
 
 .dark-mode{
-  --bg:#020617;
-  --surface:rgba(255,255,255,.06);
-  --surface-2:rgba(255,255,255,.10);
-  --text:#f8fafc;
-  --muted:rgba(248,250,252,.72);
-  --border:rgba(248,250,252,.14);
-
-  --shadow: 0 18px 40px rgba(0,0,0,.55);
-  --shadow-strong: 0 28px 80px rgba(0,0,0,.65);
+  --bg-color:#020617;
+  --text-main:#f8fafc;
+  --muted:#94a3b8;
+  --card-bg: rgba(2,6,23,0.55);
+  --card-border: rgba(148,163,184,0.12);
+  --shadow: 0 20px 25px -5px rgb(0 0 0 / .45), 0 8px 10px -6px rgb(0 0 0 / .35);
 }
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
+*{ box-sizing:border-box; }
 body{
   margin:0;
-  font-family:Pretendard, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: radial-gradient(1200px 500px at 20% -10%, rgba(99,102,241,.18), transparent 60%),
-              radial-gradient(1200px 500px at 80% 0%, rgba(168,85,247,.12), transparent 60%),
-              var(--bg);
-  color:var(--text);
+  background:var(--bg-color);
+  color:var(--text-main);
+  font-family:'Pretendard',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   overflow-x:hidden;
 }
 
-/* Container */
-.container{
-  width:100%;
-  max-width:var(--container);
-  margin:0 auto;
-  padding:0 20px;
-}
-
-/* Typography */
-.h1{font-size:44px; line-height:1.05; letter-spacing:-.02em; margin:0}
-.h2{font-size:28px; line-height:1.2; letter-spacing:-.02em; margin:0 0 12px}
-.h3{font-size:18px; line-height:1.2; margin:0 0 8px}
-.p{margin:0; color:var(--muted); line-height:1.7}
-
-/* Header */
-header{
-  position:sticky; top:0; z-index:50;
-  backdrop-filter: blur(14px);
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  border-bottom:1px solid var(--border);
-}
-.header-inner{
-  height:68px;
-  display:flex; align-items:center; justify-content:space-between;
-}
-.logo{
-  display:flex; align-items:center; gap:10px;
-  font-weight:900; letter-spacing:-.02em;
-}
-.logo-badge{
-  width:34px; height:34px; border-radius:12px;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  box-shadow:0 10px 25px rgba(99,102,241,.25);
-}
-nav{display:flex; align-items:center; gap:14px}
-nav a{
-  text-decoration:none;
-  color:var(--muted);
-  font-weight:700;
-  font-size:14px;
-  padding:10px 10px;
-  border-radius:12px;
-}
-nav a:hover{background:var(--surface-2); color:var(--text)}
-
-/* Buttons */
-.btn{
-  border:1px solid var(--border);
-  background:var(--surface);
-  color:var(--text);
-  font-weight:800;
-  padding:12px 14px;
-  border-radius:14px;
-  cursor:pointer;
-  box-shadow: none;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
-}
-.btn:hover{transform: translateY(-1px); box-shadow: var(--shadow)}
-.btn:active{transform: translateY(0px)}
-.btn-primary{
-  border:none;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  color:white;
-  box-shadow:0 16px 35px rgba(99,102,241,.28);
-}
-.btn-ghost{
-  background:transparent;
-}
-
-/* Sections */
+/* ✅ 핵심: section은 전체폭, 실제 내용폭은 .container가 담당 */
 section{
   width:100%;
-  display:flex;
-  justify-content:center;
+  padding: 84px 20px;
 }
-section > *{
+.container{
   width:100%;
-  max-width: var(--container);
-  padding: 0 20px;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
-/* Hero */
-.hero{
-  padding:70px 0 30px;
+/* Titles */
+.section-head{
+  text-align:center;
+  margin-bottom: 26px;
 }
-.hero-wrap{
-  display:grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap:28px;
-  align-items:center;
-}
-.hero-card{
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  border:1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-strong);
-  padding:26px;
-}
-.hero-kicker{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:8px 12px;
+.section-head .kicker{
+  display:inline-block;
+  padding:6px 12px;
   border-radius:999px;
-  background: color-mix(in srgb, var(--surface-2) 82%, transparent);
-  border:1px solid var(--border);
+  font-size:12px;
   font-weight:800;
-  color:var(--muted);
-  font-size:13px;
+  letter-spacing:-0.2px;
+  background: rgba(99,102,241,0.12);
+  color: var(--primary);
 }
-.hero-actions{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap}
-.hero-metrics{
-  display:grid;
-  grid-template-columns: repeat(3,1fr);
-  gap:10px; margin-top:18px;
+.section-head h2{
+  margin:12px 0 8px;
+  font-size: 28px;
+  letter-spacing:-0.6px;
 }
-.metric{
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:12px;
+.section-head p{
+  margin:0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height:1.7;
 }
-.metric b{display:block; font-size:16px}
-.metric span{font-size:12px; color:var(--muted)}
 
-/* Cards / Grid */
-.grid{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:18px;
-}
-.card{
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  border:1px solid var(--border);
-  border-radius: var(--radius);
+/* Glass card */
+.glass{
+  background: var(--card-bg);
+  border:1px solid var(--card-border);
   box-shadow: var(--shadow);
-  padding:20px;
-}
-.card p{color:var(--muted); margin:0; line-height:1.6}
-.icon{
-  width:42px; height:42px; border-radius:16px;
-  display:grid; place-items:center;
-  background: color-mix(in srgb, var(--surface-2) 85%, transparent);
-  border:1px solid var(--border);
-  margin:0 auto 10px;
-  font-size:20px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 22px;
 }
 
-/* Auth/App */
-#mainContainer{
+/* ====== Problem Cards ====== */
+.problem-grid{
   display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:18px;
-  align-items:start;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+  margin-top: 18px;
 }
-.glass-card{
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  border:1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-strong);
-  padding:24px;
+.problem-card{
+  padding: 18px 18px;
+  text-align:left;
 }
-input{
-  width:100%;
-  padding:14px 14px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  color:var(--text);
-  outline:none;
+.problem-card h3{
+  margin:0 0 8px;
+  font-size: 16px;
 }
-input::placeholder{color: color-mix(in srgb, var(--muted) 75%, transparent)}
-input:focus{box-shadow:0 0 0 4px rgba(99,102,241,.18); border-color: rgba(99,102,241,.35)}
+.problem-card p{
+  margin:0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height:1.6;
+}
+.problem-bottom{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+}
+.problem-pill{
+  padding: 12px 14px;
+  border-radius: 16px;
+  border:1px dashed var(--card-border);
+  background: rgba(255,255,255,0.35);
+  color: var(--text-main);
+  font-weight:800;
+  text-align:center;
+}
+.dark-mode .problem-pill{ background: rgba(2,6,23,0.35); }
 
-/* Theme tags */
-.tag-row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:12px}
-.theme-tag{
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
-  color:var(--text);
+/* ====== Features ====== */
+.features-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+.feature-card{
+  padding: 22px;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+.feature-icon{
+  width:44px; height:44px;
+  display:grid; place-items:center;
+  border-radius: 14px;
+  background: rgba(99,102,241,0.12);
+  color: var(--primary);
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.feature-card h3{
+  margin:0 0 8px;
+  font-size:16px;
+}
+.feature-card p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+}
+.feature-card::after{
+  content:"";
+  position:absolute;
+  right:-60px; top:-60px;
+  width:160px; height:160px;
+  background: radial-gradient(circle at 30% 30%, rgba(168,85,247,.22), transparent 60%);
+  transform: rotate(10deg);
+}
+
+/* ====== PRO Section ====== */
+.pro-wrap{
+  padding: 28px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.16), rgba(168,85,247,0.16));
+  border: 1px solid var(--card-border);
+}
+.pro-grid{
+  display:grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 18px;
+  align-items:center;
+  margin-top: 18px;
+}
+.pro-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:grid;
+  gap:10px;
+  text-align:left;
+}
+.pro-list li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  color: var(--text-main);
+  font-weight:700;
+}
+.pro-list li span{
+  color: var(--primary);
+}
+.pro-badge{
+  padding: 18px;
+  text-align:left;
+}
+.pro-badge .price{
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing:-0.6px;
+}
+.pro-badge .sub{
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+/* ====== Flow ====== */
+.flow-grid{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.step-card{
+  padding: 18px;
+  text-align:left;
+}
+.step-no{
+  width:30px; height:30px;
+  border-radius: 10px;
+  display:grid; place-items:center;
+  background: rgba(99,102,241,0.14);
+  color: var(--primary);
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+.step-card h3{ margin:0 0 6px; font-size:15px; }
+.step-card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.6; }
+
+/* ====== Pricing ====== */
+.pricing-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+.price-card{
+  padding: 22px;
+  text-align:left;
+}
+.price-card .plan{
+  font-weight: 900;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.price-card .amount{
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing:-0.6px;
+  margin-bottom: 8px;
+}
+.price-card .desc{
+  color: var(--muted);
+  font-size: 13px;
+  line-height:1.7;
+  margin-bottom: 14px;
+}
+.price-card ul{
+  margin:0;
+  padding-left: 18px;
+  color: var(--text-main);
+  font-size: 13px;
+  line-height:1.7;
+}
+.price-card.pro{
+  border: 2px solid rgba(99,102,241,0.45);
+  position:relative;
+}
+.price-card.pro::before{
+  content:"추천";
+  position:absolute;
+  top: 14px; right: 14px;
+  font-size:12px;
   font-weight:900;
-  cursor:pointer;
-}
-.theme-tag.active{
-  border:none;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  color:white;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(99,102,241,0.14);
+  color: var(--primary);
 }
 
-/* Footer */
-footer{
-  border-top:1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  padding:34px 0;
+/* Responsive */
+ @media (max-width: 900px){
+  .problem-grid{ grid-template-columns: 1fr; }
+  .problem-bottom{ grid-template-columns: 1fr; }
+  .features-grid{ grid-template-columns: 1fr; }
+  .pro-grid{ grid-template-columns: 1fr; }
+  .flow-grid{ grid-template-columns: 1fr 1fr; }
+  .pricing-grid{ grid-template-columns: 1fr; }
 }
-.footer-inner{display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; color:var(--muted); font-size:13px}
-
-/* Mobile */
- @media (max-width: 920px){
-  .hero-wrap{grid-template-columns:1fr}
-  #mainContainer{grid-template-columns:1fr}
-  .grid{grid-template-columns:1fr}
-  nav a{display:none}
+ @media (max-width: 520px){
+  .flow-grid{ grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -320,78 +358,166 @@ footer{
   </div>
 </section>
 
+<!-- PROBLEM -->
 <section class="problem">
   <div class="container">
-    <div class="section-title">
-      <h2 class="h2">왜 습관은 항상 실패할까?</h2>
-      <p class="section-sub">
-        그 동안 혼자서 습관 만들기에 지치셨나요? HabitFlow는 당신의 습관
-        성공률을 획기적으로 높여줄게요.
-      </p>
+    <div class="section-head">
+      <span class="kicker">WHY</span>
+      <h2>왜 습관은 항상 실패할까?</h2>
+      <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
     </div>
 
-    <div class="grid">
-      <div class="card" style="text-align:center;">
-        <div class="icon">❌</div>
-        <h3 class="h3">목표가 너무 많다</h3>
-        <p>무리한 목표는 쉽게 지치게 만들어요.</p>
+    <div class="problem-grid">
+      <div class="problem-card glass">
+        <h3>🎯 목표가 너무 많다</h3>
+        <p>욕심이 커질수록 시작이 어려워져요. 우리는 하루 1개만 남깁니다.</p>
       </div>
+      <div class="problem-card glass">
+        <h3>📝 기록이 귀찮다</h3>
+        <p>기록이 번거로우면 중도 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
+      </div>
+      <div class="problem-card glass">
+        <h3>📉 성취가 눈에 안 보인다</h3>
+        <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
+      </div>
+    </div>
 
-      <div class="card" style="text-align:center;">
-        <div class="icon">❌</div>
-        <h3 class="h3">기록이 귀찮다</h3>
-        <p>간단한 기록마저도 꾸준함을 방해해요.</p>
-      </div>
-
-      <div class="card" style="text-align:center;">
-        <div class="icon">❌</div>
-        <h3 class="h3">성취가 눈에 안 보인다</h3>
-        <p>노력이 쌓이는 과정을 시각적으로 확인하지 못해요.</p>
-      </div>
+    <div class="problem-bottom">
+      <div class="problem-pill">✅ 하루 딱 하나</div>
+      <div class="problem-pill">✅ 버튼 한 번</div>
+      <div class="problem-pill">✅ 연속 기록 시각화</div>
     </div>
   </div>
 </section>
 
+<!-- FEATURES -->
 <section id="features">
-  <h2 style="text-align:center;">핵심 기능</h2>
-  <div class="features">
-    <div><h3><span class="icon">📅</span> 하루 1습관</h3><p>오늘 할 단 하나만</p></div>
-    <div><h3><span class="icon">🔥</span> 연속 기록</h3><p>성취가 쌓인다</p></div>
-    <div><h3><span class="icon">☁️</span> 자동 저장</h3><p>어디서든 이어서</p></div>
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">FEATURES</span>
+      <h2>핵심 기능</h2>
+      <p>습관을 “할 수 있게 만드는” 최소 기능만 남겼습니다.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-icon">📅</div>
+        <h3>하루 1습관</h3>
+        <p>오늘 할 단 하나만 선택. 목표 과부하를 끊습니다.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-icon">🔥</div>
+        <h3>연속 기록</h3>
+        <p>성공이 쌓이는 느낌이 곧 동기입니다. 스트릭으로 확인하세요.</p>
+      </div>
+
+      <div class="feature-card glass">
+        <div class="feature-icon">☁️</div>
+        <h3>자동 저장</h3>
+        <p>클라우드에 저장되어 어디서든 이어서 할 수 있어요.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<section id="pro" class="pro" style="background: var(--accent-color); color: white;">
-  <h2>🚀 HabitFlow PRO</h2>
-  <ul>
-    <li>✔ 습관 무제한</li>
-    <li>✔ 연속 기록 통계</li>
-    <li>✔ 히스토리 관리</li>
-  </ul>
-</section>
-
-<section class="flow">
-  <h2 style="text-align:center;">사용 방법</h2>
-  <ol>
-    <li>1️⃣ 로그인</li>
-    <li>2️⃣ 오늘의 습관</li>
-    <li>3️⃣ 버튼 클릭</li>
-    <li>4️⃣ 연속 기록 확인</li>
-  </ol>
-</section>
-
-<section id="pricing">
-  <h2 style="text-align:center;">가격</h2>
-  <div class="pricing">
-    <div class="card">
-      <h3>무료</h3>
-      <p>₩0</p>
-      <p>하루 1습관</p>
+<!-- PRO -->
+<section id="pro">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">PRO</span>
+      <h2>HabitFlow PRO</h2>
+      <p>“습관이 무너지는 패턴”을 잡아주는 분석 기능을 제공합니다.</p>
     </div>
-    <div class="card highlight">
-      <h3>PRO</h3>
-      <p>₩3,900 / 월</p>
-      <p>습관 무제한 + 통계</p>
+
+    <div class="pro-wrap glass">
+      <div class="pro-grid">
+        <ul class="pro-list">
+          <li><span>✔</span> 습관 무제한 (커스텀 포함)</li>
+          <li><span>✔</span> 주간 리포트 (AI 분석/패턴)</li>
+          <li><span>✔</span> 히스토리/통계 확장</li>
+        </ul>
+
+        <div class="pro-badge glass">
+          <div class="price">₩3,900 <span style="font-size:14px; font-weight:800; color:var(--muted)">/ 월</span></div>
+          <div class="sub">연속 기록이 7일을 넘는 순간, 효과가 확실히 달라집니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW -->
+<section class="flow">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">HOW</span>
+      <h2>사용 방법</h2>
+      <p>딱 4단계. 복잡한 기능은 의도적으로 없앴습니다.</p>
+    </div>
+
+    <div class="flow-grid">
+      <div class="step-card glass">
+        <div class="step-no">1</div>
+        <h3>로그인</h3>
+        <p>이메일로 간편 시작</p>
+      </div>
+      <div class="step-card glass">
+        <div class="step-no">2</div>
+        <h3>오늘의 습관 선택</h3>
+        <p>테마에서 추천을 고르거나(PRO는 커스텀)</p>
+      </div>
+      <div class="step-card glass">
+        <div class="step-no">3</div>
+        <h3>버튼 클릭</h3>
+        <p>완료 한 번으로 기록 끝</p>
+      </div>
+      <div class="step-card glass">
+        <div class="step-no">4</div>
+        <h3>연속 기록 확인</h3>
+        <p>스트릭/티어/리포트로 동기 유지</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">PRICING</span>
+      <h2>가격</h2>
+      <p>무료로 시작하고, 패턴 분석이 필요할 때 PRO로 업그레이드하세요.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="price-card glass">
+        <div class="plan">무료</div>
+        <div class="amount">₩0</div>
+        <div class="desc">가볍게 루틴을 만들고 싶은 분에게</div>
+        <ul>
+          <li>하루 1습관</li>
+          <li>기본 테마 추천</li>
+          <li>기본 스트릭 확인</li>
+        </ul>
+      </div>
+
+      <div class="price-card glass pro" id="proCard">
+        <div class="plan">PRO</div>
+        <div class="amount">₩3,900</div>
+        <div class="desc">습관이 무너지는 “패턴”을 잡고 싶은 분에게</div>
+        <ul>
+          <li>습관 무제한 + 커스텀</li>
+          <li>주간 리포트/분석</li>
+          <li>확장 통계/히스토리</li>
+        </ul>
+        <button id="goProBtn" style="
+          margin-top:14px; width:100%; border:none; cursor:pointer;
+          padding:14px 14px; border-radius:14px;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          color:#fff; font-weight:900;
+        ">PRO로 업그레이드</button>
+      </div>
     </div>
   </div>
 </section>
