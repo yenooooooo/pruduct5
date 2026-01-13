@@ -2746,7 +2746,15 @@
         $("adminOpenBtn").style.display = "none";
         return;
       }
+// ✅ 관리자 버튼 강제 표시 패치
+const adminBtn = document.getElementById("adminOpenBtn");
+if (adminBtn && user.email === "test@gmail.com") {
+  adminBtn.style.display = "block";
 
+  adminBtn.onclick = () => {
+    document.getElementById("adminPanel").style.display = "block";
+  };
+}
       currentUserCache = user;
       showDashboard(true);
       $("welcome").textContent = `${user.email} 님`;
