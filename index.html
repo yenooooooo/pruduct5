@@ -2,171 +2,364 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>HabitFlow</title>
+  <title>HabitFlow - Ultimate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
+  
+  <link href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
-    /* ====== Base Variables & Reset ====== */
+    /* ====== ✨ Color System (Variables) ====== */
     :root {
+      /* Light Mode */
       --bg-color: #f8fafc;
       --text-main: #0f172a;
-      --muted: #64748b;
-      --card-bg: rgba(255, 255, 255, 0.72);
-      --card-border: rgba(15, 23, 42, 0.08);
+      --text-muted: #64748b;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.6);
+      --panel-bg: #ffffff;
+      --input-bg: rgba(241, 245, 249, 0.8);
+      
+      /* Theme Colors */
       --primary: #6366f1;
       --secondary: #a855f7;
-      --shadow: 0 20px 25px -5px rgb(0 0 0 / .08), 0 8px 10px -6px rgb(0 0 0 / .06);
+      --accent: #f59e0b; /* Gold */
+      
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     }
 
-    .dark-mode {
-      --bg-color: #020617;
-      --text-main: #f8fafc;
-      --muted: #94a3b8;
-      --card-bg: rgba(2, 6, 23, 0.55);
-      --card-border: rgba(148, 163, 184, 0.12);
-      --shadow: 0 20px 25px -5px rgb(0 0 0 / .45), 0 8px 10px -6px rgb(0 0 0 / .35);
+    /* 🌙 Dark Mode */
+    body.dark-mode {
+      --bg-color: #0f172a;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(30, 41, 59, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --panel-bg: #1e293b;
+      --input-bg: rgba(15, 23, 42, 0.6);
+      
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
 
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg-color); color: var(--text-main); font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'SUIT', sans-serif;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    /* 삭제 모드일 때 스티커 스타일 */
+    body.is-delete-mode .sticker {
+        cursor: no-drop !important;
+        filter: hue-rotate(180deg) drop-shadow(0 0 5px red);
+        animation: shake 0.3s infinite;
+        z-index: 9999 !important;
+    }
+    @keyframes shake {
+        0% { transform: rotate(0deg); } 25% { transform: rotate(5deg); } 
+        50% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); }
+    }
+
+    ul { list-style: none; padding: 0; margin: 0; }
+    button { font-family: inherit; }
 
     /* ====== Layout ====== */
-    section { width: 100%; padding: 84px 20px; }
+    section { width: 100%; padding: 84px 20px; position: relative; z-index: 1; pointer-events: none; }
+    .container, .glass, button, input, .card, .price-card, .workout-side-panel, .problem-card, .memo-panel { pointer-events: auto; }
     .container { width: 100%; max-width: 1080px; margin: 0 auto; }
     
-    /* Header */
-    header { position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10; }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-    .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    header { position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10; pointer-events: auto; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
     .logo-badge { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
     
-    nav { display: flex; gap: 10px; align-items: center; }
-    .pc-only { display: none; }
-    @media(min-width: 768px) { .pc-only { display: block; text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; margin-right: 10px; } }
-
-    /* Section Head */
-    .section-head { text-align: center; margin-bottom: 36px; }
-    .section-head .kicker { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: -0.2px; background: rgba(99, 102, 241, 0.12); color: var(--primary); }
-    .section-head h2 { margin: 12px 0 8px; font-size: 28px; letter-spacing: -0.6px; }
-    .section-head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
-
+    nav { display: flex; gap: 12px; align-items: center; }
+    .pc-only { display: block; }
+    @media (max-width: 600px) { .pc-only { display: none; } }
+    
     /* Glass Effect */
-    .glass { background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius: 22px; transition: 0.25s ease; }
+    .glass {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      transition: transform 0.25s ease;
+    }
     .glass:hover { transform: translateY(-4px); }
 
-    /* ====== Hero ====== */
-    .hero { padding: 140px 20px 80px; background: radial-gradient(800px circle at 80% -20%, rgba(168, 85, 247, 0.15), transparent 60%); }
-    .hero-grid { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
-    @media(min-width: 900px) { .hero-grid { grid-template-columns: 1.2fr 1fr; } }
-
-    .hero-pill { display: inline-block; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.12); color: var(--primary); }
-    .hero-title { font-size: 40px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; }
-    .hero-desc { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    /* ====== Hero Section ====== */
+    .hero { padding-top: 140px; padding-bottom: 80px; }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
     
-    .hero-actions { display: flex; gap: 12px; }
+    .hero-pill { display: inline-block; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.15); color: var(--primary); }
+    .hero-title { font-size: 46px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; font-weight: 900; color: var(--text-main); }
+    .hero-desc { font-size: 16px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
+    
     .hero-metrics { display: flex; gap: 14px; margin-top: 28px; }
-    .metric-card { padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
-    .hero-right { padding: 26px; }
-    .recommend-card { background: rgba(255,255,255,0.8); border-radius: 16px; padding: 16px; margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #000; }
+    .metric-card { 
+        padding: 14px 18px; border-radius: 16px; 
+        background: var(--input-bg); 
+        border: 1px solid var(--card-border); 
+        display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-main);
+    }
+    /* 🔥 Rolling Card Style */
+    .recommend-card { 
+        background: var(--card-bg); border-radius: 24px; padding: 30px; 
+        margin-top: 20px; display: flex; flex-direction: column; gap: 8px; 
+        font-size: 15px; color: var(--text-main); border: 1px solid var(--card-border);
+        box-shadow: var(--shadow); transition: opacity 0.5s ease-in-out;
+        min-height: 140px; justify-content: center;
+    }
 
-    /* ====== Problems & Features ====== */
-    .problem-grid, .pricing-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 18px; }
-    @media(min-width: 900px) { .problem-grid, .pricing-grid { grid-template-columns: repeat(3, 1fr); } .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
-    .problem-card { padding: 18px; text-align: left; }
-
-    /* ====== Pricing ====== */
-    .price-card { padding: 22px; text-align: left; }
-    .price-card.pro { border: 2px solid rgba(99, 102, 241, 0.45); position: relative; }
-    .price-card.pro::before { content: "추천"; position: absolute; top: 14px; right: 14px; font-size: 12px; font-weight: 900; padding: 6px 10px; border-radius: 999px; background: rgba(99, 102, 241, 0.14); color: var(--primary); }
-    .price-card ul { padding-left: 20px; line-height: 1.8; font-size: 14px; }
-
-    /* ====== Buttons & Inputs ====== */
-    .btn { appearance: none; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.8); color: var(--text-main); padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer; transition: all 0.2s ease; }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary { border: none !important; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25); }
-    .btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--card-border); }
+    /* ====== Problem Section (Restored) ====== */
+    .problem-section { padding-top: 40px; padding-bottom: 60px; }
+    .section-head { text-align: center; margin-bottom: 36px; }
+    .section-head .kicker { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(99, 102, 241, 0.15); color: var(--primary); }
+    .section-head h2 { margin: 12px 0 8px; font-size: 28px; color: var(--text-main); }
+    .section-head p { color: var(--text-muted); }
     
-    input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.5); color: var(--text-main); }
+    .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 18px; }
+    .problem-card { padding: 24px; text-align: left; display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--card-border); box-shadow: var(--shadow); }
+    .problem-card h3 { margin:0; font-size: 18px; color: var(--text-main); }
+    .problem-card p { margin:0; font-size: 14px; color: var(--text-muted); line-height: 1.5; }
 
-    /* ====== Auth & App UI ====== */
-    .auth-card { width: 100%; max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
-    .auth-actions { display: flex; gap: 10px; margin-top: 14px; }
-    .auth-actions .btn { flex: 1; }
-    .link-btn { border: none; background: transparent; color: var(--muted); font-weight: 800; cursor: pointer; text-decoration: underline; margin-top: 10px; }
+    /* ====== Dashboard Layout (Main + Side Stack) ====== */
+    .dashboard-layout { display: flex; justify-content: center; align-items: flex-start; gap: 24px; max-width: 960px; margin: 0 auto; display: none; }
+    #app { flex: 1; max-width: 480px; padding: 30px; text-align: center; position: relative; z-index: 10; width: 100%; }
+
+    /* Right Column Stack */
+    .right-stack {
+        display: flex; flex-direction: column; gap: 20px; width: 340px; flex-shrink: 0;
+    }
+
+    /* Workout Side Panel (Dark Themed for MASTER) */
+    .workout-side-panel {
+        width: 100%; 
+        background: linear-gradient(145deg, #1e293b, #0f172a); 
+        color: white;
+        padding: 24px; border-radius: 24px; 
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); 
+        display: none; text-align: left; position: relative; overflow: hidden;
+    }
+    .master-badge-corner { position: absolute; top: 16px; right: 16px; background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 1px; }
+    .w-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
+    .workout-tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 20px; }
+    .w-tab { flex: 1; border: none; background: transparent; color: #94a3b8; padding: 8px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .w-tab.active { background: #fbbf24; color: #000; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+    
+    .workout-display { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px 10px; text-align: center; margin-bottom: 20px; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    .wd-main { font-size: 20px; font-weight: 800; margin-bottom: 4px; color: #fff; }
+    .wd-sub { font-size: 12px; color: #94a3b8; }
+    .workout-anim { animation: pulse 0.5s infinite alternate; color: #fbbf24; font-size: 24px; font-weight: 900; }
+
+    /* Memo Panels */
+    .memo-panel {
+        width: 100%; padding: 20px; text-align: left; position: relative;
+        display: flex; flex-direction: column; gap: 10px; overflow: hidden;
+    }
+    .memo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .memo-title { font-weight: 800; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+    .memo-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; font-weight: 700; }
+    
+    textarea.memo-input {
+        width: 100%; height: 100px; border: none; border-radius: 12px;
+        background: var(--input-bg); color: var(--text-main);
+        padding: 12px; font-family: inherit; font-size: 14px; line-height: 1.5;
+        resize: none; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .memo-history-list {
+        max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;
+    }
+    .memo-item {
+        background: var(--input-bg); padding: 10px; border-radius: 10px; font-size: 13px; color: var(--text-main);
+        border: 1px solid var(--card-border);
+    }
+    .memo-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
+
+    /* Lock Overlay */
+    .panel-lock {
+        position: absolute; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        border-radius: 24px; z-index: 10; color: var(--text-main); font-weight: 800; text-align: center;
+        padding: 20px;
+    }
+
+    /* ====== Pricing Grid ====== */
+    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+    .price-card { padding: 24px; text-align: left; display:flex; flex-direction:column; justify-content: space-between; height: 100%; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--card-border); box-shadow: var(--shadow); }
+    .price-card .plan { font-size: 13px; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+    .price-card .amount { font-size: 24px; font-weight: 900; margin-bottom: 4px; letter-spacing: -1px; color: var(--text-main); }
+    .price-card .desc { font-size: 12px; color: var(--text-muted); margin-bottom: 15px; min-height: 32px; }
+    .price-card ul { margin-bottom: 15px; padding: 0; list-style: none; }
+    .price-card li { display: flex; gap: 6px; font-size: 12px; margin-bottom: 6px; align-items: center; font-weight: 500; color: var(--text-main); }
+
+    .price-card.pro { border: 2px solid var(--primary); }
+    .price-card.ultra { border: 2px solid var(--accent); }
+    .price-card.master { 
+        border: 2px solid #333; background: linear-gradient(135deg, #1e1e1e, #0f172a); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: scale(1.03); z-index: 2; position: relative;
+    }
+    .price-card.master .plan { color: #ffd700; }
+    .price-card.master .desc { color: #94a3b8; }
+    .price-card.master .amount, .price-card.master li { color: #fff; }
+    .price-card.master .btn { background: #ffd700; color: #000; border:none; font-weight: 900; }
+
+    /* ====== Components ====== */
+    .auth-card { max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
+    .btn { padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border:1px solid var(--card-border); background: var(--panel-bg); color: var(--text-main); width:100%; transition:0.2s; box-shadow: var(--shadow); }
+    .btn:active { transform: scale(0.95); }
+    .btn-primary { border:none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; }
+    input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); }
+
     .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
-    .theme-tag { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border); background: transparent; color: var(--text-main); cursor: pointer; font-size: 13px; }
+    .theme-tag { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border); background: transparent; cursor: pointer; font-size: 13px; color: var(--text-main); }
     .theme-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    .habit { width: 100%; padding: 20px; font-size: 18px; font-weight: 900; margin-top: 16px; border: none; border-radius: 16px; background: var(--text-main); color: var(--bg-color); cursor: pointer; }
+    /* Aura & Pet */
+    .aura-effect { position: relative; }
+    .aura-effect::before { content: ''; position: absolute; top: -15px; left: -15px; right: -15px; bottom: -15px; border-radius: 50%; background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); background-size: 400%; z-index: -1; filter: blur(25px); animation: glowing 20s linear infinite; opacity: 0.5; }
+    @keyframes glowing { 0% { background-position: 0 0; } 50% { background-position: 400% 0; } 100% { background-position: 0 0; } }
 
-    /* ====== Badges ====== */
-    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; display: inline-block; }
-    .tier-bronze { background: #cd7f32; }
-    .tier-silver { background: #c0c0c0; color: #333; }
-    .tier-gold { background: #ffd700; color: #333; }
-    .tier-platinum { background: #e5e4e2; color: #333; border: 1px solid #ccc; }
-    .tier-diamond { background: #b9f2ff; color: #333; }
-    .tier-master { background: linear-gradient(135deg, #ff00cc, #333399); }
-
-    /* ========================= */
-    /* ✅ ADMIN CONSOLE CSS */
-    /* ========================= */
-    #adminFab { position: fixed; right: 20px; bottom: 20px; z-index: 9995; width: 56px; height: 56px; border-radius: 999px; border: none; cursor: pointer; font-size: 22px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 12px 28px rgba(0,0,0,0.25); transition: transform .2s ease; display: none; }
-    #adminFab:active { transform: scale(.96); }
-    .admin-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 18px; }
-    .admin-shell { width: min(1200px, 96vw); height: min(760px, 92vh); border-radius: 22px; overflow: hidden; display: grid; grid-template-columns: 260px 1fr; background: rgba(255,255,255,.95); border: 1px solid rgba(15,23,42,0.12); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
-    .dark-mode .admin-shell { background: rgba(2,6,23,.90); border: 1px solid rgba(148,163,184,0.18); }
-    .admin-sidebar { padding: 16px; border-right: 1px solid rgba(15,23,42,.08); background: rgba(255,255,255,.55); }
-    .dark-mode .admin-sidebar { background: rgba(2,6,23,.45); border-right: 1px solid rgba(148,163,184,0.12); }
-    .admin-main { padding: 16px; overflow: auto; }
-    @media (max-width: 980px) { .admin-shell { grid-template-columns: 1fr; } .admin-sidebar { display:none; } }
+    .pet-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px 0; cursor: pointer; transition: transform 0.2s; }
+    .pet-emoji { font-size: 80px; animation: bounce 2s infinite; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15)); }
+    .pet-bubble { background: var(--panel-bg); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; position: relative; margin-bottom: 10px; opacity: 0; transition: opacity 0.3s; box-shadow: var(--shadow); }
     
-    .admin-tab { width: 100%; text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(15,23,42,.08); background: rgba(255,255,255,.6); cursor: pointer; font-weight: 900; color: var(--text-main); margin-bottom: 8px; }
-    .admin-tab.active { border: none; color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-    .admin-grid-kpi { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .admin-kpi { padding: 14px; }
-    .admin-table-row { display: grid; grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr; gap: 10px; padding: 10px; border-bottom: 1px solid rgba(15,23,42,.06); align-items: center; font-size: 13px; }
-    
-    /* PRO Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10001; }
-    .modal-card { width: 90%; max-width: 400px; background: var(--bg-color); padding: 30px; border-radius: 20px; text-align: center; }
+    .sticker { position: absolute; font-size: 40px; cursor: grab; user-select: none; z-index: 50; transition: transform 0.1s; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); }
+    .sticker:active { cursor: grabbing; transform: scale(1.1); }
 
+    .heatmap-grid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; margin-top: 10px; justify-content: center; }
+    .grass { width: 100%; aspect-ratio: 1; border-radius: 3px; background: rgba(0,0,0,0.08); }
+    .grass.active { background: #22c55e; }
+
+    /* Background Blobs */
+    .blob-cont { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; overflow: hidden; pointer-events: none; }
+    .blob { position: absolute; border-radius: 50%; opacity: 0.6; filter: blur(60px); animation: float 10s infinite alternate; }
+    .blob-1 { top: 10%; left: 10%; width: 300px; height: 300px; background: var(--secondary); animation-duration: 25s; }
+    .blob-2 { bottom: 20%; right: 10%; width: 350px; height: 350px; background: var(--primary); animation-duration: 30s; }
+    .blob-3 { bottom: 10%; left: 30%; width: 250px; height: 250px; background: #ec4899; animation-duration: 22s; }
+    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(40px, 60px); } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 100% { transform: scale(1.05); opacity: 1; } }
+
+    @media (max-width: 900px) {
+        .hero-grid, .pricing-grid, .problem-grid, .dashboard-layout { grid-template-columns: 1fr; flex-direction: column; align-items: center; }
+        .workout-side-panel, .right-stack { width: 100%; max-width: 480px; }
+    }
+
+    /* ===================================================================== */
+    /* 👑 ENHANCED ADMIN PANEL STYLES */
+    /* ===================================================================== */
+    #adminPanel {
+      display:none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+      padding: 18px;
+    }
+    .admin-shell {
+      width: min(1100px, 100%); height: min(740px, 100%); margin: 0 auto;
+      border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 280px 1fr;
+      border: 1px solid rgba(255,255,255,0.18); box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+      background: rgba(255,255,255,0.9);
+    }
+    .dark-mode .admin-shell { background: rgba(2, 6, 23, 0.85); }
+
+    .admin-left { padding: 16px; border-right: 1px solid rgba(15,23,42,0.08); background: rgba(255,255,255,0.7); display:flex; flex-direction:column; }
+    .dark-mode .admin-left { background: rgba(2,6,23,0.35); border-right-color: rgba(148,163,184,0.15); }
+
+    .admin-right { padding: 16px; background: rgba(255,255,255,0.55); overflow-y:auto; }
+    .dark-mode .admin-right { background: rgba(2,6,23,0.25); }
+
+    .admin-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 12px; }
+    .admin-title { font-weight: 1000; font-size: 16px; display:flex; align-items:center; gap:10px; color:var(--text-main); }
+    .admin-sub { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+    .admin-nav { display:grid; gap: 8px; margin-top: 12px; }
+    .adminNavBtn {
+      width:100%; padding: 12px 12px; border-radius: 12px;
+      border: 1px solid rgba(15,23,42,0.10); background: rgba(255,255,255,0.75);
+      cursor: pointer; font-weight: 900; text-align:left;
+      display:flex; align-items:center; justify-content:space-between; color:var(--text-main);
+    }
+    .dark-mode .adminNavBtn { background: rgba(2,6,23,0.4); border-color: rgba(148,163,184,0.15); }
+    .adminNavBtn.active { border-color: rgba(99,102,241,0.55); box-shadow: 0 12px 24px rgba(99,102,241,0.18); color: var(--primary); }
+    
+    .admin-chip { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: rgba(99,102,241,0.12); color: var(--primary); font-weight: 900; }
+
+    .admin-cards { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin: 10px 0 14px; }
+    .admin-card { padding: 12px; border-radius: 14px; border: 1px solid rgba(15,23,42,0.10); background: rgba(255,255,255,0.7); }
+    .dark-mode .admin-card { background: rgba(2,6,23,0.35); border-color: rgba(148,163,184,0.15); }
+    .admin-card .k { color: var(--text-muted); font-size: 12px; font-weight: 800; }
+    .admin-card .v { font-size: 20px; font-weight: 1000; margin-top: 6px; color:var(--text-main); }
+
+    .admin-toolbar { display:flex; gap: 10px; align-items:center; flex-wrap: wrap; margin-bottom: 10px; }
+    .admin-table { width:100%; border-collapse: collapse; overflow:hidden; border-radius: 14px; border: 1px solid rgba(15,23,42,0.10); background: rgba(255,255,255,0.65); }
+    .dark-mode .admin-table { background: rgba(2,6,23,0.25); border-color: rgba(148,163,184,0.15); }
+    .admin-table th, .admin-table td { padding: 10px 10px; border-bottom: 1px solid rgba(15,23,42,0.08); font-size: 12px; text-align:left; vertical-align: middle; color:var(--text-main); }
+    .admin-table th { color: var(--text-muted); font-weight: 900; }
+    
+    .admin-row-actions { display:flex; gap: 6px; }
+    .mini-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(15,23,42,0.10); background: rgba(255,255,255,0.8); cursor:pointer; font-weight: 900; font-size: 11px; }
+    .danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); color:#ef4444; }
+    .ok { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); color:#16a34a; }
+    .info { background: rgba(59,130,246,0.10); border-color: rgba(59,130,246,0.35); color:#2563eb; }
+
+    .admin-pane { display:none; }
+    .admin-pane.active { display:block; }
+
+    /* Modals for Admin */
+    .detail-modal { background: rgba(255,255,255,0.95); width: min(720px, 100%); max-height: 85vh; border-radius: 16px; overflow: hidden; display:flex; flex-direction: column; box-shadow: 0 30px 60px rgba(0,0,0,0.35); }
+    .dark-mode .detail-modal { background: rgba(2,6,23,0.92); }
+    .detail-head { padding: 14px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(15,23,42,0.10); color:var(--text-main); }
+    .detail-body { padding: 16px; overflow:auto; font-family: monospace; font-size: 12px; line-height: 1.6; color: var(--text-main); }
+    .detail-foot { padding: 12px 16px; border-top: 1px solid rgba(15,23,42,0.10); display:flex; gap: 10px; justify-content:flex-end; }
   </style>
 </head>
 <body>
 
+  <div class="blob-cont">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div id="stickerLayer" style="position: absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; pointer-events:none; z-index:5;"></div>
+
+  <div id="coinDisplay" style="position: fixed; top: 20px; right: 20px; z-index: 500; background: var(--panel-bg); padding: 8px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; display:none; border: 2px solid var(--accent); color: var(--text-main); box-shadow: var(--shadow);">
+      <span>⭐</span> <span id="coinCount">0</span>
+  </div>
+
   <header>
     <div class="container header-inner">
-      <div class="logo">
-        <div class="logo-badge"></div>
-        HabitFlow
-      </div>
+      <div class="logo"><div class="logo-badge"></div>HabitFlow</div>
       <nav>
-        <a href="#features" class="pc-only">기능</a>
-        <a href="#pricing" class="pc-only">가격</a>
-        <button class="btn btn-primary" onclick="scrollToAuth()" style="padding: 8px 16px; font-size: 14px;">시작하기</button>
-        <button id="darkModeToggle" class="btn btn-ghost" style="padding: 8px;">🌓</button>
+        <button class="btn btn-primary" onclick="scrollToAuth()" style="padding: 8px 16px; font-size: 14px; width:auto;">시작하기</button>
+        <button id="darkModeToggle" class="btn btn-ghost" style="padding: 8px; width:auto;">🌓</button>
       </nav>
     </div>
   </header>  
+
+  <div id="topBanner" style="display:none; position:fixed; top:70px; z-index:9998; width:100%; padding:12px 18px; background: rgba(99,102,241,0.12); border-bottom:1px solid rgba(99,102,241,0.20); color: var(--text-main); font-weight: 900; text-align:center; backdrop-filter: blur(10px);"></div>
 
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-left">
         <span class="hero-pill">✨ 하루 하나로 충분해요</span>
         <h1 class="hero-title">하루 하나,<br />인생을 바꾸는 습관</h1>
-        <p class="hero-desc">
-          작심삼일을 끝내는 가장 단순한 방식.<br />
-          버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.
-        </p>
+        <p class="hero-desc">작심삼일을 끝내는 가장 단순한 방식.<br>버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.</p>
         <div class="hero-actions">
-          <button class="btn btn-primary" onclick="scrollToAuth()">지금 시작하기</button>
-          <a href="#pricing" class="btn btn-ghost">가격 보기</a>
+          <button class="btn btn-primary" style="width:auto;" onclick="scrollToAuth()">지금 시작하기</button>
         </div>
         <div class="hero-metrics">
           <div class="metric-card"><b>1 Habit</b><span>하루 딱 하나</span></div>
@@ -174,17 +367,41 @@
           <div class="metric-card"><b>Report</b><span>주간 리포트</span></div>
         </div>
       </div>
-
+      
       <div class="hero-right glass">
-        <h3>오늘의 추천 루틴</h3>
-        <p>로그인 후 테마를 선택하면 오늘 습관이 자동으로 추천돼요.</p>
-        <div class="recommend-card">
+        <h3 style="margin-top:0;">오늘의 추천 루틴</h3>
+        <p style="color:var(--text-muted); font-size:14px;">로그인 후 테마를 선택하면 매일 다른 루틴이 추천됩니다.</p>
+        
+        <div id="heroRecommendCard" class="recommend-card fade-anim" style="transition: opacity 0.5s;">
           <div>🚑 <b>생존 체력 팩</b></div>
-          <span style="font-size:12px; color:#555">직장인을 위한 “죽지 않으려고 하는 운동”</span>
+          <span style="font-size:12px; color:var(--text-muted);">직장인을 위한 "죽지 않으려고 하는 운동"</span>
         </div>
-        <div class="recommend-card">
-          <div>✨ <b>갓생 입문 팩</b></div>
-          <span style="font-size:12px; color:#555">성공 루틴을 2분짜리로 쪼개기</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="problem-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">WHY</span>
+        <h2>왜 습관은 항상 실패할까?</h2>
+        <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card glass">
+          <div class="p-icon" style="font-size:32px;">🎯</div>
+          <h3>목표가 너무 많다</h3>
+          <p>욕심이 커질수록 시작이 어려워져요. 하루 1개만 남깁니다.</p>
+        </div>
+        <div class="problem-card glass">
+          <div class="p-icon" style="font-size:32px;">📝</div>
+          <h3>기록이 귀찮다</h3>
+          <p>기록이 번거로우면 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
+        </div>
+        <div class="problem-card glass">
+          <div class="p-icon" style="font-size:32px;">📉</div>
+          <h3>성취가 눈에 안 보인다</h3>
+          <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
         </div>
       </div>
     </div>
@@ -195,83 +412,141 @@
       
       <div id="auth" class="auth-card glass">
         <h2>HabitFlow 시작하기</h2>
-        <p style="color:var(--muted); margin-bottom:24px;">이메일로 간편하게 시작하세요</p>
-        
         <input id="email" placeholder="이메일 주소">
         <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
-        
         <div class="auth-actions">
-           <button id="signupBtn" class="btn btn-primary" type="button">회원가입</button>
-           <button id="signinBtn" class="btn btn-ghost" type="button">로그인</button>
+           <button id="signupBtn" class="btn btn-primary">회원가입</button>
+           <button id="signinBtn" class="btn btn-ghost">로그인</button>
         </div>
-        
-        <div style="margin-top:16px;">
-          <button id="resetPwBtn" class="link-btn" type="button">비밀번호 찾기</button>
-        </div>
-        
-        <p id="authHint" style="margin-top:20px; font-size:13px; color:var(--muted);">
-          처음이면 <b>회원가입</b> → 메일 인증 후 로그인하세요.
-        </p>
+        <div style="margin-top:10px;"><button id="resetPwBtn" class="link-btn">비밀번호 찾기</button></div>
       </div>
 
-      <div id="app" class="glass" style="width:100%; max-width:480px; padding:30px; display:none; text-align:center;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h2 id="welcome" style="margin:0; font-size: 1.2rem;"></h2>
-          <button id="logoutBtn" style="background:none; border:none; color:var(--muted); font-size:0.8rem; text-decoration:underline; cursor:pointer;">로그아웃</button>
-        </div>
+      <div id="dashboardLayout" class="dashboard-layout">
+          
+          <div id="app" class="glass">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h2 id="welcome" style="margin:0; font-size: 1.2rem;"></h2>
+              <button id="logoutBtn" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; text-decoration:underline; cursor:pointer;">로그아웃</button>
+            </div>
+            
+            <div style="margin: 10px 0 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
+                <span id="levelBadge" style="font-weight:900; color:var(--primary); font-size:18px;">Lv.1</span>
+                <span id="xpText" style="font-size:12px; color:var(--text-muted); font-weight:700;">0 / 100 XP</span>
+              </div>
+              <div style="background:rgba(0,0,0,0.08); border-radius:10px; height:10px; overflow:hidden; position:relative;">
+                <div id="xpBar" style="background:linear-gradient(90deg, var(--primary), var(--secondary)); width:0%; height:100%; transition: width 0.6s; border-radius:10px;"></div>
+              </div>
+            </div>
 
-        <div id="tierBadge" style="display:none; margin: 20px 0;">
-          <span id="tierText" class="badge"></span>
-          <p id="streakCount" style="font-size: 0.9rem; margin-top: 8px; font-weight:700;"></p>
-        </div>
+            <div class="pet-container" id="petContainer">
+                <div id="petBubble" class="pet-bubble">응원합니다!</div>
+                <div id="petEmoji" class="pet-emoji">🥚</div>
+            </div>
 
-        <div id="themeSection" style="margin-top:24px;">
-           <p style="font-size: 0.9rem; font-weight: 700; margin-bottom:10px;">🎁 오늘의 루틴 팩 선택</p>
-           <div class="tag-container">
-              <button class="theme-tag" onclick="selectTheme(this, 'survival')">🚑 생존</button>
-              <button class="theme-tag" onclick="selectTheme(this, 'godsaeng')">✨ 갓생</button>
-              <button class="theme-tag" onclick="selectTheme(this, 'detox')">📱 디톡스</button>
-              <button class="theme-tag" onclick="selectTheme(this, 'custom')">➕ 커스텀</button>
-           </div>
-        </div>
-        
-        <div id="todaySuggestion" style="margin-top:16px; font-size:0.9rem; padding:12px; background:rgba(99,102,241,0.1); border-radius:12px; color:var(--text-main);">
-          테마를 선택하면 오늘 할 일이 추천됩니다.
-        </div>
-        
-        <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center; font-weight:700;">
-        <button id="habitBtn" class="habit">오늘 습관 완료 ✅</button>
-        <p id="status" style="margin-top:12px; font-size:14px; color:var(--primary); font-weight:700; min-height:20px;"></p>
-        
-        <div id="stats" style="display:none; margin-top:20px; padding:16px; background:rgba(255,255,255,0.5); border-radius:12px;">
-          <h3 style="margin:0 0 10px; font-size:16px;">📊 나의 습관 통계</h3>
-          <p id="totalDays" style="margin:0; font-weight:700;"></p>
-        </div>
+            <div class="heatmap-container" style="margin: 15px 0; padding: 15px; border-radius: 16px; background: rgba(0,0,0,0.05); border: 1px solid var(--card-border);">
+               <div style="font-size:12px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between; margin-bottom: 5px;">
+                 <span>🌿 최근 20일</span><span>Log</span>
+               </div>
+               <div id="heatmapGrid" class="heatmap-grid"></div>
+            </div>
 
-        <button id="restoreStreakBtn" style="margin-top:10px; width:100%; padding:12px; border-radius:12px; background:#f59e0b; color:white; border:none; font-weight:800; display:none; cursor:pointer;">
-          🔥 연속 기록 복구 (PRO)
-        </button>
+            <div id="tierBadge" style="display:none; margin: 20px 0;">
+              <span id="tierText" class="badge"></span>
+              <p id="streakCount" style="font-size: 0.9rem; margin-top: 8px; font-weight:700;"></p>
+            </div>
 
-        <div id="weeklyReport" style="display:none; width: 100%; margin-top: 30px; text-align: left;">
-          <div id="weeklyReportBody"></div>
-          <div id="weeklyReportLocked" style="display:none; padding: 24px; border: 2px dashed var(--card-border); border-radius: 16px; text-align: center;">
-             <span style="font-size: 2rem; display:block; margin-bottom:10px;">🔒</span>
-             <div>
-               <b>-일 연속 성공</b> 중입니다!<br>
-               AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
-               PRO 회원이 되어 확인해보세요.
-             </div>
-             <button id="weeklyGoProBtn" class="btn btn-primary" style="margin-top: 15px; font-size:13px;" onclick="showProModal()">리포트 잠금 해제하기</button>
+            <div id="themeSection" style="margin-top:24px;">
+               <p style="font-size: 0.9rem; font-weight: 700; margin-bottom:10px;">🎁 오늘의 루틴 팩</p>
+               <div class="tag-container">
+                  <button class="theme-tag" onclick="selectTheme(this, 'survival')">🚑 생존</button>
+                  <button class="theme-tag" onclick="selectTheme(this, 'godsaeng')">✨ 갓생</button>
+                  <button class="theme-tag" onclick="selectTheme(this, 'detox')">📱 디톡스</button>
+                  <button class="theme-tag" onclick="selectTheme(this, 'custom')">➕ 커스텀</button>
+               </div>
+            </div>
+            
+            <div id="todaySuggestion" style="margin-top:16px; font-size:0.9rem; padding:12px; background:rgba(99,102,241,0.1); border-radius:12px; color:var(--text-main);">테마를 선택하세요.</div>
+            
+            <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center; font-weight:700;">
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button id="habitBtn" class="btn btn-primary">오늘 습관 완료 ✅</button>
+                <button id="timerBtn" class="btn" style="width:60px; background:#333; color:white; display:none;">⏱️</button>
+            </div>
+            <p id="status" style="margin-top:12px; font-size:14px; color:var(--primary); font-weight:700; min-height:20px;"></p>
+            
+            <div id="stats" style="display:none; margin-top:20px; padding:16px; background:rgba(0,0,0,0.05); border-radius:12px;">
+              <h3 style="margin:0 0 10px; font-size:16px;">📊 통계</h3>
+              <p id="totalDays" style="margin:0; font-weight:700;"></p>
+            </div>
+
+            <button id="restoreStreakBtn" style="margin-top:10px; width:100%; padding:12px; border-radius:12px; background:var(--accent); color:white; border:none; display:none;">🔥 연속 기록 복구</button>
+
+            <div id="weeklyReport" style="display:none; width: 100%; margin-top: 30px; text-align: left;">
+              <div id="weeklyReportBody"></div>
+              <div id="weeklyReportLocked" style="display:none; padding: 24px; border: 2px dashed var(--card-border); border-radius: 16px; text-align: center;">
+                 🔒 PRO 회원이 되어 리포트를 확인하세요.
+                 <button class="btn btn-primary" style="margin-top: 15px; font-size:13px;" onclick="showProModal('PRO')">잠금 해제</button>
+              </div>
+            </div>
+
+            <div id="calendarSection" style="display:none; margin-top:30px; text-align:left;">
+              <h3 style="font-size:16px; margin-bottom:10px;">📅 캘린더</h3>
+              <div id="calendarGrid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;"></div>
+            </div>
           </div>
-        </div>
 
-        <div id="calendarSection" style="display:none; margin-top:30px; text-align:left;">
-          <h3 style="font-size:16px; margin-bottom:10px;">📅 이번 달 기록</h3>
-          <div id="calendarGrid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;"></div>
-        </div>
+          <div class="right-stack">
+              
+              <div id="workoutSidePanel" class="workout-side-panel">
+                  <span class="master-badge-corner">MASTER</span>
+                  <div class="w-title">🔥 오늘의 챌린지</div>
+                  
+                  <div class="workout-tabs">
+                      <button class="w-tab active" onclick="selectWorkoutTab('walk')">🚶 걷기</button>
+                      <button class="w-tab" onclick="selectWorkoutTab('run')">🏃 달리기</button>
+                      <button class="w-tab" onclick="selectWorkoutTab('gym')">🏋️ 헬스</button>
+                  </div>
 
-      </div>
+                  <div class="workout-display">
+                      <div id="workoutResult" class="wd-main">❓</div>
+                      <div class="wd-sub">종목 선택 후 미션 뽑기!</div>
+                  </div>
 
+                  <button id="startWorkoutBtn" class="btn" style="background:var(--accent); color:#000; border:none; font-weight:900; box-shadow:0 4px 15px rgba(251,191,36,0.4);">🎰 미션 랜덤 뽑기</button>
+                  <button id="completeWorkoutBtn" class="btn" style="background:linear-gradient(to right, #22c55e, #16a34a); color:#fff; border:none; display:none;">✅ 완료 (코인 3배)</button>
+                  
+                  <div style="margin-top:15px; font-size:11px; opacity:0.6; text-align:center;">
+                      * 마스터 챌린지 성공 시 경험치/코인 3배
+                  </div>
+              </div>
+
+              <div id="memoPanel" class="glass memo-panel" style="display:none;">
+                  <div class="memo-header">
+                      <div class="memo-title">📝 오늘의 메모</div>
+                      <span class="memo-badge">PRO+</span>
+                  </div>
+                  
+                  <div id="memoLocked" class="panel-lock">
+                      <div style="font-size:30px; margin-bottom:10px;">🔒</div>
+                      <div>PRO 등급부터 사용 가능</div>
+                      <button class="btn btn-primary" style="margin-top:15px; width:auto; padding:8px 16px; font-size:12px;" onclick="showProModal('PRO')">잠금 해제</button>
+                  </div>
+
+                  <textarea id="dailyMemo" class="memo-input" placeholder="오늘의 다짐이나 할 일을 기록하세요..."></textarea>
+                  <button id="saveMemoBtn" class="btn btn-primary" style="margin-top:10px;">💾 저장하기</button>
+              </div>
+
+              <div id="memoHistoryPanel" class="glass memo-panel" style="display:none;">
+                  <div class="memo-header">
+                      <div class="memo-title">📂 지난 메모 기록</div>
+                  </div>
+                  <div id="memoHistoryList" class="memo-history-list">
+                      <div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>
+                  </div>
+              </div>
+
+          </div> </div>
     </div>
   </section>
 
@@ -280,106 +555,277 @@
       <div class="section-head">
         <span class="kicker">PRICING</span>
         <h2>가격</h2>
-        <p>무료로 시작하고, 패턴 분석이 필요할 때 PRO로 업그레이드하세요.</p>
+        <p>당신의 성장을 가속화할 최적의 플랜을 선택하세요.</p>
       </div>
+      
       <div class="pricing-grid">
         <div class="price-card glass">
-          <div class="plan">무료</div>
-          <div class="amount">₩0</div>
-          <div class="desc">가볍게 루틴을 만들고 싶은 분에게</div>
-          <ul>
-            <li>✅ 하루 1습관</li>
-            <li>✅ 기본 테마 추천</li>
-            <li>✅ 기본 스트릭 확인</li>
-          </ul>
+          <div>
+            <div class="plan">무료</div>
+            <div class="amount">₩0</div>
+            <div class="desc">가볍게 시작하는 입문자용</div>
+            <ul>
+              <li>✅ 하루 1습관 기록</li>
+              <li>✅ 기본 테마 추천</li>
+            </ul>
+          </div>
         </div>
-        <div class="price-card glass pro" id="proCard">
-          <div class="plan">PRO</div>
-          <div class="amount">₩3,900</div>
-          <div class="desc">습관이 무너지는 “패턴”을 잡고 싶은 분에게</div>
-          <ul>
-            <li>✨ 습관 무제한 + 커스텀</li>
-            <li>✨ 주간 리포트/AI 분석</li>
-            <li>✨ 캘린더/통계/복구권</li>
-          </ul>
-          <button id="goProBtn" class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="showProModal()">PRO로 업그레이드</button>
+
+        <div class="price-card glass pro">
+          <div>
+            <div class="plan" style="color:var(--primary);">PRO</div>
+            <div class="amount">₩3,900</div>
+            <div class="desc">습관 패턴을 잡고 싶은 분</div>
+            <ul>
+              <li>✨ 습관 무제한 + 커스텀</li>
+              <li>✨ 주간 AI 분석 리포트</li>
+              <li>✨ 캘린더 뷰 / 복구권</li>
+              <li>📝 <b>오늘의 메모 & 히스토리</b></li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" onclick="showProModal('PRO')">PRO 업그레이드</button>
+        </div>
+
+        <div class="price-card glass ultra">
+          <div>
+            <div class="plan" style="color:var(--accent);">ULTRA</div>
+            <div class="amount">₩5,900</div>
+            <div class="desc">나만의 감성으로 꾸미기</div>
+            <ul>
+              <li>🌈 앱 컬러 테마 변경</li>
+              <li>🎵 BGM 선곡권 (빗소리 등)</li>
+              <li>💰 코인 획득 2배</li>
+              <li>👑 PRO 기능 모두 포함</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706);" onclick="showProModal('ULTRA')">ULTRA 업그레이드</button>
+        </div>
+
+        <div class="price-card glass master">
+          <div>
+            <div class="plan">MASTER</div>
+            <div class="amount">₩7,900</div>
+            <div class="desc">극한의 성장을 위한 완전체</div>
+            <ul>
+              <li>💪 <b>매일 운동 챌린지 패널</b></li>
+              <li>⏱️ 포모도로 집중 타이머</li>
+              <li>✨ 마스터 전용 오라 이펙트</li>
+              <li>💰 코인 획득 3배</li>
+            </ul>
+          </div>
+          <button class="btn" onclick="showProModal('MASTER')">MASTER 업그레이드</button>
         </div>
       </div>
     </div>
   </section>
 
-  <div id="proModal" class="modal-overlay">
-    <div class="modal-card">
-        <h3>🚀 PRO 업그레이드</h3>
-        <p>죄송합니다. 현재 결제 시스템 점검 중입니다.</p>
-        <button class="btn btn-ghost" onclick="document.getElementById('proModal').style.display='none'">닫기</button>
-    </div>
-  </div>
-
   <footer>
-    <div class="container" style="text-align:center; padding-bottom:40px; color:var(--muted); font-size:14px;">
+    <div class="container" style="text-align:center; padding-bottom:40px; color:var(--text-muted); font-size:14px;">
       <p>© 2026 HabitFlow. All rights reserved.</p>
+      <p>support@habitflow.app</p>
     </div>
   </footer>
 
-<button id="adminFab" aria-label="Admin Console">👑</button>
+  <button id="trashModeBtn" style="display:none; position:fixed; bottom:20px; right:140px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🗑️</button>
+  <button id="themeBtn" style="display:none; position:fixed; bottom:20px; right:200px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#ec4899; color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🎨</button>
+  <button id="shopOpenBtn" style="display:none; position:fixed; bottom:20px; right:80px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#8b5cf6; color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🎁</button>
+  <button id="rankOpenBtn" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:24px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🏆</button>
+  
+  <button id="adminOpenBtn" style="display:none; position:fixed; bottom:20px; left:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#ef4444; color:white; font-size:24px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">👑</button>
+  
+  <button id="bgmOpenBtn" style="display:none; position:fixed; bottom:20px; left:80px; z-index:99999; width:40px; height:40px; border-radius:50%; border:none; background:var(--panel-bg); color:var(--text-main); font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(5px);">🎵</button>
 
-<div id="adminOverlay" class="admin-overlay" style="display:none;">
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
-      <div class="admin-brand" style="margin-bottom:20px;">
-        <div class="admin-title" style="font-weight:900;">HabitFlow Admin</div>
-        <div id="adminMe" class="admin-sub" style="font-size:12px; color:var(--muted);">—</div>
-      </div>
-      <nav class="admin-nav">
-        <button class="admin-tab active" data-tab="dash">대시보드</button>
-        <button class="admin-tab" data-tab="users">유저 관리</button>
-      </nav>
-      <div style="margin-top:auto;">
-        <button id="adminRefresh" class="btn btn-ghost" style="width:100%;">새로고침</button>
-        <button id="adminClose" class="btn" style="width:100%; margin-top:10px;">닫기</button>
-      </div>
-    </aside>
-
-    <main class="admin-main">
-      <div class="admin-topbar" style="margin-bottom:20px;">
-        <div id="adminSectionTitle" style="font-size:24px; font-weight:800;">대시보드</div>
-      </div>
-
-      <section class="admin-panel" data-panel="dash">
-        <div class="admin-grid-kpi">
-          <div class="admin-kpi glass">
-            <div class="admin-kpi-label" style="font-size:12px; color:var(--muted);">총 유저</div>
-            <div id="kpiTotal" class="admin-kpi-value" style="font-size:24px; font-weight:900;">—</div>
-          </div>
-          <div class="admin-kpi glass">
-            <div class="admin-kpi-label" style="font-size:12px; color:var(--muted);">PRO 유저</div>
-            <div id="kpiPRO" class="admin-kpi-value" style="font-size:24px; font-weight:900;">—</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="admin-panel" data-panel="users" style="display:none;">
-        <div class="glass" style="padding:12px; margin-top:12px;">
-          <div class="admin-table-head" style="display:grid; grid-template-columns: 1.6fr 0.5fr 1fr; font-weight:700; color:var(--muted); padding-bottom:10px; border-bottom:1px solid #eee;">
-            <div>유저 (Email)</div>
-            <div>등급</div>
-            <div>UID</div>
-          </div>
-          <div id="userTable" class="admin-table-body" style="margin-top:10px;">불러오는 중...</div>
-        </div>
-      </section>
-
-    </main>
+  <div id="shopPanel" class="glass" style="display:none; position:fixed; bottom:80px; right:20px; width:300px; padding:20px; z-index:10000; border:2px solid #8b5cf6; background:var(--panel-bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3 style="margin:0; color:#7c3aed;">🎁 상점</h3><button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
+    <div style="text-align:center; margin-bottom:20px;"><div style="font-size:60px;">🔮</div><button id="gachaBtn" class="btn btn-primary" style="margin-top:10px;">1코인 뽑기! (보유: <span id="shopCoinCount">0</span>)</button></div>
+    <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">🎒 내 스티커</div>
+    <div id="inventoryList" style="height:150px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
   </div>
-</div>
+
+  <div id="themePanel" class="glass" style="display:none; position:fixed; bottom:80px; right:120px; width:200px; padding:20px; z-index:10000; background:var(--panel-bg);">
+    <div style="margin-bottom:10px; font-weight:bold;">🎨 테마 (ULTRA+)</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <button onclick="changeTheme('purple')" style="background:#6366f1; height:40px; border-radius:8px; border:none;"></button>
+        <button onclick="changeTheme('blue')" style="background:#3b82f6; height:40px; border-radius:8px; border:none;"></button>
+        <button onclick="changeTheme('pink')" style="background:#ec4899; height:40px; border-radius:8px; border:none;"></button>
+        <button onclick="changeTheme('gold')" style="background:#d97706; height:40px; border-radius:8px; border:none;"></button>
+    </div>
+  </div>
+
+  <div id="rankPanel" class="glass" style="display:none; position:fixed; bottom:80px; right:20px; width:340px; padding:20px; z-index:10000; border:2px solid var(--accent); background:var(--panel-bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3 style="margin:0; color:var(--accent);">🏆 명예의 전당</h3><button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
+    <div id="rankList" style="height:300px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px;"></div>
+  </div>
+
+  <div id="adminPanel">
+    <div class="admin-shell">
+      <div class="admin-left">
+        <div class="admin-top">
+          <div>
+            <div class="admin-title">👑 Admin Console</div>
+            <div class="admin-sub" id="adminSubtitle">관리자만 접근 가능</div>
+          </div>
+          <button id="adminCloseBtn" class="mini-btn danger">닫기</button>
+        </div>
+        <div class="admin-nav">
+          <button class="adminNavBtn active" data-pane="pane-dashboard">
+            대시보드 <span class="admin-chip">LIVE</span>
+          </button>
+          <button class="adminNavBtn" data-pane="pane-users">
+            유저 관리 <span class="admin-chip" id="adminUserCountChip">0</span>
+          </button>
+          <button class="adminNavBtn" data-pane="pane-announcement">
+            공지/배너 <span class="admin-chip">TXT</span>
+          </button>
+          <button class="adminNavBtn" data-pane="pane-tools">
+            운영 도구 <span class="admin-chip">PRO</span>
+          </button>
+        </div>
+        <div style="margin-top:auto; padding:12px; border-radius:14px; border:1px solid rgba(15,23,42,0.10); background: rgba(255,255,255,0.7);">
+           <div style="font-weight:1000; font-size:13px;">빠른 액션</div>
+           <div style="display:grid; gap:8px; margin-top:10px;">
+             <button id="adminRefreshBtn" class="mini-btn info">새로고침</button>
+             <button id="adminExportCsvBtn" class="mini-btn">유저 CSV 내보내기</button>
+           </div>
+        </div>
+      </div>
+
+      <div class="admin-right">
+        <div id="pane-dashboard" class="admin-pane active">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:10px;">
+            <div>
+              <div style="font-weight:1000; font-size:18px; color:var(--text-main);">대시보드</div>
+              <div style="color:var(--text-muted); font-size:12px;">현황 요약</div>
+            </div>
+            <div style="background: rgba(99,102,241,0.12); color: var(--primary); padding:4px 8px; border-radius:99px; font-size:11px;">
+              <span style="font-weight:1000;">SYNC</span> <span id="adminLastSync">-</span>
+            </div>
+          </div>
+          
+          <div class="admin-cards">
+            <div class="admin-card"><div class="k">총 유저</div><div class="v" id="dashTotalUsers">0</div></div>
+            <div class="admin-card"><div class="k">PRO 유저</div><div class="v" id="dashProUsers">0</div></div>
+            <div class="admin-card"><div class="k">차단 유저</div><div class="v" id="dashBannedUsers">0</div></div>
+            <div class="admin-card"><div class="k">최근 7일 활동</div><div class="v" id="dashActive7">-</div></div>
+          </div>
+
+          <div class="glass" style="padding:14px; margin-top:10px;">
+            <div style="font-weight:1000; font-size:14px; margin-bottom:10px;">최근 가입/활동 유저</div>
+            <div style="overflow:auto; border-radius:14px;">
+              <table class="admin-table">
+                <thead><tr><th>UID</th><th>Email</th><th>PRO</th><th>차단</th><th>메모</th><th>액션</th></tr></thead>
+                <tbody id="dashRecentTbody"><tr><td colspan="6">불러오는 중...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="pane-users" class="admin-pane">
+           <div style="font-weight:1000; font-size:18px; margin-bottom:10px; color:var(--text-main);">유저 관리</div>
+           <div class="admin-toolbar">
+             <input id="adminSearch" placeholder="검색: 이메일/UID" style="max-width:300px;" />
+             <select id="adminFilter" style="max-width:150px; padding:10px; border-radius:12px; border:1px solid rgba(0,0,0,0.1);">
+               <option value="all">전체</option>
+               <option value="pro">PRO만</option>
+               <option value="free">무료만</option>
+               <option value="banned">차단만</option>
+             </select>
+             <button id="adminApplyFilterBtn" class="mini-btn info">적용</button>
+           </div>
+           <div style="overflow:auto; border-radius:14px;">
+             <table class="admin-table">
+               <thead><tr><th>UID</th><th>Email</th><th>PRO</th><th>차단</th><th>복구권</th><th>액션</th></tr></thead>
+               <tbody id="adminUsersTbody"><tr><td colspan="6">불러오는 중...</td></tr></tbody>
+             </table>
+           </div>
+        </div>
+
+        <div id="pane-announcement" class="admin-pane">
+           <div style="font-weight:1000; font-size:18px; color:var(--text-main);">공지/배너</div>
+           <div class="glass" style="padding:14px; margin-top:10px;">
+             <label style="display:flex; gap:8px; align-items:center; font-weight:900; font-size:13px; color:var(--text-main);">
+               <input type="checkbox" id="bannerEnabled" style="width:18px; height:18px;"> 배너 활성화
+             </label>
+             <div style="margin-top:10px;">
+               <div style="font-weight:900; font-size:13px; margin-bottom:6px; color:var(--text-main);">배너 문구</div>
+               <textarea id="bannerText" placeholder="예) 🎉 이번 주 PRO 50% 할인!"></textarea>
+             </div>
+             <div style="display:flex; gap:10px; margin-top:10px;">
+               <button id="saveBannerBtn" class="btn btn-primary">저장</button>
+               <button id="loadBannerBtn" class="btn">불러오기</button>
+             </div>
+             <div id="bannerStatus" style="margin-top:10px; color:var(--text-muted); font-size:12px;">-</div>
+           </div>
+        </div>
+
+        <div id="pane-tools" class="admin-pane">
+           <div style="font-weight:1000; font-size:18px; color:var(--text-main);">운영 도구</div>
+           <div class="glass" style="padding:14px; margin-top:10px;">
+             <div style="font-weight:1000; font-size:14px; margin-bottom:10px; color:var(--text-main);">테스트</div>
+             <div style="display:flex; gap:10px; flex-wrap:wrap;">
+               <button id="cheatStreakBtn" class="btn" style="width:auto;">내 계정 5일 치트</button>
+               <button id="resetMyHabitBtn" class="btn" style="width:auto; background:#fee2e2; color:#ef4444; border:1px solid #ef4444;">내 기록 초기화</button>
+             </div>
+           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="timerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:20000; align-items:center; justify-content:center;">
+      <div class="glass" style="padding:40px; text-align:center; background:var(--panel-bg); width:300px;">
+          <h2 style="margin:0;">⏱️ 집중 타이머</h2>
+          <div id="timerDisplay" style="font-size:60px; font-weight:900; margin:20px 0;">25:00</div>
+          <div style="display:flex; gap:10px;">
+              <button id="startTimerBtn" class="btn btn-primary">시작</button>
+              <button id="stopTimerBtn" class="btn">중지</button>
+          </div>
+          <button onclick="document.getElementById('timerModal').style.display='none'" style="margin-top:20px; border:none; background:none; text-decoration:underline;">닫기</button>
+      </div>
+  </div>
+
+  <div id="adminUserDetailModal" class="modal-overlay" style="display:none; position:fixed; inset:0; z-index:11000; background:rgba(0,0,0,0.55); align-items:center; justify-content:center; padding: 14px;">
+    <div class="detail-modal">
+      <div class="detail-head">
+        <div style="font-weight:1000;">👤 유저 상세</div>
+        <button id="detailCloseBtn" class="mini-btn danger">닫기</button>
+      </div>
+      <div id="detailContent" class="detail-body">-</div>
+      <div class="detail-foot">
+        <button id="detailSaveNoteBtn" class="mini-btn info">메모 저장</button>
+        <button id="detailCloseBtn2" class="mini-btn">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="proModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10001; backdrop-filter:blur(5px);">
+    <div class="glass" style="padding:40px; max-width:360px; width:90%; text-align:center; background:var(--panel-bg);">
+      <h2 style="margin-top:0;" id="modalTitle">👑 업그레이드</h2>
+      <p style="color:var(--text-muted); margin-bottom:20px;">더 강력한 기능으로 성장하세요.</p>
+      <button class="btn btn-primary" onclick="alert('결제 기능 준비중!')">시작하기</button>
+      <p style="margin-top:16px; font-size:13px; cursor:pointer; color:var(--text-muted);" onclick="this.closest('#proModal').style.display='none'">닫기</p>
+    </div>
+  </div>
+
+  <div id="bgm" class="glass" style="display:none; position:fixed; bottom:70px; left:20px; padding:15px; width:240px; z-index:10000; background:var(--panel-bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><b>🎵 BGM</b><button onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
+    <select id="bgmSelect" style="width:100%; padding:5px; margin-bottom:10px; display:none;"><option value="./bgm.mp3">기본</option><option value="rain">비오는 날</option><option value="forest">숲속</option></select>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><button id="bgmToggle" style="flex:1; padding:6px; border-radius:6px; background:var(--primary); color:white; border:none;">재생</button></div>
+    <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
+  </div>
+
+  <audio id="bgmAudio" src="./bgm.mp3" preload="auto" loop></audio>
+
+<script>
+  function scrollToAuth() { document.getElementById("authSection").scrollIntoView({ behavior: "smooth" }); }
+  function safeText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, query, where, orderBy, limit, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 1. Firebase 설정
   const firebaseConfig = {
     apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
     authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
@@ -393,429 +839,813 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // 2. 전역 변수 설정 (HTML onclick 호환성)
-  window.db = db;
-  window.auth = auth;
-  
-  // 3. Admin 설정
-  const ADMIN_EMAIL_ALLOWLIST = ["test@gmail.com"]; 
-  let _isAdminUser = false;
+  // 🚨 관리자 이메일 설정
+  const ADMIN_EMAILS = ["test@gmail.com"];
 
-  // --- Theme Data ---
+  const STICKERS = ["🍎","💊","📚","🎸","💎","👑","🚀","🦄","🦖","🍕","🌈","🔥","💧","⭐","🍀","🍄"];
   const themeData = {
-    survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋", "🚶 30분 산책"],
-    godsaeng: ["📅 다음 주 계획 짜기", "🛏️ 이불 정리하기", "💰 가계부 적기", "📚 책 2페이지 읽기", "🗣️ 영단어 1개 외우기", "📝 감사 일기 3줄", "🧹 방 청소하기"],
-    detox: ["📝 내일 할 일 손기록", "📵 기상 후 10분 노폰", "🍽️ 식사 중 영상 금지", "🎧 이어폰 없이 걷기", "📱 스크린 타임 확인", "🧘 5분 명상", "📵 디지털 프리 1시간"]
+    survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋"],
+    godsaeng: ["📅 주간 계획", "🛏️ 이불 정리", "💰 가계부", "📚 독서 2p", "🗣️ 영단어 1개", "📝 감사일기"],
+    detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기", "🧘 명상 5분"],
+    custom: [] 
   };
+  
+  // Rotating Recommendation
+  const recommendations = [
+      { t: "🚑 생존 체력 팩", d: '직장인을 위한 "죽지 않으려고 하는 운동"' },
+      { t: "✨ 갓생 입문 팩", d: '성공 루틴을 2분짜리로 쪼개기' },
+      { t: "🧘 디톡스 힐링 팩", d: '스마트폰 내려놓고 뇌 휴식하기' }
+  ];
+  let recIdx = 0;
+  setInterval(() => {
+      const card = document.getElementById('heroRecommendCard');
+      if(card) {
+          recIdx = (recIdx + 1) % recommendations.length;
+          card.style.opacity = 0;
+          setTimeout(() => {
+              card.innerHTML = `<div><b>${recommendations[recIdx].t}</b></div><span style="font-size:12px; color:var(--text-muted)">${recommendations[recIdx].d}</span>`;
+              card.style.opacity = 1;
+          }, 500);
+      }
+  }, 4000);
 
-  // --- Helper Functions ---
-  function dateKeyFromOffset(daysAgo) {
-    const d = new Date();
-    d.setDate(d.getDate() - daysAgo);
-    return d.toISOString().slice(0, 10);
+  // Workout Challenge
+  window.selectWorkoutTab = (type) => {
+      document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('startWorkoutBtn').dataset.type = type;
+      document.getElementById('workoutResult').innerHTML = '<span class="wd-main">❓</span><div class="wd-sub">종목 선택 후 미션 뽑기!</div>';
+      document.getElementById('completeWorkoutBtn').style.display = 'none';
+      document.getElementById('startWorkoutBtn').style.display = 'inline-block';
   }
 
+  document.getElementById("startWorkoutBtn").onclick = () => {
+      const type = document.getElementById('startWorkoutBtn').dataset.type;
+      if(!type) return alert("종목을 먼저 선택하세요!");
+      
+      const res = document.getElementById("workoutResult");
+      res.innerHTML = '<span class="workout-anim">...두구두구...</span>';
+      
+      setTimeout(() => {
+          let mainText = "";
+          let subText = "화이팅!";
+          if(type === 'walk') {
+              const times = [30, 60, 90, 120];
+              const t = times[Math.floor(Math.random()*times.length)];
+              mainText = `🚶 걷기 ${t}분`;
+              subText = "가볍게 시작해보세요!";
+          } else if(type === 'run') {
+              const times = [20, 30, 40, 60];
+              const t = times[Math.floor(Math.random()*times.length)];
+              mainText = `🏃 달리기 ${t}분`;
+              subText = "심장이 터질 때까지!";
+          } else {
+              const routines = ["스쿼트 100개", "푸쉬업 50개 + 플랭크 3분", "등 운동 5세트", "하체 집중 타격", "버피 50회"];
+              mainText = `🏋️ ${routines[Math.floor(Math.random()*routines.length)]}`;
+              subText = "근성장 가즈아!";
+          }
+          res.innerHTML = `<div class="wd-main">${mainText}</div><div class="wd-sub">${subText}</div>`;
+          document.getElementById('startWorkoutBtn').style.display = 'none';
+          document.getElementById('completeWorkoutBtn').style.display = 'inline-block';
+      }, 1000);
+  };
+
+  document.getElementById("completeWorkoutBtn").onclick = async () => {
+      const user = auth.currentUser;
+      if(!user) return;
+      const ref = doc(db,"users",user.uid);
+      const snap = await getDoc(ref);
+      let coins = snap.data().coins || 0;
+      coins += 3;
+      await updateDoc(ref, { coins });
+      alert("🔥 챌린지 완료! 코인 3개 획득!");
+      updateLevelUI(user.uid);
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      document.getElementById('completeWorkoutBtn').style.display = 'none';
+      document.getElementById('startWorkoutBtn').style.display = 'inline-block';
+      document.getElementById('workoutResult').innerHTML = '<div class="wd-main">✅ 완료</div><div class="wd-sub">내일 또 도전하세요!</div>';
+  };
+
+  function dateKeyFromOffset(n) { const d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
   async function getConsecutiveStreak(uid) {
-    let count = 0;
-    let date = new Date();
-    while (true) {
-      const key = date.toISOString().slice(0, 10);
-      const snap = await getDoc(doc(db, "users", uid, "habits", key));
-      if (!snap.exists()) break;
-      count++;
-      date.setDate(date.getDate() - 1);
+    let c = 0, d = new Date();
+    while(true) {
+      if(!(await getDoc(doc(db,"users",uid,"habits",d.toISOString().slice(0,10)))).exists()) break;
+      c++; d.setDate(d.getDate()-1);
     }
-    return count;
+    return c;
   }
 
-  // --- Window Global Functions (HTML에서 호출 가능하도록) ---
-  window.scrollToAuth = () => {
-    document.getElementById("authSection").scrollIntoView({ behavior: "smooth" });
+  async function updateLevelUI(uid) {
+    const d = (await getDoc(doc(db,"users",uid))).data() || {};
+    document.getElementById("levelBadge").innerText = `Lv.${d.level||1}`;
+    document.getElementById("xpText").innerText = `${d.xp||0} / 100 XP`;
+    document.getElementById("xpBar").style.width = `${(d.xp||0)}%`;
+    document.getElementById("coinDisplay").style.display = 'flex';
+    document.getElementById("coinCount").innerText = d.coins||0;
+    
+    const petC = document.getElementById("petContainer");
+    if(d.isMaster) petC.classList.add("aura-effect");
+    else petC.classList.remove("aura-effect");
+
+    let emoji = "🥚";
+    if((d.level||1)>=16) emoji="👑"; else if((d.level||1)>=8) emoji="🐲"; else if((d.level||1)>=4) emoji="🐥"; else if((d.level||1)>=2) emoji="🐣";
+    document.getElementById("petEmoji").innerText = emoji;
+  }
+
+  // --- Sticker Logic ---
+  let isDeleteMode = false;
+  const trashBtn = document.getElementById("trashModeBtn");
+  trashBtn.onclick = () => {
+      isDeleteMode = !isDeleteMode;
+      trashBtn.style.background = isDeleteMode ? "#ef4444" : "var(--accent)";
+      document.body.classList.toggle("is-delete-mode");
+      alert(isDeleteMode ? "🗑️ 삭제 모드 ON: 스티커를 클릭해서 지우세요." : "✨ 삭제 모드 OFF");
   };
 
-  window.selectTheme = async (el, themeType) => {
-    const user = auth.currentUser;
-    if (!user) return alert("로그인이 필요합니다.");
-
-    const tokenResult = await getIdTokenResult(user);
-    const isPro = tokenResult.claims.pro === true;
-    const habitInput = document.getElementById("habitName");
-    const dayIdx = new Date().getDay();
-
-    document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
-
-    if (themeType === 'custom') {
-      if (!isPro) {
-        alert("🔒 커스텀 습관은 PRO 전용입니다.");
-        return;
-      }
-      habitInput.readOnly = false;
-      habitInput.value = "";
-      habitInput.placeholder = "원하는 습관을 입력하세요";
-      habitInput.style.background = "#fff";
-      habitInput.focus();
-    } else {
-      habitInput.readOnly = true;
-      habitInput.style.background = "var(--bg-color)";
-      habitInput.value = themeData[themeType][dayIdx];
-    }
-    if (el) el.classList.add('active');
-  };
-  
-  window.showProModal = () => document.getElementById("proModal").style.display = "flex";
-
-  // --- DOM Elements ---
-  const authDiv = document.getElementById('auth');
-  const appDiv = document.getElementById('app');
-  const emailInput = document.getElementById("email");
-  const passInput = document.getElementById("password");
-  const signupBtn = document.getElementById("signupBtn");
-  const signinBtn = document.getElementById("signinBtn");
-  const resetPwBtn = document.getElementById("resetPwBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const habitBtn = document.getElementById('habitBtn');
-  
-  // PRO & Admin UI
-  const proCard = document.getElementById("proCard");
-  const statsDiv = document.getElementById("stats");
-  const restoreBtn = document.getElementById("restoreStreakBtn");
-  const weeklyReport = document.getElementById("weeklyReport");
-
-  // --- Auth Logic ---
-  signupBtn.onclick = async () => {
-    if (!emailInput.value || !passInput.value) return alert("입력해주세요");
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value);
-      // 유저 문서 생성
-      await setDoc(doc(db, "users", cred.user.uid), {
-          email: cred.user.email,
-          createdAt: new Date(),
-          isPro: false
+  async function loadInventory(uid) {
+      const d = (await getDoc(doc(db,"users",uid))).data() || {};
+      const list = document.getElementById("inventoryList"); list.innerHTML = "";
+      (d.inventory||[]).forEach(s => {
+          const div = document.createElement("div"); div.innerText = s;
+          div.style.cssText = "font-size:30px; cursor:grab; background:white; border-radius:8px; text-align:center;";
+          div.onmousedown = (e) => startDrag(e,s,uid,true);
+          div.ontouchstart = (e) => startDrag(e,s,uid,true);
+          list.appendChild(div);
       });
-      await sendEmailVerification(cred.user);
-      alert("✅ 회원가입 완료! 인증 메일을 확인해주세요.");
-      await signOut(auth);
-    } catch (e) {
-      alert("가입 실패: " + e.message);
-    }
-  };
-
-  signinBtn.onclick = async () => {
-    if (!emailInput.value || !passInput.value) return alert("입력해주세요");
-    try {
-      await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
-    } catch (e) {
-      alert("로그인 실패: " + e.message);
-    }
-  };
-
-  resetPwBtn.onclick = async () => {
-    if (!emailInput.value) return alert("이메일을 입력해주세요.");
-    try {
-      await sendPasswordResetEmail(auth, emailInput.value);
-      alert("비밀번호 재설정 메일을 보냈습니다.");
-    } catch(e) { alert("오류: " + e.message); }
-  };
-
-  logoutBtn.onclick = () => signOut(auth);
-
-  // --- Auth Monitor ---
-  onAuthStateChanged(auth, async user => {
-    if (!user) {
-      authDiv.style.display = 'block';
-      appDiv.style.display = 'none';
-      document.getElementById("adminFab").style.display = 'none';
-      return;
-    }
-
-    // 관리자 확인
-    const tokenResult = await getIdTokenResult(user, true);
-    const isAdmin = tokenResult.claims.admin === true || ADMIN_EMAIL_ALLOWLIST.includes(user.email);
-    _isAdminUser = isAdmin;
-
-    if (isAdmin) {
-        document.getElementById("adminFab").style.display = 'block';
-        document.getElementById("adminMe").textContent = user.email;
-    }
-
-    // UI 전환
-    authDiv.style.display = 'none';
-    appDiv.style.display = 'block';
-    
-    // DB 업데이트 (최근 활동)
-    await setDoc(doc(db, "users", user.uid), { 
-        lastActiveAt: new Date(),
-        email: user.email 
-    }, { merge: true });
-
-    const isPro = tokenResult.claims.pro === true;
-    document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
-
-    // PRO Check
-    if (isPro) {
-      proCard.style.display = "none";
-      statsDiv.style.display = "block";
-      document.getElementById("status").textContent = "🌟 PRO 멤버십 이용 중";
-      loadStats(user.uid);
-    } else {
-      proCard.style.display = "block";
-      statsDiv.style.display = "none";
-      document.getElementById("status").textContent = "🌱 무료 회원 (하루 1습관)";
-    }
-
-    // 데이터 로드
-    const streak = await getConsecutiveStreak(user.uid);
-    updateTierUI(streak);
-    await updateWeeklyReport(user.uid, isPro);
-    await renderCalendar(user.uid, isPro);
-    await updateStreakProtectionUI(user.uid, isPro);
-  });
-
-  // --- Habit Actions ---
-  habitBtn.onclick = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-    
-    const habitName = document.getElementById("habitName").value;
-    if (habitName === "테마를 선택하세요" || !habitName.trim()) {
-      alert("테마를 선택하거나 습관을 입력하세요!");
-      return;
-    }
-    
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const ref = doc(db, "users", user.uid, "habits", todayStr);
-    
-    await setDoc(ref, {
-      done: true,
-      name: habitName,
-      timestamp: new Date()
-    });
-
-    celebrate();
-    
-    // 유저 문서에 성공 횟수 업데이트
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    const currentCount = userSnap.data()?.totalSuccess || 0;
-    await updateDoc(userRef, { totalSuccess: currentCount + 1 });
-
-    const streak = await getConsecutiveStreak(user.uid);
-    updateTierUI(streak);
-  };
-
-  function celebrate() {
-    const btn = document.getElementById("habitBtn");
-    btn.style.transform = "scale(0.95)";
-    setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
-    
-    document.getElementById("status").textContent = "🎉 오늘의 미션 클리어!";
-    btn.innerHTML = "완료함 ✨";
-    btn.style.background = "#ddd";
-    btn.style.color = "#888";
-    btn.style.cursor = "default";
-    btn.disabled = true;
-
-    if (typeof confetti === 'function') {
-        confetti({ origin: { y: 0.7 }, spread: 26, startVelocity: 55 });
-    }
   }
 
-  // --- UI Update Helpers ---
-  function updateTierUI(streak) {
-    const tierBadge = document.getElementById("tierBadge");
-    const tierText = document.getElementById("tierText");
-    const streakCount = document.getElementById("streakCount");
-
-    tierBadge.style.display = "block";
-    streakCount.textContent = `🔥 현재 ${streak}일 연속 성공 중!`;
-
-    let label = "🥉 BRONZE";
-    let cls = "tier-bronze";
-    if (streak >= 30) { label = "🏆 GRANDMASTER"; cls = "tier-master"; }
-    else if (streak >= 20) { label = "💎 DIAMOND"; cls = "tier-diamond"; }
-    else if (streak >= 14) { label = "✨ PLATINUM"; cls = "tier-platinum"; }
-    else if (streak >= 7) { label = "🥇 GOLD"; cls = "tier-gold"; }
-    else if (streak >= 3) { label = "🥈 SILVER"; cls = "tier-silver"; }
-
-    tierText.textContent = label;
-    tierText.className = "badge " + cls;
+  async function loadPlacedStickers(uid) {
+      const d = (await getDoc(doc(db,"users",uid))).data() || {};
+      const layer = document.getElementById("stickerLayer"); layer.innerHTML = "";
+      (d.placedStickers||[]).forEach(s => createStickerEl(s, uid));
   }
 
-  async function updateWeeklyReport(uid, isPro) {
-    const reportBody = document.getElementById("weeklyReportBody");
-    const lockedDiv = document.getElementById("weeklyReportLocked");
-    const reportDiv = document.getElementById("weeklyReport");
-    
-    let successCount = 0;
-    const days = [];
-    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
-    
-    for (let i = 0; i < 7; i++) {
-       const key = dateKeyFromOffset(i);
-       const snap = await getDoc(doc(db, "users", uid, "habits", key));
-       const done = snap.exists();
-       const d = new Date(key);
-       if (done) successCount++;
-       days.push({ key, done, dayName: dayNames[d.getDay()] });
-    }
-
-    const streak = await getConsecutiveStreak(uid);
-    if (streak < 3) {
-      reportDiv.style.display = "none";
-      return;
-    }
-    reportDiv.style.display = "block";
-
-    if (!isPro) {
-      reportBody.innerHTML = "";
-      lockedDiv.style.display = "block";
-      document.querySelector("#weeklyReportLocked b").textContent = `${streak}일 연속 성공`;
-      return;
-    }
-
-    lockedDiv.style.display = "none";
-    const rate = Math.round((successCount/7)*100);
-    const listHTML = days.reverse().map(d => `
-       <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
-         <span>${d.dayName} (${d.key.slice(5)})</span>
-         <span>${d.done ? "✅" : "❌"}</span>
-       </div>
-    `).join('');
-
-    reportBody.innerHTML = `
-      <div style="background:rgba(99,102,241,0.1); padding:16px; border-radius:12px; margin-bottom:12px;">
-         <div style="font-weight:700; margin-bottom:8px;">🤖 AI Habit Coach</div>
-         <div style="font-size:13px; line-height:1.5;">
-           이번 주 성공률은 <b>${rate}%</b>입니다.<br>
-           ${rate === 100 ? "완벽합니다! 갓생 그 자체시네요." : "주말에 조금 더 신경써보면 어떨까요?"}
-         </div>
-      </div>
-      <div style="padding:10px; background:#fff; border-radius:12px; border:1px solid #eee;">${listHTML}</div>
-    `;
-  }
-
-  async function renderCalendar(uid, isPro) {
-    const section = document.getElementById("calendarSection");
-    const grid = document.getElementById("calendarGrid");
-    
-    if (!isPro) { section.style.display = "none"; return; }
-    section.style.display = "block";
-    grid.innerHTML = "";
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const lastDay = new Date(year, month + 1, 0).getDate();
-
-    for (let d = 1; d <= lastDay; d++) {
-      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const snap = await getDoc(doc(db, "users", uid, "habits", dateStr));
+  function createStickerEl(data, uid) {
+      const el = document.createElement("div"); el.className = "sticker"; el.innerText = data.char;
+      el.style.left = data.x+"%"; el.style.top = data.y+"%"; el.id = data.id;
       
-      const cell = document.createElement("div");
-      cell.textContent = d;
-      cell.style.padding = "6px";
-      cell.style.borderRadius = "6px";
-      cell.style.fontSize = "12px";
-      cell.style.textAlign = "center";
-      
-      if (snap.exists()) {
-        cell.style.background = "#22c55e";
-        cell.style.color = "white";
-      } else {
-        cell.style.background = "rgba(0,0,0,0.05)";
-        cell.style.color = "var(--muted)";
-      }
-      grid.appendChild(cell);
-    }
-  }
-
-  async function updateStreakProtectionUI(uid, isPro) {
-    if (!isPro) return;
-    const snap = await getDoc(doc(db, "users", uid));
-    const left = snap.data()?.streakProtectionLeft ?? 2;
-    
-    if (left > 0) {
-      restoreBtn.style.display = "block";
-      restoreBtn.textContent = `🔥 연속 기록 복구 (${left}회 남음)`;
-      restoreBtn.onclick = async () => {
-         const yesterday = dateKeyFromOffset(1);
-         await setDoc(doc(db, "users", uid, "habits", yesterday), { done: true, restored: true });
-         await updateDoc(doc(db, "users", uid), { streakProtectionLeft: left - 1 });
-         alert("🔥 어제 기록이 복구되었습니다!");
-         location.reload();
+      const dragStart = (e) => {
+          if(isDeleteMode) return; 
+          startDrag(e, el, uid, false); 
       };
-    } else {
-      restoreBtn.style.display = "none";
-    }
+      el.addEventListener('mousedown', dragStart);
+      el.addEventListener('touchstart', dragStart, {passive:false});
+      
+      el.addEventListener('click', async (e) => {
+          if(!isDeleteMode) return;
+          e.stopPropagation(); e.preventDefault();
+          if(confirm("이 스티커를 삭제할까요?")) {
+              el.remove();
+              const r = doc(db,"users",uid);
+              const p = (await getDoc(r)).data().placedStickers || [];
+              await updateDoc(r, { placedStickers: p.filter(s => s.id !== data.id) });
+          }
+      });
+      document.getElementById("stickerLayer").appendChild(el);
   }
+
+  let dragCtx = null;
+  function startDrag(e, target, uid, isNew) {
+      if(isDeleteMode) return;
+      e.preventDefault();
+      const el = isNew ? document.createElement("div") : target;
+      if(isNew) { el.className = "sticker"; el.innerText = target; el.style.pointerEvents="none"; document.body.appendChild(el); }
+      
+      dragCtx = { el, isNew, char: isNew?target:null, uid };
+      const cx = e.clientX||e.touches[0].clientX;
+      const cy = e.clientY||e.touches[0].clientY;
+      
+      if(!isNew) {
+          const r = el.getBoundingClientRect();
+          dragCtx.ox = cx - r.left; dragCtx.oy = cy - r.top;
+          el.style.zIndex = 1000;
+      } else {
+          el.style.left = (cx-20)+"px"; el.style.top = (cy-20)+"px";
+      }
+
+      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
+      document.addEventListener('touchmove', onMove, {passive:false}); document.addEventListener('touchend', onEnd);
+  }
+
+  function onMove(e) {
+      if(!dragCtx) return;
+      e.preventDefault();
+      const cx = e.clientX||e.touches[0].clientX; const cy = e.clientY||e.touches[0].clientY;
+      if(dragCtx.isNew) { dragCtx.el.style.left=(cx-20)+"px"; dragCtx.el.style.top=(cy-20)+"px"; }
+      else { dragCtx.el.style.left=(cx-dragCtx.ox)+"px"; dragCtx.el.style.top=(cy-dragCtx.oy)+"px"; }
+  }
+
+  async function onEnd(e) {
+      document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd);
+      if(!dragCtx) return;
+
+      const layer = document.getElementById("stickerLayer");
+      const r = layer.getBoundingClientRect();
+      const cx = e.clientX||(e.changedTouches?e.changedTouches[0].clientX:0);
+      const cy = e.clientY||(e.changedTouches?e.changedTouches[0].clientY:0);
+      
+      let x, y;
+      if(dragCtx.isNew) {
+          x = ((cx - r.left)/r.width)*100; y = ((cy - r.top)/r.height)*100;
+          dragCtx.el.remove();
+      } else {
+          const er = dragCtx.el.getBoundingClientRect();
+          x = ((er.left - r.left)/r.width)*100; y = ((er.top - r.top)/r.height)*100;
+          dragCtx.el.style.zIndex="";
+      }
+
+      const ref = doc(db,"users",dragCtx.uid);
+      const placed = (await getDoc(ref)).data().placedStickers || [];
+      
+      if(dragCtx.isNew) {
+          const s = { id: Date.now().toString(), char: dragCtx.char, x, y };
+          placed.push(s); createStickerEl(s, dragCtx.uid);
+      } else {
+          const i = placed.findIndex(s => s.id === dragCtx.el.id);
+          if(i>-1) { placed[i].x=x; placed[i].y=y; dragCtx.el.style.left=x+"%"; dragCtx.el.style.top=y+"%"; }
+      }
+      await updateDoc(ref, { placedStickers: placed });
+      dragCtx = null;
+  }
+
+  window.selectTheme = async (el, type) => {
+      const user = auth.currentUser; if(!user) return alert("로그인 필요");
+      const input = document.getElementById("habitName");
+      document.querySelectorAll('.theme-tag').forEach(t=>t.classList.remove('active'));
+      
+      if(type==='custom') {
+          const t = await getIdTokenResult(user);
+          if(!t.claims.pro && !t.claims.admin) return alert("🔒 PRO 전용");
+          input.readOnly=false; input.value=""; input.focus();
+      } else {
+          input.readOnly=true;
+          const pool = themeData[type];
+          input.value = pool[Math.floor(Math.random()*pool.length)]; // 🔥 Random
+      }
+      if(el) el.classList.add('active');
+  };
+
+  window.showProModal = (type) => {
+      document.getElementById("modalTitle").innerText = `👑 ${type} 업그레이드`;
+      document.getElementById("proModal").style.display = 'flex';
+  };
+
+  window.changeTheme = async (c) => {
+      const user = auth.currentUser; if(!user) return;
+      const d = (await getDoc(doc(db,"users",user.uid))).data();
+      if(!d.isUltra && !d.isMaster && user.email!=="test@gmail.com") return alert("💎 ULTRA 전용");
+      
+      let p, s;
+      if(c==='blue') { p='#3b82f6'; s='#60a5fa'; }
+      else if(c==='pink') { p='#ec4899'; s='#f472b6'; }
+      else if(c==='gold') { p='#d97706'; s='#fbbf24'; }
+      else { p='#6366f1'; s='#a855f7'; }
+      document.documentElement.style.setProperty('--primary', p);
+      document.documentElement.style.setProperty('--secondary', s);
+      document.querySelector('.blob-1').style.background = s;
+      document.querySelector('.blob-2').style.background = p;
+  };
 
   async function loadStats(uid) {
-    const snap = await getDocs(collection(db, "users", uid, "habits"));
-    document.getElementById("totalDays").textContent = `총 누적 성공: ${snap.size}일`;
+      const snap = await getDocs(collection(db,"users",uid,"habits"));
+      let successCount = 0;
+      snap.forEach(doc => {
+          if(doc.data().done) successCount++;
+      });
+      safeText("totalDays", `총 누적 성공: ${successCount}일`);
   }
 
-  // ============================
-  // ADMIN FUNCTIONS (NEW)
-  // ============================
-  const adminFab = document.getElementById("adminFab");
-  const adminOverlay = document.getElementById("adminOverlay");
-  const adminClose = document.getElementById("adminClose");
-  const adminRefresh = document.getElementById("adminRefresh");
-  const userTable = document.getElementById("userTable");
-  const adminTabs = document.querySelectorAll(".admin-tab");
-  const adminPanels = document.querySelectorAll(".admin-panel");
+  // Memo Saving
+  document.getElementById("saveMemoBtn").onclick = async () => {
+      const user = auth.currentUser; if(!user) return;
+      const memo = document.getElementById("dailyMemo").value;
+      if(!memo.trim()) return alert("내용을 입력하세요");
+      
+      const today = dateKeyFromOffset(0);
+      await setDoc(doc(db,"users",user.uid,"habits",today), { memo: memo }, { merge: true });
+      alert("✅ 메모 저장 완료!");
+      renderMemoHistory(user.uid);
+  };
 
-  // Admin Toggle
-  adminFab.addEventListener("click", async () => {
-      adminOverlay.style.display = "flex";
-      await refreshAdmin();
-  });
-  adminClose.addEventListener("click", () => adminOverlay.style.display = "none");
-  adminRefresh.addEventListener("click", refreshAdmin);
-
-  // Tabs
-  adminTabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-          adminTabs.forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          const target = tab.dataset.tab;
-          adminPanels.forEach(p => p.style.display = p.dataset.panel === target ? "block" : "none");
+  async function renderMemoHistory(uid) {
+      const listDiv = document.getElementById("memoHistoryList");
+      listDiv.innerHTML = "로딩 중...";
+      
+      const snap = await getDocs(collection(db,"users",uid,"habits"));
+      let memos = [];
+      snap.forEach(doc => {
+          const d = doc.data();
+          if(d.memo) memos.push({date: doc.id, text: d.memo});
       });
-  });
-
-  async function refreshAdmin() {
-      // 1. Load Dashboard
-      const usersSnap = await getDocs(collection(db, "users"));
-      const total = usersSnap.size;
-      let proCount = 0;
-      usersSnap.forEach(u => { if(u.data().isPro) proCount++; });
-      document.getElementById("kpiTotal").textContent = total;
-      document.getElementById("kpiPRO").textContent = proCount;
-
-      // 2. Load Users Table
-      let html = "";
-      usersSnap.forEach(docSnap => {
-          const u = docSnap.data();
-          const uid = docSnap.id;
-          html += `
-          <div class="admin-table-row" style="grid-template-columns: 1.6fr 0.5fr 1fr;">
-              <div style="font-weight:700;">${u.email || "No Email"}</div>
-              <div><span class="badge" style="background:${u.isPro?'#6366f1':'#ccc'}">${u.isPro?'PRO':'FREE'}</span></div>
-              <div style="font-size:11px; color:#aaa;">${uid.slice(0,6)}...</div>
-          </div>
-          `;
+      
+      memos.sort((a,b) => new Date(b.date) - new Date(a.date));
+      
+      if(memos.length === 0) {
+          listDiv.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>';
+          return;
+      }
+      
+      listDiv.innerHTML = "";
+      memos.forEach(m => {
+          const div = document.createElement("div");
+          div.className = "memo-item";
+          div.innerHTML = `<div class="memo-date">${m.date}</div><div>${m.text}</div>`;
+          listDiv.appendChild(div);
       });
-      userTable.innerHTML = html;
   }
 
-  // --- Dark Mode ---
+  // Auth State
+  onAuthStateChanged(auth, async user => {
+      if(!user) {
+          document.getElementById("auth").style.display='block';
+          document.getElementById("dashboardLayout").style.display='none';
+          document.getElementById("coinDisplay").style.display = 'none';
+          ['adminOpenBtn','rankOpenBtn','shopOpenBtn','trashModeBtn','bgmOpenBtn','themeBtn'].forEach(id=>document.getElementById(id).style.display='none');
+          return;
+      }
+      
+      // Admin Email Check
+      const isAdmin = ADMIN_EMAILS.includes(user.email || "");
+      if(!user.emailVerified && !isAdmin) { alert("인증 필요"); await signOut(auth); return; }
+
+      document.getElementById("auth").style.display='none';
+      document.getElementById("dashboardLayout").style.display='flex';
+      document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
+
+      ['rankOpenBtn','shopOpenBtn','trashModeBtn','bgmOpenBtn'].forEach(id=>document.getElementById(id).style.display='block');
+      
+      // User Doc Load
+      const userRef = doc(db,"users",user.uid);
+      let snap = await getDoc(userRef);
+      if(!snap.exists()){
+          await setDoc(userRef, {
+              email: user.email, isPro: false, isBanned: false, streakProtectionLeft: 2, 
+              createdAt: new Date().toISOString()
+          }, {merge:true});
+          snap = await getDoc(userRef);
+      }
+      
+      if(snap.data().isBanned){ alert("차단된 계정입니다."); await signOut(auth); return; }
+
+      let { isPro, isUltra, isMaster } = snap.data() || {};
+      
+      if(isAdmin) { 
+          isPro=true; isUltra=true; isMaster=true; 
+          document.getElementById("adminOpenBtn").style.display='block'; 
+      }
+
+      if(isUltra || isMaster) {
+          document.getElementById("themeBtn").style.display='block';
+          document.getElementById("bgmSelect").style.display='block';
+      }
+      if(isMaster) {
+          document.getElementById("workoutSidePanel").style.display='block';
+          document.getElementById("timerBtn").style.display='block';
+      } else {
+          document.getElementById("workoutSidePanel").style.display='none';
+          document.getElementById("timerBtn").style.display='none';
+      }
+
+      // Memo UI
+      document.getElementById("memoPanel").style.display = 'flex';
+      document.getElementById("memoHistoryPanel").style.display = 'flex';
+      if(isPro || isUltra || isMaster) {
+          document.getElementById("memoLocked").style.display='none';
+          const today = dateKeyFromOffset(0);
+          const s = await getDoc(doc(db,"users",user.uid,"habits",today));
+          if(s.exists() && s.data().memo) document.getElementById("dailyMemo").value = s.data().memo;
+          renderMemoHistory(user.uid);
+      } else {
+          document.getElementById("memoLocked").style.display='flex';
+          document.getElementById("memoHistoryPanel").style.display='none';
+      }
+
+      if(isPro||isUltra||isMaster) {
+          document.getElementById("stats").style.display='block';
+          safeText("status", isMaster?"👑 MASTER":isUltra?"💎 ULTRA":"🌟 PRO");
+          loadStats(user.uid);
+      } else {
+          safeText("status", "🌱 무료 회원");
+      }
+
+      updateLevelUI(user.uid);
+      loadPlacedStickers(user.uid);
+      updateTierUI(await getConsecutiveStreak(user.uid));
+      renderCalendar(user.uid, (isPro||isUltra||isMaster));
+      
+      // Heatmap
+      const grid=document.getElementById("heatmapGrid"); grid.innerHTML="";
+      for(let i=19; i>=0; i--) {
+          const d = dateKeyFromOffset(i);
+          const div=document.createElement("div"); div.className="grass"; div.title=d;
+          if((await getDoc(doc(db,"users",user.uid,"habits",d))).exists()) div.classList.add("active");
+          grid.appendChild(div);
+      }
+  });
+
+  // Buttons Logic
+  document.getElementById("habitBtn").onclick = async () => {
+      const user=auth.currentUser; if(!user) return;
+      const name = document.getElementById("habitName").value;
+      if(!name || name==="테마를 선택하세요") return alert("습관 입력");
+      
+      await setDoc(doc(db,"users",user.uid,"habits",dateKeyFromOffset(0)), {done:true, name, timestamp:new Date()}, {merge:true});
+      await setDoc(doc(db,"users",user.uid), {updatedAt:new Date().toISOString()}, {merge:true});
+      
+      const ref = doc(db,"users",user.uid);
+      const snap = await getDoc(ref);
+      let { level=1, xp=0, coins=0, isUltra, isMaster } = snap.data() || {};
+      
+      xp+=20;
+      coins += isMaster ? 3 : (isUltra ? 2 : 1);
+      
+      if(xp>=100) { level++; xp-=100; }
+      
+      await setDoc(ref, {level, xp, coins}, {merge:true});
+      updateLevelUI(user.uid);
+      
+      const btn = document.getElementById("habitBtn");
+      btn.innerHTML = "완료함 ✨"; btn.disabled=true;
+      confetti({particleCount: 100, origin:{y:0.7}});
+  };
+
+  document.getElementById("gachaBtn").onclick = async () => {
+      const user=auth.currentUser; if(!user) return;
+      const ref = doc(db,"users",user.uid);
+      const snap = await getDoc(ref);
+      let coins = snap.data().coins||0;
+      if(coins<1) return alert("코인 부족");
+      
+      coins--;
+      const p = STICKERS[Math.floor(Math.random()*STICKERS.length)];
+      await updateDoc(ref, { coins, inventory: arrayUnion(p) });
+      
+      alert(`🎉 [${p}] 획득!`);
+      updateLevelUI(user.uid); loadInventory(user.uid);
+  };
+
+  // Timer
+  let timer=null, timeLeft=1500;
+  document.getElementById("timerBtn").onclick = () => document.getElementById("timerModal").style.display='flex';
+  document.getElementById("startTimerBtn").onclick = () => {
+      if(timer) return;
+      timer = setInterval(() => {
+          if(timeLeft<=0) { clearInterval(timer); alert("집중 끝!"); return; }
+          timeLeft--;
+          const m = Math.floor(timeLeft/60), s = timeLeft%60;
+          document.getElementById("timerDisplay").innerText = `${m}:${s<10?'0':''}${s}`;
+      }, 1000);
+  };
+  document.getElementById("stopTimerBtn").onclick = () => { clearInterval(timer); timer=null; };
+
+  // Helper UIs
+  ['rank','shop'].forEach(k => {
+      document.getElementById(k+'OpenBtn').onclick = () => {
+          document.getElementById(k+'Panel').style.display = document.getElementById(k+'Panel').style.display==='none'?'block':'none';
+          if(k==='rank') loadLeaderboard();
+          if(k==='shop') loadInventory(auth.currentUser.uid);
+      }
+  });
+
+  async function loadLeaderboard() {
+      const list = document.getElementById("rankList"); list.innerHTML="로딩...";
+      const snap = await getDocs(collection(db,"users"));
+      let u = []; snap.forEach(d=>u.push(d.data()));
+      u.sort((a,b)=>b.level-a.level);
+      list.innerHTML = u.slice(0,10).map((x,i)=>`<div style="padding:5px; border-bottom:1px solid #eee;">${i+1}. ${x.email?.slice(0,3)}*** Lv.${x.level}</div>`).join('');
+  }
+
+  // BGM Logic
+  const audio = document.getElementById("bgmAudio");
+  document.getElementById("bgmOpenBtn").onclick = () => document.getElementById("bgm").style.display='block';
+  document.getElementById("bgmToggle").onclick = () => { audio.paused ? audio.play() : audio.pause(); };
+  document.getElementById("bgmSelect").onchange = (e) => { audio.src = e.target.value; audio.play(); };
+  
+  // Theme Toggle
   const toggle = document.getElementById("darkModeToggle");
   toggle.onclick = () => {
     document.body.classList.toggle("dark-mode");
     localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
   };
   if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
-</script>
 
+  // =========================================================
+  // 👑 ADMIN PANEL LOGIC (INTEGRATED)
+  // =========================================================
+  
+  const adminPanel = document.getElementById("adminPanel");
+  const adminOpenBtn = document.getElementById("adminOpenBtn");
+  const adminCloseBtn = document.getElementById("adminCloseBtn");
+  const adminRefreshBtn = document.getElementById("adminRefreshBtn");
+  const adminExportCsvBtn = document.getElementById("adminExportCsvBtn");
+  const adminSubtitle = document.getElementById("adminSubtitle");
+  const adminNavBtns = document.querySelectorAll(".adminNavBtn");
+  const panes = document.querySelectorAll(".admin-pane");
+  
+  const dashTotalUsers = document.getElementById("dashTotalUsers");
+  const dashProUsers = document.getElementById("dashProUsers");
+  const dashBannedUsers = document.getElementById("dashBannedUsers");
+  const dashActive7 = document.getElementById("dashActive7");
+  const dashRecentTbody = document.getElementById("dashRecentTbody");
+  const adminUsersTbody = document.getElementById("adminUsersTbody");
+  const adminSearch = document.getElementById("adminSearch");
+  const adminFilter = document.getElementById("adminFilter");
+  const adminApplyFilterBtn = document.getElementById("adminApplyFilterBtn");
+  
+  const adminUserDetailModal = document.getElementById("adminUserDetailModal");
+  const detailContent = document.getElementById("detailContent");
+  const detailCloseBtn = document.getElementById("detailCloseBtn");
+  const detailCloseBtn2 = document.getElementById("detailCloseBtn2");
+  const detailSaveNoteBtn = document.getElementById("detailSaveNoteBtn");
+  
+  const bannerEnabled = document.getElementById("bannerEnabled");
+  const bannerText = document.getElementById("bannerText");
+  const saveBannerBtn = document.getElementById("saveBannerBtn");
+  const loadBannerBtn = document.getElementById("loadBannerBtn");
+  const bannerStatus = document.getElementById("bannerStatus");
+  const cheatBtn = document.getElementById("cheatStreakBtn");
+  const resetMyHabitBtn = document.getElementById("resetMyHabitBtn");
+
+  let cachedUsers = []; 
+  let selectedDetailUid = null;
+
+  function isAdminNow() { return auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email); }
+
+  adminOpenBtn.onclick = () => {
+      if (!isAdminNow()) return alert("관리자만 접근 가능합니다.");
+      adminPanel.style.display = "block";
+      adminSubtitle.textContent = `로그인: ${auth.currentUser.email}`;
+      refreshAdminData();
+  }
+
+  adminCloseBtn.onclick = () => adminPanel.style.display = "none";
+
+  adminNavBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+          adminNavBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          panes.forEach(p => p.classList.remove("active"));
+          document.getElementById(btn.dataset.pane).classList.add("active");
+      });
+  });
+
+  adminRefreshBtn.onclick = () => refreshAdminData();
+
+  async function refreshAdminData() {
+      if (!isAdminNow()) return;
+      
+      const snap = await getDocs(collection(db, "users"));
+      cachedUsers = [];
+      snap.forEach(d => cachedUsers.push({ uid: d.id, ...d.data() }));
+      
+      // Sort by UpdatedAt or CreatedAt
+      cachedUsers.sort((a,b) => {
+          const au = a.updatedAt || a.createdAt || "";
+          const bu = b.updatedAt || b.createdAt || "";
+          return String(bu).localeCompare(String(au));
+      });
+
+      document.getElementById("adminUserCountChip").textContent = String(cachedUsers.length);
+      
+      // Dashboard Stats
+      dashTotalUsers.textContent = cachedUsers.length;
+      dashProUsers.textContent = cachedUsers.filter(u => u.isPro).length;
+      dashBannedUsers.textContent = cachedUsers.filter(u => u.isBanned).length;
+      
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const active7 = cachedUsers.filter(u => {
+          const t = u.updatedAt || u.createdAt;
+          if (!t) return false;
+          return new Date(t) >= sevenDaysAgo;
+      }).length;
+      dashActive7.textContent = String(active7);
+
+      // Recent User Table
+      dashRecentTbody.innerHTML = "";
+      const top = cachedUsers.slice(0, 8);
+      if (top.length === 0) {
+          dashRecentTbody.innerHTML = `<tr><td colspan="6" style="color:var(--text-muted);">유저가 없습니다.</td></tr>`;
+      } else {
+          top.forEach(u => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                  <td>${(u.uid || "").slice(0,10)}...</td>
+                  <td>${u.email || "-"}</td>
+                  <td>${u.isPro ? "✅" : "-"}</td>
+                  <td>${u.isBanned ? "🚫" : "-"}</td>
+                  <td>${(u.note || "").toString().slice(0,15)}</td>
+                  <td>
+                      <div class="admin-row-actions">
+                          <button class="mini-btn info" data-act="detail" data-uid="${u.uid}">상세</button>
+                          <button class="mini-btn ${u.isPro ? "danger" : "ok"}" data-act="togglePro" data-uid="${u.uid}">
+                              ${u.isPro ? "해제" : "PRO"}
+                          </button>
+                      </div>
+                  </td>
+              `;
+              dashRecentTbody.appendChild(tr);
+          });
+      }
+      
+      renderUsersTable();
+      document.getElementById("adminLastSync").textContent = new Date().toLocaleTimeString();
+  }
+
+  function renderUsersTable() {
+      const q = (adminSearch.value || "").trim().toLowerCase();
+      const f = adminFilter.value;
+      
+      let list = [...cachedUsers];
+      if (q) list = list.filter(u => (u.email || "").toLowerCase().includes(q) || (u.uid || "").toLowerCase().startsWith(q));
+      if (f === "pro") list = list.filter(u => u.isPro);
+      if (f === "free") list = list.filter(u => !u.isPro);
+      if (f === "banned") list = list.filter(u => u.isBanned);
+
+      adminUsersTbody.innerHTML = "";
+      if (list.length === 0) {
+          adminUsersTbody.innerHTML = `<tr><td colspan="6" style="color:var(--text-muted);">유저 없음</td></tr>`;
+          return;
+      }
+
+      list.slice(0, 100).forEach(u => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+              <td style="font-weight:900;">${(u.uid || "").slice(0,10)}...</td>
+              <td>${u.email || "-"}</td>
+              <td>${u.isPro ? "✅" : "-"}</td>
+              <td>${u.isBanned ? "🚫" : "-"}</td>
+              <td>${u.streakProtectionLeft ?? 0}회</td>
+              <td>
+                  <div class="admin-row-actions">
+                      <button class="mini-btn info" data-act="detail" data-uid="${u.uid}">상세</button>
+                      <button class="mini-btn ${u.isPro ? "danger" : "ok"}" data-act="togglePro" data-uid="${u.uid}">
+                          ${u.isPro ? "해제" : "PRO"}
+                      </button>
+                      <button class="mini-btn ${u.isBanned ? "ok" : "danger"}" data-act="toggleBan" data-uid="${u.uid}">
+                          ${u.isBanned ? "해제" : "차단"}
+                      </button>
+                  </div>
+              </td>
+          `;
+          adminUsersTbody.appendChild(tr);
+      });
+  }
+
+  adminApplyFilterBtn.onclick = () => renderUsersTable();
+  adminSearch.addEventListener("input", () => renderUsersTable());
+  adminFilter.addEventListener("change", () => renderUsersTable());
+
+  // Helper Functions for Actions
+  function findCached(uid) { return cachedUsers.find(u => u.uid === uid); }
+
+  async function togglePro(uid) {
+      const u = findCached(uid); if (!u) return;
+      const next = !u.isPro;
+      if (!confirm(`[${u.email}] ${next ? "PRO 부여" : "PRO 해제"} 하시겠습니까?`)) return;
+      await updateDoc(doc(db, "users", uid), { isPro: next, updatedAt: new Date().toISOString() });
+      await refreshAdminData();
+  }
+
+  async function toggleBan(uid) {
+      const u = findCached(uid); if (!u) return;
+      const next = !u.isBanned;
+      if (!confirm(`[${u.email}] ${next ? "차단" : "차단 해제"} 하시겠습니까?`)) return;
+      await updateDoc(doc(db, "users", uid), { isBanned: next, updatedAt: new Date().toISOString() });
+      await refreshAdminData();
+  }
+
+  // Detail Modal Logic
+  async function openDetail(uid) {
+      const u = findCached(uid); if (!u) return;
+      selectedDetailUid = uid;
+      adminUserDetailModal.style.display = "flex";
+      
+      detailContent.innerHTML = "로딩중...";
+      const habitsSnap = await getDocs(collection(db, "users", uid, "habits"));
+      let habitsArr = [];
+      habitsSnap.forEach(h => habitsArr.push({ date: h.id, ...h.data() }));
+      habitsArr.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      const recent = habitsArr.slice(0, 10).map(h => `- ${h.date}: ${h.name} ${h.done?"✅":"❌"}`).join("\n");
+      
+      const txt = `
+[USER INFO]
+UID: ${uid}
+Email: ${u.email || "-"}
+Status: ${u.isPro ? "PRO" : "FREE"} / ${u.isBanned ? "BANNED" : "ACTIVE"}
+Tickets: ${u.streakProtectionLeft ?? 0}
+Created: ${u.createdAt}
+
+[MEMO]
+<textarea id="detailNote" style="width:100%; height:60px; border:1px solid #ccc;">${u.note || ""}</textarea>
+
+[RECENT HABITS]
+${recent || "- 기록 없음 -"}
+      `;
+      detailContent.innerHTML = `<pre style="white-space:pre-wrap;">${txt}</pre>`;
+  }
+
+  // Event Delegation for Table Buttons
+  const handleTableClick = async (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const { act, uid } = btn.dataset;
+      if (!act || !uid) return;
+      
+      if (act === "detail") await openDetail(uid);
+      if (act === "togglePro") await togglePro(uid);
+      if (act === "toggleBan") await toggleBan(uid);
+  };
+  dashRecentTbody.addEventListener("click", handleTableClick);
+  adminUsersTbody.addEventListener("click", handleTableClick);
+
+  // Close Detail
+  detailCloseBtn.onclick = () => adminUserDetailModal.style.display = "none";
+  detailCloseBtn2.onclick = () => adminUserDetailModal.style.display = "none";
+  
+  // Save Note in Detail
+  detailSaveNoteBtn.onclick = async () => {
+      if (!selectedDetailUid) return;
+      const note = document.getElementById("detailNote").value;
+      await updateDoc(doc(db, "users", selectedDetailUid), { note, updatedAt: new Date().toISOString() });
+      alert("✅ 메모 저장");
+      await refreshAdminData();
+  };
+
+  // CSV Export
+  adminExportCsvBtn.onclick = () => {
+      if (!cachedUsers.length) return alert("데이터 없음");
+      const header = ["uid","email","isPro","isBanned","tickets","created","note"];
+      const rows = cachedUsers.map(u => [u.uid, u.email, u.isPro, u.isBanned, u.streakProtectionLeft, u.createdAt, (u.note||"").replaceAll("\n"," ")].join(","));
+      const csv = [header.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = "users.csv"; a.click();
+  };
+
+  // Banner Logic
+  loadBannerBtn.onclick = async () => {
+      try {
+          const snap = await getDoc(doc(db, "config", "public"));
+          const data = snap.exists() ? snap.data() : {};
+          bannerEnabled.checked = !!data.bannerEnabled;
+          bannerText.value = data.bannerText || "";
+          bannerStatus.textContent = "불러오기 완료";
+      } catch (e) { bannerStatus.textContent = "실패"; }
+  };
+  
+  saveBannerBtn.onclick = async () => {
+      await setDoc(doc(db, "config", "public"), {
+          bannerEnabled: bannerEnabled.checked,
+          bannerText: bannerText.value || "",
+          updatedAt: new Date().toISOString()
+      }, { merge: true });
+      loadBanner(); // Refresh actual banner
+      bannerStatus.textContent = "저장 완료";
+  };
+
+  // Load Banner on Start
+  async function loadBanner() {
+      const b = document.getElementById("topBanner");
+      try {
+          const snap = await getDoc(doc(db, "config", "public"));
+          if (!snap.exists()) return;
+          const d = snap.data();
+          if (d.bannerEnabled && d.bannerText) {
+              b.textContent = d.bannerText;
+              b.style.display = "block";
+          } else {
+              b.style.display = "none";
+          }
+      } catch (e) {}
+  }
+  loadBanner();
+
+  // Test Tools
+  cheatBtn.onclick = async () => {
+      const u = auth.currentUser; if (!u) return alert("로그인 필요");
+      if (!confirm("내 계정에 지난 5일 성공 데이터를 생성할까요?")) return;
+      for (let i = 0; i < 5; i++) {
+          const k = dateKeyFromOffset(i);
+          await setDoc(doc(db, "users", u.uid, "habits", k), { done: true, cheat: true }, { merge: true });
+      }
+      alert("완료! 새로고침하세요.");
+  };
+
+  resetMyHabitBtn.onclick = async () => {
+      const u = auth.currentUser; if (!u) return alert("로그인 필요");
+      if (!confirm("⚠ 내 모든 습관 기록을 삭제합니까?")) return;
+      const s = await getDocs(collection(db, "users", u.uid, "habits"));
+      const p = [];
+      s.forEach(d => p.push(deleteDoc(doc(db, "users", u.uid, "habits", d.id))));
+      await Promise.all(p);
+      alert("삭제 완료.");
+      location.reload();
+  };
+
+</script>
 </body>
 </html>
