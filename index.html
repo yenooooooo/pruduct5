@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>HabitFlow</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -31,131 +32,80 @@
     }
 
     * { box-sizing: border-box; }
-
+    body { margin: 0; background: var(--bg-color); color: var(--text-main); font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
 
     /* ====== Layout ====== */
     section { width: 100%; padding: 84px 20px; }
     .container { width: 100%; max-width: 1080px; margin: 0 auto; }
     
     /* Header */
-    header {
-      position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10;
-    }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; }
+    header { position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
     .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
     .logo-badge { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
     
-    nav { display: flex; gap: 20px; align-items: center; }
-    nav a { text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; }
-    
+    nav { display: flex; gap: 10px; align-items: center; }
+    .pc-only { display: none; }
+    @media(min-width: 768px) { .pc-only { display: block; text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px; margin-right: 10px; } }
+
     /* Section Head */
     .section-head { text-align: center; margin-bottom: 36px; }
-    .section-head .kicker {
-      display: inline-block; padding: 6px 12px; border-radius: 999px;
-      font-size: 12px; font-weight: 800; letter-spacing: -0.2px;
-      background: rgba(99, 102, 241, 0.12); color: var(--primary);
-    }
+    .section-head .kicker { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: -0.2px; background: rgba(99, 102, 241, 0.12); color: var(--primary); }
     .section-head h2 { margin: 12px 0 8px; font-size: 28px; letter-spacing: -0.6px; }
     .section-head p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
 
     /* Glass Effect */
-    .glass {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-radius: 22px;
-      transition: 0.25s ease;
-    }
+    .glass { background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius: 22px; transition: 0.25s ease; }
     .glass:hover { transform: translateY(-4px); }
 
     /* ====== Hero ====== */
-    .hero {
-      padding: 140px 20px 80px;
-      background: radial-gradient(800px circle at 80% -20%, rgba(168, 85, 247, 0.15), transparent 60%);
-    }
-    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
-    .hero-pill {
-      display: inline-block; padding: 8px 14px; border-radius: 999px;
-      font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.12); color: var(--primary);
-    }
-    .hero-title { font-size: 46px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; }
+    .hero { padding: 140px 20px 80px; background: radial-gradient(800px circle at 80% -20%, rgba(168, 85, 247, 0.15), transparent 60%); }
+    .hero-grid { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
+    @media(min-width: 900px) { .hero-grid { grid-template-columns: 1.2fr 1fr; } }
+
+    .hero-pill { display: inline-block; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.12); color: var(--primary); }
+    .hero-title { font-size: 40px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; }
     .hero-desc { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
     
     .hero-actions { display: flex; gap: 12px; }
     .hero-metrics { display: flex; gap: 14px; margin-top: 28px; }
-    .metric-card {
-      padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.5);
-      border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px;
-    }
+    .metric-card { padding: 14px 18px; border-radius: 16px; background: rgba(255,255,255,0.5); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
     .hero-right { padding: 26px; }
-    .recommend-card {
-      background: rgba(255,255,255,0.8); border-radius: 16px; padding: 16px;
-      margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #000;
-    }
+    .recommend-card { background: rgba(255,255,255,0.8); border-radius: 16px; padding: 16px; margin-top: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #000; }
 
     /* ====== Problems & Features ====== */
-    .problem-grid, .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
-    .problem-card, .feature-card { padding: 18px; text-align: left; }
-    .feature-icon {
-      width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
-      background: rgba(99, 102, 241, 0.12); color: var(--primary); font-size: 20px; margin-bottom: 12px;
-    }
-    .problem-bottom { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .problem-pill {
-      padding: 12px 14px; border-radius: 16px; border: 1px dashed var(--card-border);
-      background: rgba(255, 255, 255, 0.35); color: var(--text-main); font-weight: 800; text-align: center;
-    }
+    .problem-grid, .pricing-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 18px; }
+    @media(min-width: 900px) { .problem-grid, .pricing-grid { grid-template-columns: repeat(3, 1fr); } .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+    .problem-card { padding: 18px; text-align: left; }
 
     /* ====== Pricing ====== */
-    .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 18px; }
     .price-card { padding: 22px; text-align: left; }
     .price-card.pro { border: 2px solid rgba(99, 102, 241, 0.45); position: relative; }
-    .price-card.pro::before {
-      content: "추천"; position: absolute; top: 14px; right: 14px; font-size: 12px;
-      font-weight: 900; padding: 6px 10px; border-radius: 999px;
-      background: rgba(99, 102, 241, 0.14); color: var(--primary);
-    }
+    .price-card.pro::before { content: "추천"; position: absolute; top: 14px; right: 14px; font-size: 12px; font-weight: 900; padding: 6px 10px; border-radius: 999px; background: rgba(99, 102, 241, 0.14); color: var(--primary); }
+    .price-card ul { padding-left: 20px; line-height: 1.8; font-size: 14px; }
 
     /* ====== Buttons & Inputs ====== */
-    .btn {
-      appearance: none; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.8);
-      color: var(--text-main); padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer;
-      transition: all 0.2s ease;
-    }
+    .btn { appearance: none; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.8); color: var(--text-main); padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer; transition: all 0.2s ease; }
     .btn:active { transform: scale(0.98); }
-    .btn-primary {
-      border: none !important; background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: #fff; box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25);
-    }
+    .btn-primary { border: none !important; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 14px 30px rgba(99, 102, 241, 0.25); }
     .btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--card-border); }
     
-    input {
-      width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px;
-      border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.5); color: var(--text-main);
-    }
+    input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.5); color: var(--text-main); }
 
     /* ====== Auth & App UI ====== */
-    .auth-card { max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
+    .auth-card { width: 100%; max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
     .auth-actions { display: flex; gap: 10px; margin-top: 14px; }
     .auth-actions .btn { flex: 1; }
     .link-btn { border: none; background: transparent; color: var(--muted); font-weight: 800; cursor: pointer; text-decoration: underline; margin-top: 10px; }
     
     .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
-    .theme-tag {
-      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border);
-      background: transparent; color: var(--text-main); cursor: pointer; font-size: 13px;
-    }
+    .theme-tag { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border); background: transparent; color: var(--text-main); cursor: pointer; font-size: 13px; }
     .theme-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-    .habit {
-      width: 100%; padding: 20px; font-size: 18px; font-weight: 900; margin-top: 16px;
-      border: none; border-radius: 16px; background: var(--text-main); color: var(--bg-color); cursor: pointer;
-    }
+    .habit { width: 100%; padding: 20px; font-size: 18px; font-weight: 900; margin-top: 16px; border: none; border-radius: 16px; background: var(--text-main); color: var(--bg-color); cursor: pointer; }
 
     /* ====== Badges ====== */
-    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; }
+    .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; color: #fff; display: inline-block; }
     .tier-bronze { background: #cd7f32; }
     .tier-silver { background: #c0c0c0; color: #333; }
     .tier-gold { background: #ffd700; color: #333; }
@@ -163,348 +113,29 @@
     .tier-diamond { background: #b9f2ff; color: #333; }
     .tier-master { background: linear-gradient(135deg, #ff00cc, #333399); }
 
-    /* ====== Responsive ====== */
-    @media (max-width: 900px) {
-      .hero-grid, .problem-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
-      .problem-bottom { grid-template-columns: 1fr; }
-    }
     /* ========================= */
-/* ✅ ADMIN CONSOLE (NEW UI) */
-/* ========================= */
+    /* ✅ ADMIN CONSOLE CSS */
+    /* ========================= */
+    #adminFab { position: fixed; right: 20px; bottom: 20px; z-index: 9995; width: 56px; height: 56px; border-radius: 999px; border: none; cursor: pointer; font-size: 22px; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 12px 28px rgba(0,0,0,0.25); transition: transform .2s ease; display: none; }
+    #adminFab:active { transform: scale(.96); }
+    .admin-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 18px; }
+    .admin-shell { width: min(1200px, 96vw); height: min(760px, 92vh); border-radius: 22px; overflow: hidden; display: grid; grid-template-columns: 260px 1fr; background: rgba(255,255,255,.95); border: 1px solid rgba(15,23,42,0.12); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+    .dark-mode .admin-shell { background: rgba(2,6,23,.90); border: 1px solid rgba(148,163,184,0.18); }
+    .admin-sidebar { padding: 16px; border-right: 1px solid rgba(15,23,42,.08); background: rgba(255,255,255,.55); }
+    .dark-mode .admin-sidebar { background: rgba(2,6,23,.45); border-right: 1px solid rgba(148,163,184,0.12); }
+    .admin-main { padding: 16px; overflow: auto; }
+    @media (max-width: 980px) { .admin-shell { grid-template-columns: 1fr; } .admin-sidebar { display:none; } }
+    
+    .admin-tab { width: 100%; text-align: left; padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(15,23,42,.08); background: rgba(255,255,255,.6); cursor: pointer; font-weight: 900; color: var(--text-main); margin-bottom: 8px; }
+    .admin-tab.active { border: none; color: #fff; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+    .admin-grid-kpi { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .admin-kpi { padding: 14px; }
+    .admin-table-row { display: grid; grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr; gap: 10px; padding: 10px; border-bottom: 1px solid rgba(15,23,42,.06); align-items: center; font-size: 13px; }
+    
+    /* PRO Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10001; }
+    .modal-card { width: 90%; max-width: 400px; background: var(--bg-color); padding: 30px; border-radius: 20px; text-align: center; }
 
-#adminFab{
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 9995;
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-size: 22px;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
-  transition: transform .2s ease;
-}
-#adminFab:active{ transform: scale(.96); }
-
-.admin-overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-}
-
-.admin-shell{
-  width: min(1200px, 96vw);
-  height: min(760px, 92vh);
-  border-radius: 22px;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  background: rgba(255,255,255,.78);
-  border: 1px solid rgba(15,23,42,0.12);
-  box-shadow: 0 30px 80px rgba(0,0,0,.35);
-}
-
-.dark-mode .admin-shell{
-  background: rgba(2,6,23,.72);
-  border: 1px solid rgba(148,163,184,0.18);
-}
-
-.admin-sidebar{
-  padding: 16px;
-  border-right: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.55);
-}
-.dark-mode .admin-sidebar{
-  background: rgba(2,6,23,.45);
-  border-right: 1px solid rgba(148,163,184,0.12);
-}
-
-.admin-brand{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 10px 14px;
-}
-.admin-dot{
-  width: 12px; height: 12px;
-  border-radius: 999px;
-  background: var(--primary);
-}
-.admin-title{ font-weight: 900; font-size: 14px; }
-.admin-sub{ font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-.admin-nav{
-  display: grid;
-  gap: 8px;
-  margin-top: 8px;
-}
-.admin-tab{
-  width: 100%;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.6);
-  cursor: pointer;
-  font-weight: 900;
-  color: var(--text-main);
-}
-.dark-mode .admin-tab{
-  background: rgba(2,6,23,.35);
-  border: 1px solid rgba(148,163,184,0.12);
-}
-.admin-tab.active{
-  border: none;
-  color: #fff;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-
-.admin-side-actions{
-  display: grid;
-  gap: 10px;
-  margin-top: auto;
-  padding: 12px 6px 6px;
-}
-
-.admin-main{
-  padding: 16px;
-  overflow: auto;
-}
-
-.admin-topbar{
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.admin-h1{
-  font-weight: 900;
-  font-size: 18px;
-  letter-spacing: -0.4px;
-}
-.admin-hint{ color: var(--muted); font-size: 13px; margin-top: 4px; }
-
-.admin-grid-kpi{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-@media (max-width: 980px){
-  .admin-shell{ grid-template-columns: 1fr; }
-  .admin-sidebar{ display:none; }
-  .admin-grid-kpi{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-@media (max-width: 520px){
-  .admin-grid-kpi{ grid-template-columns: 1fr; }
-}
-
-.admin-kpi{ padding: 14px; }
-.admin-kpi-label{ color: var(--muted); font-size: 12px; font-weight: 800; }
-.admin-kpi-value{ font-size: 22px; font-weight: 900; margin-top: 6px; }
-
-.admin-two-col{
-  display: grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 12px;
-  margin-top: 12px;
-}
-@media (max-width: 980px){
-  .admin-two-col{ grid-template-columns: 1fr; }
-}
-
-.admin-box-title{
-  font-weight: 900;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.admin-toolbar{
-  display: grid;
-  grid-template-columns: 1fr 160px 160px 140px;
-  gap: 10px;
-  align-items: center;
-}
-@media (max-width: 980px){
-  .admin-toolbar{ grid-template-columns: 1fr; }
-}
-
-.admin-input, .admin-select, .admin-textarea{
-  width: 100%;
-  border-radius: 12px;
-  padding: 12px 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.75);
-  color: var(--text-main);
-  outline: none;
-}
-.dark-mode .admin-input, .dark-mode .admin-select, .dark-mode .admin-textarea{
-  background: rgba(2,6,23,.35);
-  border: 1px solid rgba(148,163,184,0.14);
-}
-
-.admin-textarea{ min-height: 110px; resize: vertical; }
-
-.admin-table-head{
-  display: grid;
-  grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr;
-  gap: 10px;
-  padding: 10px 10px;
-  font-size: 12px;
-  font-weight: 900;
-  color: var(--muted);
-  border-bottom: 1px solid rgba(15,23,42,.08);
-}
-.admin-table-row{
-  display: grid;
-  grid-template-columns: 1.6fr .5fr .7fr .6fr .6fr .6fr;
-  gap: 10px;
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(15,23,42,.06);
-  align-items: center;
-  font-size: 13px;
-}
-.admin-pill{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 900;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.6);
-}
-.dark-mode .admin-pill{
-  background: rgba(2,6,23,.35);
-  border: 1px solid rgba(148,163,184,0.14);
-}
-
-.admin-list{
-  display: grid;
-  gap: 10px;
-  font-size: 13px;
-}
-.admin-muted{ color: var(--muted); }
-
-.admin-form-row{ margin: 10px 0; }
-
-.admin-switch{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  cursor:pointer;
-  font-weight:900;
-  font-size:13px;
-  color: var(--text-main);
-}
-.admin-switch input{ display:none; }
-.admin-switch-ui{
-  width: 44px;
-  height: 26px;
-  border-radius: 999px;
-  position: relative;
-  background: rgba(0,0,0,.15);
-  transition: .2s ease;
-}
-.admin-switch-ui::after{
-  content:"";
-  position:absolute;
-  top:3px; left:3px;
-  width:20px; height:20px;
-  border-radius:999px;
-  background:#fff;
-  transition:.2s ease;
-}
-.admin-switch input:checked + .admin-switch-ui{
-  background: rgba(99,102,241,.55);
-}
-.admin-switch input:checked + .admin-switch-ui::after{
-  left: 21px;
-}
-
-.admin-modal{
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  background: rgba(0,0,0,.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-.admin-modal-card{
-  width: min(860px, 95vw);
-  height: min(740px, 92vh);
-  background: rgba(255,255,255,.95);
-  border-radius: 20px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 30px 80px rgba(0,0,0,.35);
-}
-.dark-mode .admin-modal-card{ background: rgba(2,6,23,.85); }
-
-.admin-modal-head{
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(15,23,42,.08);
-}
-.admin-x{
-  width: 38px; height: 38px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.65);
-  cursor: pointer;
-  font-weight: 900;
-}
-.dark-mode .admin-x{
-  background: rgba(2,6,23,.35);
-  border: 1px solid rgba(148,163,184,0.14);
-}
-
-.admin-modal-tabs{
-  display:flex;
-  gap: 8px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(15,23,42,.08);
-}
-.um-tab{
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.65);
-  cursor:pointer;
-  font-weight: 900;
-  font-size: 12px;
-}
-.dark-mode .um-tab{
-  background: rgba(2,6,23,.35);
-  border: 1px solid rgba(148,163,184,0.14);
-}
-.um-tab.active{
-  border: none;
-  color:#fff;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-}
-.admin-modal-body{
-  padding: 14px 16px;
-  overflow: auto;
-}
   </style>
 </head>
 <body>
@@ -554,30 +185,6 @@
         <div class="recommend-card">
           <div>✨ <b>갓생 입문 팩</b></div>
           <span style="font-size:12px; color:#555">성공 루틴을 2분짜리로 쪼개기</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="problem">
-    <div class="container">
-      <div class="section-head">
-        <span class="kicker">WHY</span>
-        <h2>왜 습관은 항상 실패할까?</h2>
-        <p>HabitFlow는 “딱 1개만, 버튼 1번”으로 실행 장벽을 최소화합니다.</p>
-      </div>
-      <div class="problem-grid">
-        <div class="problem-card glass">
-          <h3>🎯 목표가 너무 많다</h3>
-          <p>욕심이 커질수록 시작이 어려워져요. 하루 1개만 남깁니다.</p>
-        </div>
-        <div class="problem-card glass">
-          <h3>📝 기록이 귀찮다</h3>
-          <p>기록이 번거로우면 포기 확률이 올라가요. 버튼 한 번이면 끝.</p>
-        </div>
-        <div class="problem-card glass">
-          <h3>📉 성취가 눈에 안 보인다</h3>
-          <p>쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</p>
         </div>
       </div>
     </div>
@@ -650,9 +257,9 @@
           <div id="weeklyReportLocked" style="display:none; padding: 24px; border: 2px dashed var(--card-border); border-radius: 16px; text-align: center;">
              <span style="font-size: 2rem; display:block; margin-bottom:10px;">🔒</span>
              <div>
-                <b>-일 연속 성공</b> 중입니다!<br>
-                AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
-                PRO 회원이 되어 확인해보세요.
+               <b>-일 연속 성공</b> 중입니다!<br>
+               AI가 분석한 <b>'실패 패턴 리포트'</b>가 도착했습니다.<br>
+               PRO 회원이 되어 확인해보세요.
              </div>
              <button id="weeklyGoProBtn" class="btn btn-primary" style="margin-top: 15px; font-size:13px;" onclick="showProModal()">리포트 잠금 해제하기</button>
           </div>
@@ -701,906 +308,78 @@
     </div>
   </section>
 
+  <div id="proModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>🚀 PRO 업그레이드</h3>
+        <p>죄송합니다. 현재 결제 시스템 점검 중입니다.</p>
+        <button class="btn btn-ghost" onclick="document.getElementById('proModal').style.display='none'">닫기</button>
+    </div>
+  </div>
+
   <footer>
     <div class="container" style="text-align:center; padding-bottom:40px; color:var(--muted); font-size:14px;">
       <p>© 2026 HabitFlow. All rights reserved.</p>
-      <p>support@habitflow.app</p>
     </div>
   </footer>
 
-<!-- ========================= -->
-<!-- ✅ ADMIN CONSOLE (NEW UI) -->
-<!-- ========================= -->
-
-<!-- 1) 우측 하단 플로팅 버튼 -->
 <button id="adminFab" aria-label="Admin Console">👑</button>
 
-<!-- 2) 관리자 콘솔 오버레이 -->
 <div id="adminOverlay" class="admin-overlay" style="display:none;">
   <div class="admin-shell">
-    <!-- Left: Sidebar -->
     <aside class="admin-sidebar">
-      <div class="admin-brand">
-        <div class="admin-dot"></div>
-        <div>
-          <div class="admin-title">HabitFlow Admin</div>
-          <div id="adminMe" class="admin-sub">—</div>
-        </div>
+      <div class="admin-brand" style="margin-bottom:20px;">
+        <div class="admin-title" style="font-weight:900;">HabitFlow Admin</div>
+        <div id="adminMe" class="admin-sub" style="font-size:12px; color:var(--muted);">—</div>
       </div>
-
       <nav class="admin-nav">
         <button class="admin-tab active" data-tab="dash">대시보드</button>
-        <button class="admin-tab" data-tab="users">유저</button>
-        <button class="admin-tab" data-tab="notice">공지/팝업</button>
-        <button class="admin-tab" data-tab="logs">운영 로그</button>
-        <button class="admin-tab" data-tab="settings">설정</button>
+        <button class="admin-tab" data-tab="users">유저 관리</button>
       </nav>
-
-      <div class="admin-side-actions">
-        <button id="adminRefresh" class="btn btn-ghost" type="button">새로고침</button>
-        <button id="adminClose" class="btn" type="button">닫기</button>
+      <div style="margin-top:auto;">
+        <button id="adminRefresh" class="btn btn-ghost" style="width:100%;">새로고침</button>
+        <button id="adminClose" class="btn" style="width:100%; margin-top:10px;">닫기</button>
       </div>
     </aside>
 
-    <!-- Right: Main -->
     <main class="admin-main">
-      <!-- Header -->
-      <div class="admin-topbar">
-        <div>
-          <div id="adminSectionTitle" class="admin-h1">대시보드</div>
-          <div class="admin-hint">운영 상태를 한눈에 확인하고 유저를 관리하세요.</div>
-        </div>
+      <div class="admin-topbar" style="margin-bottom:20px;">
+        <div id="adminSectionTitle" style="font-size:24px; font-weight:800;">대시보드</div>
       </div>
 
-      <!-- CONTENT: DASH -->
       <section class="admin-panel" data-panel="dash">
         <div class="admin-grid-kpi">
           <div class="admin-kpi glass">
-            <div class="admin-kpi-label">최근 7일 활동 유저</div>
-            <div id="kpiWAU" class="admin-kpi-value">—</div>
+            <div class="admin-kpi-label" style="font-size:12px; color:var(--muted);">총 유저</div>
+            <div id="kpiTotal" class="admin-kpi-value" style="font-size:24px; font-weight:900;">—</div>
           </div>
           <div class="admin-kpi glass">
-            <div class="admin-kpi-label">PRO 유저 수</div>
-            <div id="kpiPRO" class="admin-kpi-value">—</div>
-          </div>
-          <div class="admin-kpi glass">
-            <div class="admin-kpi-label">휴면 유저(14일+)</div>
-            <div id="kpiDormant" class="admin-kpi-value">—</div>
-          </div>
-          <div class="admin-kpi glass">
-            <div class="admin-kpi-label">가입 유저 총계</div>
-            <div id="kpiTotal" class="admin-kpi-value">—</div>
-          </div>
-        </div>
-
-        <div class="admin-two-col">
-          <div class="glass" style="padding:16px;">
-            <div class="admin-box-title">최근 가입 유저</div>
-            <div id="dashRecentUsers" class="admin-list">불러오는 중...</div>
-          </div>
-
-          <div class="glass" style="padding:16px;">
-            <div class="admin-box-title">운영 메모</div>
-            <div class="admin-muted" style="font-size:13px; line-height:1.6;">
-              - 대시보드 KPI는 Firestore users 컬렉션 기준입니다.<br>
-              - lastActiveAt / createdAt 필드가 있으면 더 정확해집니다.
-            </div>
+            <div class="admin-kpi-label" style="font-size:12px; color:var(--muted);">PRO 유저</div>
+            <div id="kpiPRO" class="admin-kpi-value" style="font-size:24px; font-weight:900;">—</div>
           </div>
         </div>
       </section>
 
-      <!-- CONTENT: USERS -->
       <section class="admin-panel" data-panel="users" style="display:none;">
-        <div class="admin-toolbar glass" style="padding:12px;">
-          <input id="userSearch" class="admin-input" placeholder="이메일 / UID 검색" />
-          <select id="userFilter" class="admin-select">
-            <option value="all">전체</option>
-            <option value="pro">PRO만</option>
-            <option value="free">무료만</option>
-            <option value="dormant">휴면(14일+)</option>
-            <option value="banned">차단</option>
-          </select>
-          <select id="userSort" class="admin-select">
-            <option value="recent">최근 활동순</option>
-            <option value="created">가입 최신순</option>
-            <option value="success">누적 성공순</option>
-          </select>
-          <button id="userReload" class="btn btn-ghost" type="button">목록 새로고침</button>
-        </div>
-
         <div class="glass" style="padding:12px; margin-top:12px;">
-          <div class="admin-table-head">
-            <div>유저</div>
+          <div class="admin-table-head" style="display:grid; grid-template-columns: 1.6fr 0.5fr 1fr; font-weight:700; color:var(--muted); padding-bottom:10px; border-bottom:1px solid #eee;">
+            <div>유저 (Email)</div>
             <div>등급</div>
-            <div>최근활동</div>
-            <div>누적성공</div>
-            <div>상태</div>
-            <div style="text-align:right;">액션</div>
+            <div>UID</div>
           </div>
-          <div id="userTable" class="admin-table-body">불러오는 중...</div>
+          <div id="userTable" class="admin-table-body" style="margin-top:10px;">불러오는 중...</div>
         </div>
       </section>
 
-      <!-- CONTENT: NOTICE -->
-      <section class="admin-panel" data-panel="notice" style="display:none;">
-        <div class="glass" style="padding:16px;">
-          <div class="admin-box-title">배너 공지</div>
-          <div class="admin-form-row">
-            <label class="admin-switch">
-              <input id="bannerEnabled" type="checkbox" />
-              <span class="admin-switch-ui"></span>
-              <span>배너 활성화</span>
-            </label>
-          </div>
-          <div class="admin-form-row">
-            <input id="bannerText" class="admin-input" placeholder="배너 문구" />
-          </div>
-          <div class="admin-form-row">
-            <input id="bannerLink" class="admin-input" placeholder="배너 링크(선택)" />
-          </div>
-          <button id="saveBanner" class="btn btn-primary" type="button" style="width:220px;">배너 저장</button>
-        </div>
-
-        <div class="glass" style="padding:16px; margin-top:12px;">
-          <div class="admin-box-title">팝업 공지</div>
-          <div class="admin-form-row">
-            <label class="admin-switch">
-              <input id="popupEnabled" type="checkbox" />
-              <span class="admin-switch-ui"></span>
-              <span>팝업 활성화</span>
-            </label>
-          </div>
-          <div class="admin-form-row">
-            <input id="popupTitle" class="admin-input" placeholder="팝업 제목" />
-          </div>
-          <div class="admin-form-row">
-            <textarea id="popupBody" class="admin-textarea" placeholder="팝업 내용"></textarea>
-          </div>
-          <div class="admin-form-row">
-            <input id="popupCtaText" class="admin-input" placeholder="버튼 문구(선택)" />
-          </div>
-          <div class="admin-form-row">
-            <input id="popupCtaLink" class="admin-input" placeholder="버튼 링크(선택)" />
-          </div>
-          <button id="savePopup" class="btn btn-primary" type="button" style="width:220px;">팝업 저장</button>
-        </div>
-      </section>
-
-      <!-- CONTENT: LOGS -->
-      <section class="admin-panel" data-panel="logs" style="display:none;">
-        <div class="glass" style="padding:16px;">
-          <div class="admin-box-title">운영 로그 (최근 50개)</div>
-          <div id="adminLogs" class="admin-list">불러오는 중...</div>
-        </div>
-      </section>
-
-      <!-- CONTENT: SETTINGS -->
-      <section class="admin-panel" data-panel="settings" style="display:none;">
-        <div class="glass" style="padding:16px;">
-          <div class="admin-box-title">관리자 설정</div>
-          <div class="admin-muted" style="font-size:13px; line-height:1.7;">
-            - 관리자 접근은 <b>Firebase Custom Claims(admin=true)</b>가 가장 안전합니다.<br>
-            - 지금은 데모용으로 “관리자 이메일”도 허용할 수 있습니다(아래 JS에서 설정).<br>
-          </div>
-        </div>
-      </section>
     </main>
   </div>
 </div>
 
-<!-- 3) 유저 상세 모달 -->
-<div id="adminUserModal" class="admin-modal" style="display:none;">
-  <div class="admin-modal-card">
-    <div class="admin-modal-head">
-      <div>
-        <div id="umTitle" style="font-weight:900; font-size:16px;">유저 상세</div>
-        <div id="umSub" class="admin-muted" style="font-size:12px;">—</div>
-      </div>
-      <button id="umClose" class="admin-x">✖</button>
-    </div>
-
-    <div class="admin-modal-tabs">
-      <button class="um-tab active" data-umtab="overview">개요</button>
-      <button class="um-tab" data-umtab="actions">조치</button>
-      <button class="um-tab" data-umtab="notes">메모</button>
-    </div>
-
-    <div class="admin-modal-body">
-      <div class="um-panel" data-umpanel="overview">
-        <div class="admin-grid-kpi" style="grid-template-columns: repeat(2, minmax(0,1fr));">
-          <div class="admin-kpi glass"><div class="admin-kpi-label">등급</div><div id="umPlan" class="admin-kpi-value">—</div></div>
-          <div class="admin-kpi glass"><div class="admin-kpi-label">누적 성공</div><div id="umTotal" class="admin-kpi-value">—</div></div>
-          <div class="admin-kpi glass"><div class="admin-kpi-label">최근 활동</div><div id="umLast" class="admin-kpi-value">—</div></div>
-          <div class="admin-kpi glass"><div class="admin-kpi-label">상태</div><div id="umStatus" class="admin-kpi-value">—</div></div>
-        </div>
-        <div class="glass" style="padding:12px; margin-top:12px;">
-          <div class="admin-box-title">최근 기록(최대 10개)</div>
-          <div id="umHabits" class="admin-list">불러오는 중...</div>
-        </div>
-      </div>
-
-      <div class="um-panel" data-umpanel="actions" style="display:none;">
-        <div class="glass" style="padding:12px;">
-          <div class="admin-box-title">상태 변경</div>
-          <div class="admin-form-row">
-            <select id="umStatusSelect" class="admin-select">
-              <option value="active">ACTIVE</option>
-              <option value="warned">WARNED</option>
-              <option value="banned">BANNED</option>
-            </select>
-          </div>
-          <div class="admin-form-row">
-            <input id="umReason" class="admin-input" placeholder="사유(선택)" />
-          </div>
-          <button id="umSaveStatus" class="btn btn-primary" type="button" style="width:220px;">상태 저장</button>
-        </div>
-
-        <div class="glass" style="padding:12px; margin-top:12px;">
-          <div class="admin-box-title">PRO 토글(데모)</div>
-          <div class="admin-muted" style="font-size:12px; line-height:1.6;">
-            실제 운영은 Custom Claims가 안전하지만, 지금은 <b>users/{uid}.isPro</b>로 데모 토글합니다.
-          </div>
-          <button id="umTogglePro" class="btn btn-ghost" type="button" style="margin-top:10px; width:220px;">PRO 토글</button>
-        </div>
-      </div>
-
-      <div class="um-panel" data-umpanel="notes" style="display:none;">
-        <div class="glass" style="padding:12px;">
-          <div class="admin-box-title">운영자 메모</div>
-          <textarea id="umNoteText" class="admin-textarea" placeholder="메모를 입력하세요"></textarea>
-          <button id="umAddNote" class="btn btn-primary" type="button" style="width:220px; margin-top:10px;">메모 추가</button>
-          <div id="umNotes" class="admin-list" style="margin-top:12px;">불러오는 중...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<script>
-  function scrollToAuth() {
-    document.getElementById("authSection").scrollIntoView({ behavior: "smooth" });
-  }
-  function safeText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
-</script>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-    onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // =========================
-// ✅ ADMIN CONSOLE (NEW UI)
-// =========================
-
-// 🔧 (1) 관리자 이메일 예외 허용 (원하면 삭제 가능)
-const ADMIN_EMAIL_ALLOWLIST = ["test@gmail.com"]; // 너 관리자 이메일로 바꿔
-
-// 🔧 (2) Firestore 문서 위치
-const SETTINGS_DOC = doc(db, "settings", "global");     // 공지/팝업 저장
-const LOGS_COL = collection(db, "adminLogs");           // 운영 로그
-
-// --- Admin UI DOM ---
-const adminFab = document.getElementById("adminFab");
-const adminOverlay = document.getElementById("adminOverlay");
-const adminClose = document.getElementById("adminClose");
-const adminRefresh = document.getElementById("adminRefresh");
-const adminMe = document.getElementById("adminMe");
-
-const adminTabs = Array.from(document.querySelectorAll(".admin-tab"));
-const adminPanels = Array.from(document.querySelectorAll(".admin-panel"));
-const adminSectionTitle = document.getElementById("adminSectionTitle");
-
-// Dashboard elements
-const kpiWAU = document.getElementById("kpiWAU");
-const kpiPRO = document.getElementById("kpiPRO");
-const kpiDormant = document.getElementById("kpiDormant");
-const kpiTotal = document.getElementById("kpiTotal");
-const dashRecentUsers = document.getElementById("dashRecentUsers");
-
-// Users elements
-const userSearch = document.getElementById("userSearch");
-const userFilter = document.getElementById("userFilter");
-const userSort = document.getElementById("userSort");
-const userReload = document.getElementById("userReload");
-const userTable = document.getElementById("userTable");
-
-// Notice elements
-const bannerEnabled = document.getElementById("bannerEnabled");
-const bannerText = document.getElementById("bannerText");
-const bannerLink = document.getElementById("bannerLink");
-const saveBanner = document.getElementById("saveBanner");
-
-const popupEnabled = document.getElementById("popupEnabled");
-const popupTitle = document.getElementById("popupTitle");
-const popupBody = document.getElementById("popupBody");
-const popupCtaText = document.getElementById("popupCtaText");
-const popupCtaLink = document.getElementById("popupCtaLink");
-const savePopup = document.getElementById("savePopup");
-
-// Logs
-const adminLogs = document.getElementById("adminLogs");
-
-// User modal
-const adminUserModal = document.getElementById("adminUserModal");
-const umClose = document.getElementById("umClose");
-const umTitle = document.getElementById("umTitle");
-const umSub = document.getElementById("umSub");
-const umPlan = document.getElementById("umPlan");
-const umTotal = document.getElementById("umTotal");
-const umLast = document.getElementById("umLast");
-const umStatus = document.getElementById("umStatus");
-const umHabits = document.getElementById("umHabits");
-const umStatusSelect = document.getElementById("umStatusSelect");
-const umReason = document.getElementById("umReason");
-const umSaveStatus = document.getElementById("umSaveStatus");
-const umTogglePro = document.getElementById("umTogglePro");
-const umNoteText = document.getElementById("umNoteText");
-const umAddNote = document.getElementById("umAddNote");
-const umNotes = document.getElementById("umNotes");
-
-const umTabs = Array.from(document.querySelectorAll(".um-tab"));
-const umPanels = Array.from(document.querySelectorAll(".um-panel"));
-
-let _isAdminUser = false;
-let _adminEmail = "";
-let _selectedUid = "";
-
-// ---------- Helpers ----------
-function fmtDate(ts){
-  try{
-    if(!ts) return "—";
-    // Firestore Timestamp 대응
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toISOString().slice(0,10);
-  }catch{ return "—"; }
-}
-function daysAgo(ts){
-  if(!ts) return 9999;
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  const diff = Date.now() - d.getTime();
-  return Math.floor(diff / (1000*60*60*24));
-}
-function pill(text){
-  return `<span class="admin-pill">${text}</span>`;
-}
-async function writeAdminLog(actionType, targetUid, before, after, note=""){
-  try{
-    await setDoc(doc(LOGS_COL), {
-      createdAt: new Date(),
-      adminEmail: _adminEmail || "unknown",
-      targetUid: targetUid || "",
-      actionType,
-      before: before ?? null,
-      after: after ?? null,
-      note
-    });
-  }catch(e){
-    console.log("log fail", e);
-  }
-}
-
-// ---------- Open/Close ----------
-function openAdmin(){
-  if(!_isAdminUser){
-    alert("관리자 권한이 없습니다.");
-    return;
-  }
-  adminOverlay.style.display = "flex";
-  // 기본 탭 로드
-  switchTab("dash");
-  refreshAllAdmin();
-}
-function closeAdmin(){
-  adminOverlay.style.display = "none";
-}
-
-adminFab?.addEventListener("click", openAdmin);
-adminClose?.addEventListener("click", closeAdmin);
-adminOverlay?.addEventListener("click", (e)=>{
-  if(e.target === adminOverlay) closeAdmin();
-});
-adminRefresh?.addEventListener("click", refreshAllAdmin);
-
-// ---------- Tabs ----------
-function switchTab(tabKey){
-  adminTabs.forEach(btn=>{
-    btn.classList.toggle("active", btn.dataset.tab === tabKey);
-  });
-  adminPanels.forEach(p=>{
-    p.style.display = (p.dataset.panel === tabKey) ? "block" : "none";
-  });
-
-  const titleMap = { dash:"대시보드", users:"유저", notice:"공지/팝업", logs:"운영 로그", settings:"설정" };
-  adminSectionTitle.textContent = titleMap[tabKey] || "Admin";
-}
-adminTabs.forEach(btn=>{
-  btn.addEventListener("click", ()=> switchTab(btn.dataset.tab));
-});
-
-// ---------- Refresh ----------
-async function refreshAllAdmin(){
-  await Promise.all([
-    loadDashboard(),
-    loadUsers(),
-    loadNoticeSettings(),
-    loadAdminLogs()
-  ]);
-}
-
-// ======================
-// 1) DASHBOARD
-// ======================
-async function loadDashboard(){
-  try{
-    const usersSnap = await getDocs(collection(db, "users"));
-    const total = usersSnap.size;
-
-    let proCount = 0;
-    let wau = 0;         // 7일 내 활동
-    let dormant = 0;     // 14일+ 활동없음
-
-    // 최근 가입 5명(데모: createdAt 없으면 uid로만 표시)
-    const recent = [];
-
-    usersSnap.forEach(docSnap=>{
-      const u = docSnap.data();
-      const uid = docSnap.id;
-
-      if(u.isPro) proCount++;
-
-      const last = u.lastActiveAt || u.lastActive || u.updatedAt || null;
-      const ago = daysAgo(last);
-
-      if(ago <= 7) wau++;
-      if(ago >= 14) dormant++;
-
-      recent.push({ uid, email: u.email || "(no email)", createdAt: u.createdAt || null, lastActiveAt: last, isPro: !!u.isPro, status: u.status || "active", totalSuccess: u.totalSuccess ?? 0 });
-    });
-
-    // createdAt 기준 정렬 (없으면 그대로)
-    recent.sort((a,b)=>{
-      const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
-      const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
-      return bd - ad;
-    });
-
-    kpiTotal.textContent = String(total);
-    kpiPRO.textContent = String(proCount);
-    kpiWAU.textContent = String(wau);
-    kpiDormant.textContent = String(dormant);
-
-    dashRecentUsers.innerHTML = recent.slice(0,5).map(r=>{
-      return `
-        <div class="glass" style="padding:10px;">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
-            <div style="font-weight:900; font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-              ${r.email}
-            </div>
-            <div style="display:flex; gap:6px;">
-              ${r.isPro ? pill("PRO") : pill("FREE")}
-              ${pill((r.status||"active").toUpperCase())}
-            </div>
-          </div>
-          <div class="admin-muted" style="font-size:12px; margin-top:6px;">
-            uid: ${r.uid.slice(0,8)}… · 최근활동: ${fmtDate(r.lastActiveAt)}
-          </div>
-        </div>
-      `;
-    }).join("") || "<div class='admin-muted'>유저가 없습니다.</div>";
-  }catch(e){
-    console.error(e);
-    dashRecentUsers.innerHTML = "<div class='admin-muted'>대시보드 로드 실패</div>";
-  }
-}
-
-// ======================
-// 2) USERS
-// ======================
-userReload?.addEventListener("click", loadUsers);
-userSearch?.addEventListener("input", ()=> loadUsers());
-userFilter?.addEventListener("change", ()=> loadUsers());
-userSort?.addEventListener("change", ()=> loadUsers());
-
-async function loadUsers(){
-  try{
-    const qSnap = await getDocs(collection(db, "users"));
-    const rows = [];
-    qSnap.forEach(docSnap=>{
-      const u = docSnap.data();
-      rows.push({
-        uid: docSnap.id,
-        email: u.email || "(no email)",
-        isPro: !!u.isPro,
-        status: u.status || "active",
-        lastActiveAt: u.lastActiveAt || u.lastActive || u.updatedAt || null,
-        totalSuccess: u.totalSuccess ?? 0,
-        createdAt: u.createdAt || null
-      });
-    });
-
-    // 검색
-    const keyword = (userSearch?.value || "").trim().toLowerCase();
-    let filtered = rows.filter(r=>{
-      if(!keyword) return true;
-      return r.email.toLowerCase().includes(keyword) || r.uid.toLowerCase().includes(keyword);
-    });
-
-    // 필터
-    const f = userFilter?.value || "all";
-    if(f === "pro") filtered = filtered.filter(r=> r.isPro);
-    if(f === "free") filtered = filtered.filter(r=> !r.isPro);
-    if(f === "banned") filtered = filtered.filter(r=> (r.status||"") === "banned");
-    if(f === "dormant") filtered = filtered.filter(r=> daysAgo(r.lastActiveAt) >= 14);
-
-    // 정렬
-    const s = userSort?.value || "recent";
-    filtered.sort((a,b)=>{
-      if(s === "success") return (b.totalSuccess||0) - (a.totalSuccess||0);
-      if(s === "created"){
-        const ad = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
-        const bd = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
-        return bd - ad;
-      }
-      // recent
-      const al = a.lastActiveAt?.toDate ? a.lastActiveAt.toDate().getTime() : (a.lastActiveAt ? new Date(a.lastActiveAt).getTime() : 0);
-      const bl = b.lastActiveAt?.toDate ? b.lastActiveAt.toDate().getTime() : (b.lastActiveAt ? new Date(b.lastActiveAt).getTime() : 0);
-      return bl - al;
-    });
-
-    userTable.innerHTML = filtered.map(r=>{
-      const plan = r.isPro ? "PRO" : "FREE";
-      const last = fmtDate(r.lastActiveAt);
-      const st = (r.status || "active").toUpperCase();
-
-      return `
-        <div class="admin-table-row">
-          <div style="min-width:0;">
-            <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.email}</div>
-            <div class="admin-muted" style="font-size:12px;">uid: ${r.uid.slice(0,10)}…</div>
-          </div>
-          <div>${pill(plan)}</div>
-          <div>${last}</div>
-          <div>${r.totalSuccess ?? 0}</div>
-          <div>${pill(st)}</div>
-          <div style="text-align:right;">
-            <button class="btn btn-ghost" data-open-uid="${r.uid}" type="button" style="padding:8px 10px;">상세</button>
-          </div>
-        </div>
-      `;
-    }).join("") || "<div class='admin-muted' style='padding:12px;'>조건에 맞는 유저가 없습니다.</div>";
-
-    // 상세 버튼 이벤트
-    userTable.querySelectorAll("[data-open-uid]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        openUserModal(btn.getAttribute("data-open-uid"));
-      });
-    });
-  }catch(e){
-    console.error(e);
-    userTable.innerHTML = "<div class='admin-muted' style='padding:12px;'>유저 목록 로드 실패</div>";
-  }
-}
-
-// ======================
-// 3) NOTICE SETTINGS
-// ======================
-saveBanner?.addEventListener("click", saveBannerSettings);
-savePopup?.addEventListener("click", savePopupSettings);
-
-async function loadNoticeSettings(){
-  try{
-    const snap = await getDoc(SETTINGS_DOC);
-    const data = snap.exists() ? snap.data() : {};
-
-    const banner = data.banner || {};
-    bannerEnabled.checked = !!banner.enabled;
-    bannerText.value = banner.text || "";
-    bannerLink.value = banner.link || "";
-
-    const popup = data.popup || {};
-    popupEnabled.checked = !!popup.enabled;
-    popupTitle.value = popup.title || "";
-    popupBody.value = popup.body || "";
-    popupCtaText.value = popup.ctaText || "";
-    popupCtaLink.value = popup.ctaLink || "";
-  }catch(e){
-    console.error(e);
-  }
-}
-
-async function saveBannerSettings(){
-  try{
-    const beforeSnap = await getDoc(SETTINGS_DOC);
-    const before = beforeSnap.exists() ? beforeSnap.data() : {};
-
-    await setDoc(SETTINGS_DOC, {
-      ...before,
-      banner: {
-        enabled: !!bannerEnabled.checked,
-        text: bannerText.value.trim(),
-        link: bannerLink.value.trim()
-      }
-    }, { merge:true });
-
-    await writeAdminLog("SAVE_BANNER", "", before?.banner, {
-      enabled: !!bannerEnabled.checked,
-      text: bannerText.value.trim(),
-      link: bannerLink.value.trim()
-    });
-
-    alert("배너 저장 완료");
-  }catch(e){
-    console.error(e);
-    alert("배너 저장 실패");
-  }
-}
-
-async function savePopupSettings(){
-  try{
-    const beforeSnap = await getDoc(SETTINGS_DOC);
-    const before = beforeSnap.exists() ? beforeSnap.data() : {};
-
-    await setDoc(SETTINGS_DOC, {
-      ...before,
-      popup: {
-        enabled: !!popupEnabled.checked,
-        title: popupTitle.value.trim(),
-        body: popupBody.value.trim(),
-        ctaText: popupCtaText.value.trim(),
-        ctaLink: popupCtaLink.value.trim()
-      }
-    }, { merge:true });
-
-    await writeAdminLog("SAVE_POPUP", "", before?.popup, {
-      enabled: !!popupEnabled.checked,
-      title: popupTitle.value.trim(),
-      body: popupBody.value.trim(),
-      ctaText: popupCtaText.value.trim(),
-      ctaLink: popupCtaLink.value.trim()
-    });
-
-    alert("팝업 저장 완료");
-  }catch(e){
-    console.error(e);
-    alert("팝업 저장 실패");
-  }
-}
-
-// ======================
-// 4) ADMIN LOGS
-// ======================
-async function loadAdminLogs(){
-  try{
-    // 최근 50개: Firestore 쿼리(orderBy/limit) 쓰려면 import가 필요함.
-    // 간단하게 전체 읽고 정렬(데모). 로그가 많아지면 orderBy+limit로 바꾸면 됨.
-    const snap = await getDocs(LOGS_COL);
-    const logs = [];
-    snap.forEach(d=> logs.push({ id: d.id, ...d.data() }));
-    logs.sort((a,b)=>{
-      const at = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt||0).getTime();
-      const bt = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt||0).getTime();
-      return bt - at;
-    });
-
-    adminLogs.innerHTML = logs.slice(0,50).map(l=>{
-      return `
-        <div class="glass" style="padding:10px;">
-          <div style="display:flex; justify-content:space-between; gap:10px;">
-            <div style="font-weight:900; font-size:12px;">${l.actionType || "LOG"}</div>
-            <div class="admin-muted" style="font-size:12px;">${fmtDate(l.createdAt)}</div>
-          </div>
-          <div class="admin-muted" style="font-size:12px; margin-top:6px; line-height:1.6;">
-            admin: ${l.adminEmail || "-"}<br>
-            target: ${l.targetUid ? l.targetUid.slice(0,10)+"…" : "-"}<br>
-            note: ${l.note || "-"}
-          </div>
-        </div>
-      `;
-    }).join("") || "<div class='admin-muted'>로그가 없습니다.</div>";
-  }catch(e){
-    console.error(e);
-    adminLogs.innerHTML = "<div class='admin-muted'>로그 로드 실패</div>";
-  }
-}
-
-// ======================
-// 5) USER MODAL
-// ======================
-umClose?.addEventListener("click", ()=> adminUserModal.style.display="none");
-adminUserModal?.addEventListener("click", (e)=>{
-  if(e.target === adminUserModal) adminUserModal.style.display="none";
-});
-
-umTabs.forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const key = btn.dataset.umtab;
-    umTabs.forEach(b=> b.classList.toggle("active", b === btn));
-    umPanels.forEach(p=> p.style.display = (p.dataset.umpanel === key) ? "block" : "none");
-  });
-});
-
-async function openUserModal(uid){
-  _selectedUid = uid;
-  adminUserModal.style.display = "flex";
-  umTitle.textContent = "유저 상세";
-  umSub.textContent = `uid: ${uid}`;
-
-  // 기본 탭: overview
-  umTabs.forEach((b,i)=> b.classList.toggle("active", i===0));
-  umPanels.forEach(p=> p.style.display = (p.dataset.umpanel==="overview") ? "block" : "none");
-
-  await loadUserModalData(uid);
-}
-
-async function loadUserModalData(uid){
-  try{
-    const uref = doc(db, "users", uid);
-    const usnap = await getDoc(uref);
-    const u = usnap.exists() ? usnap.data() : {};
-
-    umPlan.textContent = u.isPro ? "PRO" : "FREE";
-    umTotal.textContent = String(u.totalSuccess ?? 0);
-    umLast.textContent = fmtDate(u.lastActiveAt || u.lastActive || u.updatedAt || null);
-    umStatus.textContent = (u.status || "active").toUpperCase();
-    umStatusSelect.value = (u.status || "active");
-    umReason.value = "";
-
-    // 최근 habits 10개 (데모: 전부 가져와 정렬)
-    const hsnap = await getDocs(collection(db, "users", uid, "habits"));
-    const habits = [];
-    hsnap.forEach(d=>{
-      habits.push({ date: d.id, ...d.data() });
-    });
-    habits.sort((a,b)=> new Date(b.date) - new Date(a.date));
-
-    umHabits.innerHTML = habits.slice(0,10).map(h=>{
-      return `
-        <div class="glass" style="padding:10px;">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
-            <div style="font-weight:900;">${h.date}</div>
-            <div>${h.done ? "✅" : "❌"}</div>
-          </div>
-          <div class="admin-muted" style="font-size:12px; margin-top:6px;">
-            ${h.name || "(no name)"}
-          </div>
-        </div>
-      `;
-    }).join("") || "<div class='admin-muted'>기록이 없습니다.</div>";
-
-    // notes
-    await loadUserNotes(uid);
-
-  }catch(e){
-    console.error(e);
-    umHabits.innerHTML = "<div class='admin-muted'>불러오기 실패</div>";
-  }
-}
-
-// 상태 저장
-umSaveStatus?.addEventListener("click", async ()=>{
-  if(!_selectedUid) return;
-  const uid = _selectedUid;
-
-  try{
-    const uref = doc(db, "users", uid);
-    const beforeSnap = await getDoc(uref);
-    const before = beforeSnap.exists() ? beforeSnap.data() : {};
-
-    const nextStatus = umStatusSelect.value;
-    const reason = umReason.value.trim();
-
-    await setDoc(uref, {
-      status: nextStatus,
-      statusReason: reason,
-      statusUpdatedAt: new Date()
-    }, { merge:true });
-
-    await writeAdminLog("SET_STATUS", uid, {status: before.status, statusReason: before.statusReason}, {status: nextStatus, statusReason: reason});
-
-    alert("상태 저장 완료");
-    await loadUsers();
-    await loadUserModalData(uid);
-  }catch(e){
-    console.error(e);
-    alert("상태 저장 실패");
-  }
-});
-
-// PRO 토글(데모: users.isPro)
-umTogglePro?.addEventListener("click", async ()=>{
-  if(!_selectedUid) return;
-  const uid = _selectedUid;
-
-  try{
-    const uref = doc(db, "users", uid);
-    const beforeSnap = await getDoc(uref);
-    const before = beforeSnap.exists() ? beforeSnap.data() : {};
-    const next = !before.isPro;
-
-    await setDoc(uref, { isPro: next }, { merge:true });
-    await writeAdminLog("TOGGLE_PRO", uid, {isPro: before.isPro}, {isPro: next});
-
-    alert(`PRO 변경 완료: ${next ? "PRO" : "FREE"}`);
-    await loadUsers();
-    await loadUserModalData(uid);
-  }catch(e){
-    console.error(e);
-    alert("PRO 변경 실패");
-  }
-});
-
-// notes
-async function loadUserNotes(uid){
-  try{
-    const nsnap = await getDocs(collection(db, "users", uid, "adminNotes"));
-    const notes = [];
-    nsnap.forEach(d=> notes.push({ id:d.id, ...d.data() }));
-    notes.sort((a,b)=>{
-      const at = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt||0).getTime();
-      const bt = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt||0).getTime();
-      return bt - at;
-    });
-
-    umNotes.innerHTML = notes.map(n=>{
-      return `
-        <div class="glass" style="padding:10px;">
-          <div style="display:flex; justify-content:space-between; gap:10px;">
-            <div style="font-weight:900; font-size:12px;">${n.adminEmail || "-"}</div>
-            <div class="admin-muted" style="font-size:12px;">${fmtDate(n.createdAt)}</div>
-          </div>
-          <div style="margin-top:6px; font-size:13px; line-height:1.6;">${(n.text||"").replaceAll("<","&lt;")}</div>
-        </div>
-      `;
-    }).join("") || "<div class='admin-muted'>메모가 없습니다.</div>";
-  }catch(e){
-    console.error(e);
-    umNotes.innerHTML = "<div class='admin-muted'>메모 로드 실패</div>";
-  }
-}
-
-umAddNote?.addEventListener("click", async ()=>{
-  if(!_selectedUid) return;
-  const text = (umNoteText.value || "").trim();
-  if(!text) return alert("메모를 입력하세요.");
-
-  try{
-    const nid = doc(collection(db, "users", _selectedUid, "adminNotes"));
-    await setDoc(nid, {
-      text,
-      createdAt: new Date(),
-      adminEmail: _adminEmail || "unknown"
-    });
-
-    await writeAdminLog("ADD_NOTE", _selectedUid, null, {text});
-    umNoteText.value = "";
-    await loadUserNotes(_selectedUid);
-  }catch(e){
-    console.error(e);
-    alert("메모 추가 실패");
-  }
-});
-
-// ======================
-// ✅ 관리자 권한 판별: onAuthStateChanged 안에서 호출해야 함
-// ======================
-function setAdminAccess(user, tokenResult){
-  const isAdminClaim = tokenResult?.claims?.admin === true;
-  const isAllowlisted = ADMIN_EMAIL_ALLOWLIST.includes(user.email);
-
-  _isAdminUser = isAdminClaim || isAllowlisted;
-  _adminEmail = user.email || "";
-
-  // 관리자면 FAB 버튼 노출
-  adminFab.style.display = _isAdminUser ? "block" : "none";
-  adminMe.textContent = _isAdminUser ? _adminEmail : "No Access";
-}
+  // 1. Firebase 설정
   const firebaseConfig = {
     apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
     authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
@@ -1613,6 +392,14 @@ function setAdminAccess(user, tokenResult){
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
+  // 2. 전역 변수 설정 (HTML onclick 호환성)
+  window.db = db;
+  window.auth = auth;
+  
+  // 3. Admin 설정
+  const ADMIN_EMAIL_ALLOWLIST = ["test@gmail.com"]; 
+  let _isAdminUser = false;
 
   // --- Theme Data ---
   const themeData = {
@@ -1641,21 +428,11 @@ function setAdminAccess(user, tokenResult){
     return count;
   }
 
-  function requireEmailPass() {
-    const emailEl = document.getElementById("email");
-    const passEl = document.getElementById("password");
-    if (!emailEl?.value || !passEl?.value) {
-      alert("이메일과 비밀번호를 모두 입력해주세요.");
-      return false;
-    }
-    if (passEl.value.length < 6) {
-      alert("비밀번호는 6자 이상이어야 합니다.");
-      return false;
-    }
-    return true;
-  }
+  // --- Window Global Functions (HTML에서 호출 가능하도록) ---
+  window.scrollToAuth = () => {
+    document.getElementById("authSection").scrollIntoView({ behavior: "smooth" });
+  };
 
-  // --- Window Global Functions ---
   window.selectTheme = async (el, themeType) => {
     const user = auth.currentUser;
     if (!user) return alert("로그인이 필요합니다.");
@@ -1664,8 +441,6 @@ function setAdminAccess(user, tokenResult){
     const isPro = tokenResult.claims.pro === true;
     const habitInput = document.getElementById("habitName");
     const dayIdx = new Date().getDay();
-    setAdminAccess(user, tokenResult);
-
 
     document.querySelectorAll('.theme-tag').forEach(tag => tag.classList.remove('active'));
 
@@ -1706,11 +481,17 @@ function setAdminAccess(user, tokenResult){
   const restoreBtn = document.getElementById("restoreStreakBtn");
   const weeklyReport = document.getElementById("weeklyReport");
 
-  // --- Auth Event Listeners ---
+  // --- Auth Logic ---
   signupBtn.onclick = async () => {
-    if (!requireEmailPass()) return;
+    if (!emailInput.value || !passInput.value) return alert("입력해주세요");
     try {
       const cred = await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value);
+      // 유저 문서 생성
+      await setDoc(doc(db, "users", cred.user.uid), {
+          email: cred.user.email,
+          createdAt: new Date(),
+          isPro: false
+      });
       await sendEmailVerification(cred.user);
       alert("✅ 회원가입 완료! 인증 메일을 확인해주세요.");
       await signOut(auth);
@@ -1720,10 +501,9 @@ function setAdminAccess(user, tokenResult){
   };
 
   signinBtn.onclick = async () => {
-    if (!requireEmailPass()) return;
+    if (!emailInput.value || !passInput.value) return alert("입력해주세요");
     try {
       await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
-      // 로그인 체크는 onAuthStateChanged에서 수행
     } catch (e) {
       alert("로그인 실패: " + e.message);
     }
@@ -1739,95 +519,59 @@ function setAdminAccess(user, tokenResult){
 
   logoutBtn.onclick = () => signOut(auth);
 
-  // --- Core Logic (Auth Monitor) ---
+  // --- Auth Monitor ---
   onAuthStateChanged(auth, async user => {
-    // 1. 로그아웃 상태
     if (!user) {
       authDiv.style.display = 'block';
       appDiv.style.display = 'none';
-      if(document.getElementById("adminPanel")) document.getElementById("adminPanel").style.display = 'none';
-      if(document.getElementById("adminOpenBtn")) document.getElementById("adminOpenBtn").style.display = 'none';
+      document.getElementById("adminFab").style.display = 'none';
       return;
     }
 
-    // 2. 관리자 예외 이메일 설정
-    const adminEmail = "test@gmail.com"; 
+    // 관리자 확인
+    const tokenResult = await getIdTokenResult(user, true);
+    const isAdmin = tokenResult.claims.admin === true || ADMIN_EMAIL_ALLOWLIST.includes(user.email);
+    _isAdminUser = isAdmin;
 
-    // 3. 이메일 인증 체크 (관리자 계정은 패스)
-    if (!user.emailVerified && user.email !== adminEmail) {
-      alert("📩 이메일 인증 후 사용 가능합니다.");
-      await signOut(auth);
-      authDiv.style.display = 'block';
-      appDiv.style.display = 'none';
-      return;
+    if (isAdmin) {
+        document.getElementById("adminFab").style.display = 'block';
+        document.getElementById("adminMe").textContent = user.email;
     }
 
-    // 4. 로그인 성공 UI
+    // UI 전환
     authDiv.style.display = 'none';
     appDiv.style.display = 'block';
     
-    const dayIdx = new Date().getDay();
-    const suggestionEl = document.getElementById("todaySuggestion");
-    if(suggestionEl) suggestionEl.innerHTML = `👉 오늘 추천: <b>${themeData.survival[dayIdx]}</b> (기본)`;
+    // DB 업데이트 (최근 활동)
+    await setDoc(doc(db, "users", user.uid), { 
+        lastActiveAt: new Date(),
+        email: user.email 
+    }, { merge: true });
 
-    try {
-      const tokenResult = await getIdTokenResult(user, true);
-      const isAdmin = tokenResult.claims.admin === true;
-      const isPro = tokenResult.claims.pro === true;
+    const isPro = tokenResult.claims.pro === true;
+    document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
 
-      document.getElementById("welcome").textContent = `👋 ${user.email.split('@')[0]}님`;
-
-      // --- [관리자 패널 로직] ---
-      const openBtn = document.getElementById("adminOpenBtn");
-      const panel = document.getElementById("adminPanel");
-      
-      // 관리자 권한 확인
-      if (isAdmin || user.email === adminEmail) {
-        if(openBtn) {
-            openBtn.style.display = 'block'; // 왕관 버튼 보이기
-            openBtn.onclick = () => {
-                // 패널 토글
-                if (panel.style.display === 'none' || panel.style.display === '') {
-                    panel.style.display = 'block';
-                    loadAllUsers(); // 데이터 로드
-                } else {
-                    panel.style.display = 'none';
-                }
-            };
-        }
-      } else {
-        if(openBtn) openBtn.style.display = 'none';
-        if(panel) panel.style.display = 'none';
-      }
-      // -------------------------
-
-      // PRO UI
-      if (isPro) {
-        if(proCard) proCard.style.display = "none";
-        if(statsDiv) statsDiv.style.display = "block";
-        safeText("status", "🌟 PRO 멤버십 이용 중");
-        loadStats(user.uid);
-      } else {
-        if(proCard) proCard.style.display = "block";
-        if(statsDiv) statsDiv.style.display = "none";
-        safeText("status", "🌱 무료 회원 (하루 1습관)");
-      }
-
-      // Load Data
-      const streak = await getConsecutiveStreak(user.uid);
-      updateTierUI(streak);
-      await updateWeeklyReport(user.uid, isPro);
-      await renderCalendar(user.uid, isPro);
-      await updateStreakProtectionUI(user.uid, isPro);
-      
-      if (!isPro && streak >= 7) showProModal();
-
-    } catch (e) {
-      console.error("Auth init error:", e);
+    // PRO Check
+    if (isPro) {
+      proCard.style.display = "none";
+      statsDiv.style.display = "block";
+      document.getElementById("status").textContent = "🌟 PRO 멤버십 이용 중";
+      loadStats(user.uid);
+    } else {
+      proCard.style.display = "block";
+      statsDiv.style.display = "none";
+      document.getElementById("status").textContent = "🌱 무료 회원 (하루 1습관)";
     }
+
+    // 데이터 로드
+    const streak = await getConsecutiveStreak(user.uid);
+    updateTierUI(streak);
+    await updateWeeklyReport(user.uid, isPro);
+    await renderCalendar(user.uid, isPro);
+    await updateStreakProtectionUI(user.uid, isPro);
   });
 
-  // --- Habit Actions (꽃가루 효과 적용) ---
+  // --- Habit Actions ---
   habitBtn.onclick = async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -1847,47 +591,36 @@ function setAdminAccess(user, tokenResult){
       timestamp: new Date()
     });
 
-    celebrate(); // 꽃가루 함수 호출
+    celebrate();
     
+    // 유저 문서에 성공 횟수 업데이트
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    const currentCount = userSnap.data()?.totalSuccess || 0;
+    await updateDoc(userRef, { totalSuccess: currentCount + 1 });
+
     const streak = await getConsecutiveStreak(user.uid);
     updateTierUI(streak);
   };
 
-  // 꽃가루 효과 함수
   function celebrate() {
     const btn = document.getElementById("habitBtn");
-    
-    // 버튼 애니메이션
     btn.style.transform = "scale(0.95)";
     setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
     
-    safeText("status", "🎉 오늘의 미션 클리어! 훌륭합니다.");
+    document.getElementById("status").textContent = "🎉 오늘의 미션 클리어!";
     btn.innerHTML = "완료함 ✨";
     btn.style.background = "#ddd";
     btn.style.color = "#888";
     btn.style.cursor = "default";
     btn.disabled = true;
 
-    // 꽃가루 발사 (window.confetti가 로드되어 있어야 함)
     if (typeof confetti === 'function') {
-        const count = 200;
-        const defaults = { origin: { y: 0.7 } };
-        function fire(particleRatio, opts) {
-          confetti(Object.assign({}, defaults, opts, {
-            particleCount: Math.floor(count * particleRatio)
-          }));
-        }
-        fire(0.25, { spread: 26, startVelocity: 55 });
-        fire(0.2, { spread: 60 });
-        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-        fire(0.1, { spread: 120, startVelocity: 45 });
-    } else {
-        console.log("Confetti script not loaded");
+        confetti({ origin: { y: 0.7 }, spread: 26, startVelocity: 55 });
     }
   }
 
-  // --- UI Update Functions ---
+  // --- UI Update Helpers ---
   function updateTierUI(streak) {
     const tierBadge = document.getElementById("tierBadge");
     const tierText = document.getElementById("tierText");
@@ -1953,13 +686,11 @@ function setAdminAccess(user, tokenResult){
       <div style="background:rgba(99,102,241,0.1); padding:16px; border-radius:12px; margin-bottom:12px;">
          <div style="font-weight:700; margin-bottom:8px;">🤖 AI Habit Coach</div>
          <div style="font-size:13px; line-height:1.5;">
-            이번 주 성공률은 <b>${rate}%</b>입니다.<br>
-            ${rate === 100 ? "완벽합니다! 갓생 그 자체시네요." : "주말에 조금 더 신경써보면 어떨까요?"}
+           이번 주 성공률은 <b>${rate}%</b>입니다.<br>
+           ${rate === 100 ? "완벽합니다! 갓생 그 자체시네요." : "주말에 조금 더 신경써보면 어떨까요?"}
          </div>
       </div>
-      <div style="padding:10px; background:#fff; border-radius:12px; border:1px solid #eee;">
-         ${listHTML}
-      </div>
+      <div style="padding:10px; background:#fff; border-radius:12px; border:1px solid #eee;">${listHTML}</div>
     `;
   }
 
@@ -1967,10 +698,7 @@ function setAdminAccess(user, tokenResult){
     const section = document.getElementById("calendarSection");
     const grid = document.getElementById("calendarGrid");
     
-    if (!isPro) {
-      section.style.display = "none";
-      return;
-    }
+    if (!isPro) { section.style.display = "none"; return; }
     section.style.display = "block";
     grid.innerHTML = "";
 
@@ -2022,110 +750,64 @@ function setAdminAccess(user, tokenResult){
   }
 
   async function loadStats(uid) {
-    let count = 0;
     const snap = await getDocs(collection(db, "users", uid, "habits"));
-    safeText("totalDays", `총 누적 성공: ${snap.size}일`);
+    document.getElementById("totalDays").textContent = `총 누적 성공: ${snap.size}일`;
   }
 
-  // --- Admin Functions (모달창 적용 완료) ---
-  async function loadAllUsers() {
-    const listDiv = document.getElementById("userList");
-    if (!listDiv) return;
+  // ============================
+  // ADMIN FUNCTIONS (NEW)
+  // ============================
+  const adminFab = document.getElementById("adminFab");
+  const adminOverlay = document.getElementById("adminOverlay");
+  const adminClose = document.getElementById("adminClose");
+  const adminRefresh = document.getElementById("adminRefresh");
+  const userTable = document.getElementById("userTable");
+  const adminTabs = document.querySelectorAll(".admin-tab");
+  const adminPanels = document.querySelectorAll(".admin-panel");
 
-    listDiv.innerHTML = "<div style='text-align:center; padding:20px;'>데이터 불러오는 중...</div>";
-    
-    try {
-      const snap = await getDocs(collection(db, "users"));
-      listDiv.innerHTML = "";
-      
-      if (snap.empty) {
-          listDiv.innerHTML = "가입된 유저가 없습니다.";
-          return;
-      }
+  // Admin Toggle
+  adminFab.addEventListener("click", async () => {
+      adminOverlay.style.display = "flex";
+      await refreshAdmin();
+  });
+  adminClose.addEventListener("click", () => adminOverlay.style.display = "none");
+  adminRefresh.addEventListener("click", refreshAdmin);
 
-      snap.forEach(docSnap => {
-        const data = docSnap.data();
-        const uid = docSnap.id;
-        
-        const item = document.createElement("div");
-        item.style.cssText = "background:white; padding:10px; margin-bottom:8px; border-radius:6px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:6px;";
-        
-        item.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-             <span style="font-weight:bold; color:#334155; font-size:11px;">UID: ${uid.slice(0,6)}...</span>
-             <span class="badge" style="background:${data.isPro ? '#6366f1' : '#94a3b8'}">${data.isPro ? 'PRO' : 'FREE'}</span>
-          </div>
-          <div style="display:flex; gap:5px; margin-top:4px;">
-             <button class="info-btn" style="flex:1; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer; border-radius:4px; font-size:11px; padding:4px;">🔍 상세 정보</button>
-             <button class="pro-btn" style="flex:1; border:none; background:${data.isPro ? '#fb7185' : '#6366f1'}; color:white; cursor:pointer; border-radius:4px; font-size:11px; padding:4px;">
-                ${data.isPro ? 'PRO 해제' : 'PRO 부여'}
-             </button>
-          </div>
-        `;
-
-        item.querySelector(".pro-btn").onclick = async () => {
-           if(confirm(`[${uid}] 님의 등급을 변경하시겠습니까?`)) {
-               await updateDoc(doc(db, "users", uid), { isPro: !data.isPro });
-               loadAllUsers(); 
-           }
-        };
-
-        // 상세 정보 모달 열기
-        item.querySelector(".info-btn").onclick = async () => {
-            const modal = document.getElementById("adminUserDetailModal");
-            const content = document.getElementById("detailContent");
-            
-            modal.style.display = "flex";
-            content.innerHTML = "정보를 가져오는 중입니다...";
-
-            const habitsSnap = await getDocs(collection(db, "users", uid, "habits"));
-            const totalHabits = habitsSnap.size;
-            
-            let recentHabitsHTML = "";
-            let habitsArr = [];
-            habitsSnap.forEach(h => habitsArr.push({date: h.id, ...h.data()}));
-            habitsArr.sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            habitsArr.slice(0, 5).forEach(h => {
-                recentHabitsHTML += `<li style="margin-bottom:4px;">${h.date}: ${h.name} ${h.done?'✅':'❌'}</li>`;
-            });
-
-            content.innerHTML = `
-                <p><strong>🆔 UID:</strong> ${uid}</p>
-                <p><strong>💎 멤버십:</strong> ${data.isPro ? '<span style="color:blue">PRO 유저</span>' : '무료 유저'}</p>
-                <p><strong>🛡️ 기록 복구권:</strong> ${data.streakProtectionLeft ?? 0}회 남음</p>
-                <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
-                <p><strong>📊 총 성공 일수:</strong> ${totalHabits}일</p>
-                <p><strong>🗓️ 최근 활동:</strong></p>
-                <ul style="padding-left:20px; background:#f8fafc; padding:10px 10px 10px 30px; border-radius:8px;">
-                    ${recentHabitsHTML || "<li style='color:#999'>기록 없음</li>"}
-                </ul>
-            `;
-        };
-
-        listDiv.appendChild(item);
+  // Tabs
+  adminTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+          adminTabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          const target = tab.dataset.tab;
+          adminPanels.forEach(p => p.style.display = p.dataset.panel === target ? "block" : "none");
       });
-    } catch (error) {
-      console.error(error);
-      listDiv.innerHTML = "목록을 불러오는데 실패했습니다.";
-    }
+  });
+
+  async function refreshAdmin() {
+      // 1. Load Dashboard
+      const usersSnap = await getDocs(collection(db, "users"));
+      const total = usersSnap.size;
+      let proCount = 0;
+      usersSnap.forEach(u => { if(u.data().isPro) proCount++; });
+      document.getElementById("kpiTotal").textContent = total;
+      document.getElementById("kpiPRO").textContent = proCount;
+
+      // 2. Load Users Table
+      let html = "";
+      usersSnap.forEach(docSnap => {
+          const u = docSnap.data();
+          const uid = docSnap.id;
+          html += `
+          <div class="admin-table-row" style="grid-template-columns: 1.6fr 0.5fr 1fr;">
+              <div style="font-weight:700;">${u.email || "No Email"}</div>
+              <div><span class="badge" style="background:${u.isPro?'#6366f1':'#ccc'}">${u.isPro?'PRO':'FREE'}</span></div>
+              <div style="font-size:11px; color:#aaa;">${uid.slice(0,6)}...</div>
+          </div>
+          `;
+      });
+      userTable.innerHTML = html;
   }
 
-  const cheatBtn = document.getElementById("cheatStreakBtn");
-  if(cheatBtn) {
-    cheatBtn.onclick = async () => {
-       const user = auth.currentUser;
-       if (!user) return alert("로그인 필요");
-       if (!confirm("지난 5일 데이터를 강제 성공 처리할까요?")) return;
-       for(let i=0; i<5; i++) {
-          const k = dateKeyFromOffset(i);
-          await setDoc(doc(db, "users", user.uid, "habits", k), { done: true, cheat: true });
-       }
-       alert("치트 적용 완료! 새로고침하세요.");
-       location.reload();
-    };
-  }
-  
   // --- Dark Mode ---
   const toggle = document.getElementById("darkModeToggle");
   toggle.onclick = () => {
@@ -2135,37 +817,5 @@ function setAdminAccess(user, tokenResult){
   if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
 </script>
 
-<script>
-  // BGM Player Logic (Vanilla JS)
-  (() => {
-    const audio = document.getElementById("bgmAudio");
-    const bgmBtn = document.getElementById("bgmToggle");
-    const vol = document.getElementById("bgmVol");
-    const volText = document.getElementById("bgmVolText");
-
-    if (audio && bgmBtn) {
-      audio.volume = 0.25;
-
-      bgmBtn.onclick = () => {
-        if (audio.paused) {
-          audio.play().then(() => {
-            bgmBtn.textContent = "일시정지";
-          }).catch((e) => {
-            alert("브라우저 정책상 자동재생이 막혀있어요. 버튼을 다시 눌러주세요!");
-            console.error(e);
-          });
-        } else {
-          audio.pause();
-          bgmBtn.textContent = "재생";
-        }
-      };
-
-      vol.oninput = () => {
-        audio.volume = vol.value;
-        volText.textContent = Math.round(vol.value * 100) + "%";
-      };
-    }
-  })();
-</script>
 </body>
 </html>
