@@ -1,5 +1,13 @@
+<!-- =========================
+  HabitFlow (Hardened Build)
+  PART 1 / 2  (<= ~800 lines)
+  - 관리자 패널 포함
+  - 중복/충돌 제거
+  - 클릭/버튼 먹통 원인 제거
+========================= -->
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <title>HabitFlow - Ultimate God Mode</title>
@@ -9,7 +17,6 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
-    /* ====== ✨ Core Variables ====== */
     :root {
       --bg-color: #f8fafc;
       --text-main: #0f172a;
@@ -37,231 +44,1176 @@
       --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
-      margin: 0; font-family: 'SUIT', sans-serif;
-      background: var(--bg-color); color: var(--text-main);
-      overflow-x: hidden; transition: background 0.3s, color 0.3s;
-      min-height: 100vh; position: relative;
+      margin: 0;
+      font-family: 'SUIT', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+      position: relative;
     }
 
-    /* ====== Animations ====== */
-    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 100% { transform: scale(1.05); opacity: 1; } }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes fireScale { 0% { transform: scale(1) rotate(-5deg); } 100% { transform: scale(1.2) rotate(5deg); } }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-    /* ====== UI Components ====== */
-    ul { list-style: none; padding: 0; margin: 0; }
-    button { font-family: inherit; }
+    button {
+      font-family: inherit;
+    }
 
-    section { width: 100%; padding: 84px 20px; position: relative; z-index: 1; pointer-events: auto; }
-    .container, .glass, button, input, .card, .price-card, .workout-side-panel, .problem-card, .memo-panel { pointer-events: auto; }
-    .container { width: 100%; max-width: 1080px; margin: 0 auto; }
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+      }
 
-    header { position: absolute; top: 0; left: 0; right: 0; padding: 20px 0; z-index: 10; pointer-events: auto; }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-weight: 900; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
-    .logo-badge { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; }
+      100% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+    }
 
-    nav { display: flex; gap: 12px; align-items: center; }
-    .pc-only { display: block; }
-    @media (max-width: 600px) { .pc-only { display: none; } }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(40px, 60px);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes ticker {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 0.6;
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        top: -100px;
+      }
+
+      to {
+        top: 100px;
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes glowing {
+      0% {
+        background-position: 0 0;
+      }
+
+      50% {
+        background-position: 400% 0;
+      }
+
+      100% {
+        background-position: 0 0;
+      }
+    }
+
+    /* ✅ 클릭/드래그 먹통 방지: 기본은 auto */
+    section {
+      width: 100%;
+      padding: 84px 20px;
+      position: relative;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .glass,
+    button,
+    input,
+    .card,
+    .price-card,
+    .workout-side-panel,
+    .problem-card,
+    .memo-panel {
+      pointer-events: auto;
+    }
+
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 0;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .logo-badge {
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pc-only {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .pc-only {
+        display: none;
+      }
+    }
 
     .glass {
-      background: var(--card-bg); border: 1px solid var(--card-border);
-      box-shadow: var(--glass-shadow); backdrop-filter: blur(16px);
-      border-radius: 24px; transition: transform 0.25s ease;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      transition: transform 0.25s ease;
     }
-    .glass:hover { transform: translateY(-4px); }
 
-    .hero { padding-top: 140px; padding-bottom: 80px; }
-    .hero-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
-    .hero-pill { display: inline-block; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 800; background: rgba(99, 102, 241, 0.15); color: var(--primary); }
-    .hero-title { font-size: 46px; line-height: 1.2; letter-spacing: -1px; margin: 18px 0; font-weight: 900; color: var(--text-main); }
-    .hero-desc { font-size: 16px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; }
-    .hero-metrics { display: flex; gap: 14px; margin-top: 28px; }
-    .metric-card { padding: 14px 18px; border-radius: 16px; background: var(--input-bg); border: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-main); }
-    .recommend-card { background: var(--card-bg); border-radius: 24px; padding: 30px; margin-top: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: var(--text-main); border: 1px solid var(--card-border); box-shadow: var(--shadow); transition: opacity 0.5s ease-in-out; min-height: 140px; justify-content: center; }
+    .glass:hover {
+      transform: translateY(-4px);
+    }
 
-    .problem-section { padding-top: 40px; padding-bottom: 60px; }
-    .section-head { text-align: center; margin-bottom: 36px; }
-    .section-head .kicker { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(99, 102, 241, 0.15); color: var(--primary); }
-    .section-head h2 { margin: 12px 0 8px; font-size: 28px; color: var(--text-main); }
-    .section-head p { color: var(--text-muted); }
-    .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 18px; }
-    .problem-card { padding: 24px; text-align: left; display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--card-border); box-shadow: var(--shadow); }
-    .problem-card h3 { margin:0; font-size: 18px; color: var(--text-main); }
-    .problem-card p { margin:0; font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+    .hero {
+      padding-top: 140px;
+      padding-bottom: 80px;
+    }
 
-    .dashboard-layout { display: flex; justify-content: center; align-items: flex-start; gap: 24px; max-width: 960px; margin: 0 auto; display: none; }
-    #app { flex: 1; max-width: 480px; padding: 30px; text-align: center; position: relative; z-index: 10; width: 100%; }
-    .right-stack { display: flex; flex-direction: column; gap: 20px; width: 340px; flex-shrink: 0; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
 
-    .workout-side-panel { width: 100%; background: linear-gradient(145deg, #1e293b, #0f172a); color: white; padding: 24px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5); display: none; text-align: left; position: relative; overflow: hidden; }
-    .master-badge-corner { position: absolute; top: 16px; right: 16px; background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid #fbbf24; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; letter-spacing: 1px; }
-    .w-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .workout-tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 20px; }
-    .w-tab { flex: 1; border: none; background: transparent; color: #94a3b8; padding: 8px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-    .w-tab.active { background: #fbbf24; color: #000; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
-    .workout-display { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px 10px; text-align: center; margin-bottom: 20px; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-    .wd-main { font-size: 20px; font-weight: 800; margin-bottom: 4px; color: #fff; }
-    .wd-sub { font-size: 12px; color: #94a3b8; }
-    .workout-anim { animation: pulse 0.5s infinite alternate; color: #fbbf24; font-size: 24px; font-weight: 900; }
+    .hero-pill {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--primary);
+    }
 
-    .memo-panel { width: 100%; padding: 20px; text-align: left; position: relative; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
-    .memo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    .memo-title { font-weight: 800; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
-    .memo-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: var(--primary); color: white; font-weight: 700; }
-    textarea.memo-input { width: 100%; height: 100px; border: none; border-radius: 12px; background: var(--input-bg); color: var(--text-main); padding: 12px; font-family: inherit; font-size: 14px; line-height: 1.5; resize: none; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-    .memo-history-list { max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .memo-item { background: var(--input-bg); padding: 10px; border-radius: 10px; font-size: 13px; color: var(--text-main); border: 1px solid var(--card-border); }
-    .memo-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
+    .hero-title {
+      font-size: 46px;
+      line-height: 1.2;
+      letter-spacing: -1px;
+      margin: 18px 0;
+      font-weight: 900;
+      color: var(--text-main);
+    }
 
-    .panel-lock { position: absolute; inset: 0; background: rgba(0,0,0,0.1); backdrop-filter: blur(8px); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 24px; z-index: 10; color: var(--text-main); font-weight: 800; text-align: center; padding: 20px; }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
 
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
-    .price-card { padding: 24px; text-align: left; display:flex; flex-direction:column; justify-content: space-between; height: 100%; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--card-border); box-shadow: var(--shadow); }
-    .price-card .plan { font-size: 13px; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-    .price-card .amount { font-size: 24px; font-weight: 900; margin-bottom: 4px; letter-spacing: -1px; color: var(--text-main); }
-    .price-card .desc { font-size: 12px; color: var(--text-muted); margin-bottom: 15px; min-height: 32px; }
-    .price-card ul { margin-bottom: 15px; padding: 0; list-style: none; }
-    .price-card li { display: flex; gap: 6px; font-size: 12px; margin-bottom: 6px; align-items: center; font-weight: 500; color: var(--text-main); }
-    .price-card.pro { border: 2px solid var(--primary); }
-    .price-card.ultra { border: 2px solid var(--accent); }
-    .price-card.master { border: 2px solid #333; background: linear-gradient(135deg, #1e1e1e, #0f172a); box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: scale(1.03); z-index: 2; position: relative; }
-    .price-card.master .plan { color: #ffd700; }
-    .price-card.master .desc { color: #94a3b8; }
-    .price-card.master .amount, .price-card.master li { color: #fff; }
-    .price-card.master .btn { background: #ffd700; color: #000; border:none; font-weight: 900; }
+    .hero-metrics {
+      display: flex;
+      gap: 14px;
+      margin-top: 28px;
+    }
 
-    .auth-card { max-width: 400px; margin: 0 auto; padding: 30px; text-align: center; }
-    .btn { padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; border:1px solid var(--card-border); background: var(--panel-bg); color: var(--text-main); width:100%; transition:0.2s; box-shadow: var(--shadow); }
-    .btn:active { transform: scale(0.95); }
-    .btn-primary { border:none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; }
-    input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); }
+    .metric-card {
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-main);
+    }
 
-    .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; justify-content: center; }
-    .theme-tag { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--card-border); background: transparent; cursor: pointer; font-size: 13px; color: var(--text-main); }
-    .theme-tag.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .recommend-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 30px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 15px;
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      transition: opacity 0.5s ease-in-out;
+      min-height: 140px;
+      justify-content: center;
+    }
 
-    .aura-effect { position: relative; }
-    .aura-effect::before { content: ''; position: absolute; top: -15px; left: -15px; right: -15px; bottom: -15px; border-radius: 50%; background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000); background-size: 400%; z-index: -1; filter: blur(25px); animation: glowing 20s linear infinite; opacity: 0.5; }
-    @keyframes glowing { 0% { background-position: 0 0; } 50% { background-position: 400% 0; } 100% { background-position: 0 0; } }
+    .dashboard-layout {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 24px;
+      max-width: 960px;
+      margin: 0 auto;
+      display: none;
+    }
 
-    .pet-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px 0; cursor: pointer; transition: transform 0.2s; }
-    .pet-emoji { font-size: 80px; animation: bounce 2s infinite; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15)); }
-    .pet-bubble { background: var(--panel-bg); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; position: relative; margin-bottom: 10px; opacity: 0; transition: opacity 0.3s; box-shadow: var(--shadow); }
+    #app {
+      flex: 1;
+      max-width: 480px;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+    }
 
-    .sticker { position: absolute; font-size: 40px; cursor: grab; user-select: none; z-index: 50; transition: transform 0.1s; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); }
-    .sticker:active { cursor: grabbing; transform: scale(1.1); }
+    .right-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 340px;
+      flex-shrink: 0;
+    }
 
-    .heatmap-grid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; margin-top: 10px; justify-content: center; }
-    .grass { width: 100%; aspect-ratio: 1; border-radius: 3px; background: rgba(0,0,0,0.08); }
-    .grass.active { background: #22c55e; }
+    .workout-side-panel {
+      width: 100%;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      color: white;
+      padding: 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+      display: none;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
 
-    .blob-cont { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; overflow: hidden; pointer-events: none; }
-    .blob { position: absolute; border-radius: 50%; opacity: 0.6; filter: blur(60px); animation: float 10s infinite alternate; }
-    .blob-1 { top: 10%; left: 10%; width: 300px; height: 300px; background: var(--secondary); animation-duration: 25s; }
-    .blob-2 { bottom: 20%; right: 10%; width: 350px; height: 350px; background: var(--primary); animation-duration: 30s; }
-    .blob-3 { bottom: 10%; left: 30%; width: 250px; height: 250px; background: #ec4899; animation-duration: 22s; }
-    @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(40px, 60px); } }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .master-badge-corner {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid #fbbf24;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+    }
+
+    .w-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .workout-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .w-tab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .w-tab.active {
+      background: #fbbf24;
+      color: #000;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    .workout-display {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .wd-main {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #fff;
+    }
+
+    .wd-sub {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .workout-anim {
+      animation: pulse 0.5s infinite alternate;
+      color: #fbbf24;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .memo-panel {
+      width: 100%;
+      padding: 20px;
+      text-align: left;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .memo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .memo-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .memo-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+    }
+
+    textarea.memo-input {
+      width: 100%;
+      height: 100px;
+      border: none;
+      border-radius: 12px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .memo-history-list {
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .memo-item {
+      background: var(--input-bg);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+    }
+
+    .memo-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .panel-lock {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px;
+      z-index: 10;
+      color: var(--text-main);
+      font-weight: 800;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .price-card {
+      padding: 24px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+    }
+
+    .price-card .plan {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .price-card .amount {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 4px;
+      letter-spacing: -1px;
+      color: var(--text-main);
+    }
+
+    .price-card .desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      min-height: 32px;
+    }
+
+    .price-card ul {
+      margin-bottom: 15px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .price-card li {
+      display: flex;
+      gap: 6px;
+      font-size: 12px;
+      margin-bottom: 6px;
+      align-items: center;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .price-card.pro {
+      border: 2px solid var(--primary);
+    }
+
+    .price-card.ultra {
+      border: 2px solid var(--accent);
+    }
+
+    .price-card.master {
+      border: 2px solid #333;
+      background: linear-gradient(135deg, #1e1e1e, #0f172a);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: scale(1.03);
+      z-index: 2;
+      position: relative;
+    }
+
+    .price-card.master .plan {
+      color: #ffd700;
+    }
+
+    .price-card.master .desc {
+      color: #94a3b8;
+    }
+
+    .price-card.master .amount,
+    .price-card.master li {
+      color: #fff;
+    }
+
+    .price-card.master .btn {
+      background: #ffd700;
+      color: #000;
+      border: none;
+      font-weight: 900;
+    }
+
+    .auth-card {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      background: var(--panel-bg);
+      color: var(--text-main);
+      width: 100%;
+      transition: 0.2s;
+      box-shadow: var(--shadow);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-primary {
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .theme-tag {
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .theme-tag.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .aura-effect {
+      position: relative;
+    }
+
+    .aura-effect::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: -15px;
+      right: -15px;
+      bottom: -15px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+      background-size: 400%;
+      z-index: -1;
+      filter: blur(25px);
+      animation: glowing 20s linear infinite;
+      opacity: 0.5;
+    }
+
+    .pet-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .pet-emoji {
+      font-size: 80px;
+      animation: bounce 2s infinite;
+      filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.15));
+    }
+
+    .pet-bubble {
+      background: var(--panel-bg);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      position: relative;
+      margin-bottom: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: var(--shadow);
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      gap: 4px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .grass {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .grass.active {
+      background: #22c55e;
+    }
+
+    .blob-cont {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+      filter: blur(60px);
+      animation: float 10s infinite alternate;
+    }
+
+    .blob-1 {
+      top: 10%;
+      left: 10%;
+      width: 300px;
+      height: 300px;
+      background: var(--secondary);
+      animation-duration: 25s;
+    }
+
+    .blob-2 {
+      bottom: 20%;
+      right: 10%;
+      width: 350px;
+      height: 350px;
+      background: var(--primary);
+      animation-duration: 30s;
+    }
+
+    .blob-3 {
+      bottom: 10%;
+      left: 30%;
+      width: 250px;
+      height: 250px;
+      background: #ec4899;
+      animation-duration: 22s;
+    }
 
     @media (max-width: 900px) {
-        .hero-grid, .pricing-grid, .problem-grid, .dashboard-layout { grid-template-columns: 1fr; flex-direction: column; align-items: center; }
-        .workout-side-panel, .right-stack { width: 100%; max-width: 480px; }
-        .admin-shell { grid-template-columns: 1fr; }
-        .admin-left { display: none; }
+
+      .hero-grid,
+      .pricing-grid,
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .workout-side-panel,
+      .right-stack {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .admin-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-left {
+        display: none;
+      }
     }
 
-    /* ===================================================================== */
-    /* 👑 GOD MODE ADMIN & NEW FEATURES */
-    /* ===================================================================== */
-    #adminPanel { display:none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); padding: 20px; animation: fadeIn 0.3s; }
-    .admin-shell { width: 100%; max-width: 1400px; height: 90vh; margin: 0 auto; border-radius: 20px; overflow: hidden; display: grid; grid-template-columns: 260px 1fr; background: #111; box-shadow: 0 0 100px rgba(99,102,241,0.2); border: 1px solid #333; }
+    /* Live ticker */
+    .live-ticker {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 8px 0;
+      z-index: 9000;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 700;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
-    .admin-left { padding: 20px; background: #000; border-right: 1px solid #333; display:flex; flex-direction:column; }
-    .admin-right { padding: 30px; overflow-y:auto; background: #0a0a0a; color: #eee; }
+    .ticker-content {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+      padding-left: 100%;
+    }
 
-    .admin-title { font-weight: 1000; font-size: 24px; color: #fff; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
-    .admin-sub { color: #666; font-size: 11px; margin-bottom: 30px; letter-spacing: 1px; font-family: monospace; }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-right: 40px;
+    }
 
-    .adminNavBtn { width:100%; padding: 14px 16px; border-radius: 8px; border: none; background: transparent; cursor: pointer; font-weight: 700; text-align:left; color:#888; margin-bottom: 5px; transition: 0.2s; }
-    .adminNavBtn:hover { background: #222; color: #fff; }
-    .adminNavBtn.active { background: linear-gradient(90deg, #6366f1, #4f46e5); color: #fff; box-shadow: 0 4px 15px rgba(99,102,241,0.3); }
+    /* Zen */
+    .zen-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-color);
+      z-index: 20000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
 
-    .admin-cards { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-    .admin-card { padding: 20px; border-radius: 12px; background: #1a1a1a; border: 1px solid #333; }
-    .admin-card .k { color: #888; font-size: 12px; font-weight: 800; text-transform: uppercase; }
-    .admin-card .v { font-size: 32px; font-weight: 1000; margin-top: 10px; color: #fff; }
+    .zen-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      opacity: 0.3;
+      animation: breathe 4s infinite ease-in-out;
+      margin-bottom: 30px;
+    }
 
-    /* Matrix Terminal */
-    .matrix-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.1; z-index: 0; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMwZjAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEwPC90ZXh0Pjwvc3ZnPg=='); }
-    .matrix-terminal { background: #000; color: #00ff41; padding: 20px; border-radius: 12px; font-family: 'Courier New', monospace; height: 250px; overflow-y: auto; font-size: 12px; line-height: 1.5; border: 1px solid #0f0; box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1); margin-top: 20px; position: relative; z-index: 1; }
-    .log-line { margin-bottom: 4px; display: flex; }
-    .log-line span { opacity: 0.5; margin-right: 10px; }
+    /* Broadcast */
+    .broadcast-overlay {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: 900;
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
+      z-index: 30000;
+      display: none;
+      animation: slideDown 0.5s;
+    }
 
-    .admin-table { width:100%; border-collapse: collapse; margin-top: 20px; }
-    .admin-table th { text-align: left; padding: 15px; color: #666; font-size: 12px; border-bottom: 1px solid #333; text-transform: uppercase; }
-    .admin-table td { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; color: #ddd; }
+    .broadcast-overlay.active {
+      display: block;
+    }
 
-    .admin-pane { display:none; animation: fadeIn 0.3s; }
-    .admin-pane.active { display:block; }
+    /* Achievement */
+    .achievement-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ffd700, #f59e0b);
+      color: #000;
+      padding: 15px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+      z-index: 25000;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideInRight 0.5s;
+    }
 
-    /* Admin Close Button */
-    .admin-close-x { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: #fff; font-size: 24px; cursor: pointer; opacity: 0.6; transition: 0.2s; z-index: 20; }
-    .admin-close-x:hover { opacity: 1; color: #ef4444; }
+    /* Hearts */
+    .cheer-heart {
+      position: fixed;
+      font-size: 24px;
+      animation: floatUp 3s linear forwards;
+      z-index: 9999;
+      pointer-events: none;
+    }
 
-    /* Visual Charts (CSS based) */
-    .chart-container { display: flex; gap: 5px; height: 10px; width: 100%; margin-top: 10px; background: #222; border-radius: 5px; overflow: hidden; }
-    .chart-bar { height: 100%; transition: width 0.5s; }
-    .chart-legend { display: flex; gap: 15px; margin-top: 5px; font-size: 11px; color: #888; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-    .sticker { pointer-events: auto; }
+    /* Stickers */
+    #stickerLayer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 5;
+    }
 
+    .sticker {
+      position: absolute;
+      font-size: 40px;
+      cursor: grab;
+      user-select: none;
+      z-index: 50;
+      transition: transform 0.1s;
+      filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.15));
+      pointer-events: auto;
+    }
 
-    /* New User Features */
-    .live-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); color: white; padding: 8px 0; z-index: 9000; overflow: hidden; white-space: nowrap; font-size: 13px; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.1); }
-    .ticker-content { display: inline-block; animation: ticker 30s linear infinite; padding-left: 100%; }
-    .ticker-item { display: inline-flex; align-items: center; gap: 6px; margin-right: 40px; }
-    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+    .sticker:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+    }
 
-    .zen-overlay { position: fixed; inset: 0; background: var(--bg-color); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: 0; transition: opacity 0.35s; }
-    .zen-circle { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.3; animation: breathe 4s infinite ease-in-out; margin-bottom: 30px; }
-    @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.5); opacity: 0.6; } }
+    /* =========================
+       ADMIN PANEL
+    ========================= */
+    #adminPanel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      animation: fadeIn 0.3s;
+    }
 
-    .broadcast-overlay { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(239, 68, 68, 0.9); color: white; padding: 15px 30px; border-radius: 50px; font-weight: 900; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4); z-index: 30000; display: none; animation: slideDown 0.5s; }
-    .broadcast-overlay.active { display: block; }
-    @keyframes slideDown { from { top: -100px; } to { top: 100px; } }
+    .admin-shell {
+      width: 100%;
+      max-width: 1400px;
+      height: 90vh;
+      margin: 0 auto;
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      background: #111;
+      box-shadow: 0 0 100px rgba(99, 102, 241, 0.2);
+      border: 1px solid #333;
+    }
 
-    .achievement-toast { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ffd700, #f59e0b); color: #000; padding: 15px 20px; border-radius: 12px; font-weight: 800; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4); z-index: 25000; display: none; align-items: center; gap: 10px; animation: slideInRight 0.5s; }
-    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .admin-left {
+      padding: 20px;
+      background: #000;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* Hearts Animation */
-    .cheer-heart { position: fixed; font-size: 24px; animation: floatUp 3s linear forwards; z-index: 9999; pointer-events: none; }
-    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+    .admin-right {
+      padding: 30px;
+      overflow-y: auto;
+      background: #0a0a0a;
+      color: #eee;
+    }
+
+    .admin-title {
+      font-weight: 1000;
+      font-size: 24px;
+      color: #fff;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-sub {
+      color: #666;
+      font-size: 11px;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+      font-family: monospace;
+    }
+
+    .adminNavBtn {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+      text-align: left;
+      color: #888;
+      margin-bottom: 5px;
+      transition: 0.2s;
+    }
+
+    .adminNavBtn:hover {
+      background: #222;
+      color: #fff;
+    }
+
+    .adminNavBtn.active {
+      background: linear-gradient(90deg, #6366f1, #4f46e5);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .admin-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .admin-card {
+      padding: 20px;
+      border-radius: 12px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+    }
+
+    .admin-card .k {
+      color: #888;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .admin-card .v {
+      font-size: 32px;
+      font-weight: 1000;
+      margin-top: 10px;
+      color: #fff;
+    }
+
+    .admin-pane {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .admin-pane.active {
+      display: block;
+    }
+
+    .admin-close-x {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: 0.2s;
+      z-index: 20;
+    }
+
+    .admin-close-x:hover {
+      opacity: 1;
+      color: #ef4444;
+    }
+
+    .chart-container {
+      display: flex;
+      gap: 5px;
+      height: 10px;
+      width: 100%;
+      margin-top: 10px;
+      background: #222;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .chart-bar {
+      height: 100%;
+      transition: width 0.5s;
+    }
+
+    .matrix-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      z-index: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMwZjAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEwPC90ZXh0Pjwvc3ZnPg==');
+    }
+
+    .matrix-terminal {
+      background: #000;
+      color: #00ff41;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      height: 250px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.5;
+      border: 1px solid #0f0;
+      box-shadow: inset 0 0 30px rgba(0, 255, 0, 0.1);
+      margin-top: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .log-line {
+      margin-bottom: 4px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .log-line span {
+      opacity: 0.5;
+    }
   </style>
 </head>
-<body>
 
+<body>
+  <!-- Live ticker -->
   <div id="liveTicker" class="live-ticker">
     <div class="ticker-content" id="tickerContent">
       <div class="ticker-item">⚡ HabitFlow LIVE: 전 세계 유저들이 갓생을 살고 있습니다.</div>
     </div>
   </div>
 
+  <!-- Zen overlay -->
   <div id="zenOverlay" class="zen-overlay">
     <div class="zen-circle"></div>
     <h2 style="font-weight:300; margin-bottom:10px;">Deep Focus</h2>
     <p style="color:var(--text-muted);">오직 나에게만 집중하세요.</p>
-    <button class="btn btn-ghost" onclick="toggleZenMode()" style="margin-top:30px;">나가기</button>
+    <button class="btn" id="zenExitBtn" style="margin-top:30px;">나가기</button>
   </div>
 
+  <!-- Broadcast -->
   <div id="broadcastOverlay" class="broadcast-overlay">
     📢 <span id="broadcastMsg">긴급 공지사항입니다.</span>
   </div>
 
+  <!-- Achievement toast -->
   <div id="achievementToast" class="achievement-toast">
     <div style="font-size:24px;">🏆</div>
     <div>
@@ -270,31 +1222,35 @@
     </div>
   </div>
 
+  <!-- blobs -->
   <div class="blob-cont">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
   </div>
 
-  <!-- FIX: pointer-events auto so stickers can drag/click -->
-  <div id="stickerLayer" style="position: fixed; inset:0; overflow:hidden; pointer-events:none; z-index:9997;"></div>
+  <!-- stickers layer -->
+  <div id="stickerLayer"></div>
 
-  <div id="coinDisplay" style="position: fixed; top: 20px; right: 20px; z-index: 500; background: var(--panel-bg); padding: 8px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; display:none; border: 2px solid var(--accent); color: var(--text-main); box-shadow: var(--shadow);">
-      <span>⭐</span> <span id="coinCount">0</span>
+  <!-- coin display -->
+  <div id="coinDisplay"
+    style="position: fixed; top: 20px; right: 20px; z-index: 500; background: var(--panel-bg); padding: 8px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; display:none; border: 2px solid var(--accent); color: var(--text-main); box-shadow: var(--shadow);">
+    <span>⭐</span> <span id="coinCount">0</span>
   </div>
 
   <header>
     <div class="container header-inner">
-      <div class="logo"><div class="logo-badge"></div>HabitFlow</div>
+      <div class="logo">
+        <div class="logo-badge"></div>HabitFlow
+      </div>
       <nav>
-        <button class="btn" onclick="toggleZenMode()" style="padding: 8px 12px; width:auto;">🧘</button>
-        <button class="btn btn-primary" onclick="scrollToAuth()" style="padding: 8px 16px; font-size: 14px; width:auto;">시작하기</button>
-        <button id="darkModeToggle" class="btn btn-ghost" style="padding: 8px; width:auto;">🌓</button>
+        <button class="btn" id="zenToggleBtn" style="padding: 8px 12px; width:auto;">🧘</button>
+        <button class="btn btn-primary" id="startNowBtn"
+          style="padding: 8px 16px; font-size: 14px; width:auto;">시작하기</button>
+        <button id="darkModeToggle" class="btn" style="padding: 8px; width:auto;">🌓</button>
       </nav>
     </div>
   </header>
-
-  <div id="topBanner" style="display:none; position:fixed; top:70px; z-index:9998; width:100%; padding:12px 18px; background: rgba(99,102,241,0.12); border-bottom:1px solid rgba(99,102,241,0.20); color: var(--text-main); font-weight: 900; text-align:center; backdrop-filter: blur(10px);"></div>
 
   <section class="hero">
     <div class="container hero-grid">
@@ -303,7 +1259,7 @@
         <h1 class="hero-title">하루 하나,<br />인생을 바꾸는 습관</h1>
         <p class="hero-desc">작심삼일을 끝내는 가장 단순한 방식.<br>버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.</p>
         <div class="hero-actions">
-          <button class="btn btn-primary" style="width:auto;" onclick="scrollToAuth()">지금 시작하기</button>
+          <button class="btn btn-primary" id="heroStartBtn" style="width:auto;">지금 시작하기</button>
         </div>
         <div class="hero-metrics">
           <div class="metric-card"><b>1 Habit</b><span>하루 딱 하나</span></div>
@@ -314,7 +1270,7 @@
       <div class="hero-right glass">
         <h3 style="margin-top:0;">오늘의 추천 루틴</h3>
         <p style="color:var(--text-muted); font-size:14px;">로그인 후 테마를 선택하면 매일 다른 루틴이 추천됩니다.</p>
-        <div id="heroRecommendCard" class="recommend-card fade-anim" style="transition: opacity 0.5s;">
+        <div id="heroRecommendCard" class="recommend-card" style="transition: opacity 0.5s;">
           <div>🚑 <b>생존 체력 팩</b></div>
           <span style="font-size:12px; color:var(--text-muted);">직장인을 위한 "죽지 않으려고 하는 운동"</span>
         </div>
@@ -329,230 +1285,273 @@
         <input id="email" placeholder="이메일 주소">
         <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
         <div class="auth-actions">
-           <button id="signupBtn" class="btn btn-primary">회원가입</button>
-           <button id="signinBtn" class="btn btn-ghost">로그인</button>
+          <button id="signupBtn" class="btn btn-primary">회원가입</button>
+          <button id="signinBtn" class="btn">로그인</button>
         </div>
-        <div style="margin-top:10px;"><button id="resetPwBtn" class="link-btn">비밀번호 찾기</button></div>
+        <div style="margin-top:10px;">
+          <button id="resetPwBtn" class="btn"
+            style="background:transparent; box-shadow:none; border:none; text-decoration:underline; color:var(--text-muted);">비밀번호
+            찾기</button>
+        </div>
       </div>
 
       <div id="dashboardLayout" class="dashboard-layout">
-          <div id="app" class="glass">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h2 id="welcome" style="margin:0; font-size: 1.2rem;"></h2>
-              <button id="logoutBtn" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; text-decoration:underline; cursor:pointer;">로그아웃</button>
-            </div>
+        <div id="app" class="glass">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 id="welcome" style="margin:0; font-size: 1.2rem;"></h2>
+            <button id="logoutBtn"
+              style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; text-decoration:underline; cursor:pointer;">로그아웃</button>
+          </div>
 
-            <div style="margin: 10px 0 10px;">
-              <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
-                <span id="levelBadge" style="font-weight:900; color:var(--primary); font-size:18px;">Lv.1</span>
-                <span id="xpText" style="font-size:12px; color:var(--text-muted); font-weight:700;">0 / 100 XP</span>
+          <div style="margin: 10px 0 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:5px;">
+              <span id="levelBadge" style="font-weight:900; color:var(--primary); font-size:18px;">Lv.1</span>
+              <span id="xpText" style="font-size:12px; color:var(--text-muted); font-weight:700;">0 / 100 XP</span>
+            </div>
+            <div
+              style="background:rgba(0,0,0,0.08); border-radius:10px; height:10px; overflow:hidden; position:relative;">
+              <div id="xpBar"
+                style="background:linear-gradient(90deg, var(--primary), var(--secondary)); width:0%; height:100%; transition: width 0.6s; border-radius:10px;">
               </div>
-              <div style="background:rgba(0,0,0,0.08); border-radius:10px; height:10px; overflow:hidden; position:relative;">
-                <div id="xpBar" style="background:linear-gradient(90deg, var(--primary), var(--secondary)); width:0%; height:100%; transition: width 0.6s; border-radius:10px;"></div>
-              </div>
-            </div>
-
-            <div class="pet-container" id="petContainer">
-                <div id="petBubble" class="pet-bubble">응원합니다!</div>
-                <div id="petEmoji" class="pet-emoji">🥚</div>
-            </div>
-
-            <button id="globalCheerBtn" class="btn" style="background: #fff0f7; color: #ec4899; border: 1px solid #ec4899; width: 100%; margin-bottom: 15px;">
-                💖 모두에게 응원 보내기
-            </button>
-
-            <div class="heatmap-container" style="margin: 15px 0; padding: 15px; border-radius: 16px; background: rgba(0,0,0,0.05); border: 1px solid var(--card-border);">
-               <div style="font-size:12px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between; margin-bottom: 5px;">
-                 <span>🌿 최근 20일</span><span>Log</span>
-               </div>
-               <div id="heatmapGrid" class="heatmap-grid"></div>
-            </div>
-
-            <div id="tierBadge" style="display:none; margin: 20px 0;">
-              <span id="tierText" class="badge"></span>
-              <p id="streakCount" style="font-size: 0.9rem; margin-top: 8px; font-weight:700;"></p>
-            </div>
-
-            <div id="themeSection" style="margin-top:24px;">
-               <p style="font-size: 0.9rem; font-weight: 700; margin-bottom:10px;">🎁 오늘의 루틴 팩</p>
-               <div class="tag-container">
-                  <button class="theme-tag" onclick="selectTheme(this, 'survival')">🚑 생존</button>
-                  <button class="theme-tag" onclick="selectTheme(this, 'godsaeng')">✨ 갓생</button>
-                  <button class="theme-tag" onclick="selectTheme(this, 'detox')">📱 디톡스</button>
-                  <button class="theme-tag" onclick="selectTheme(this, 'custom')">➕ 커스텀</button>
-               </div>
-            </div>
-
-            <div id="todaySuggestion" style="margin-top:16px; font-size:0.9rem; padding:12px; background:rgba(99,102,241,0.1); border-radius:12px; color:var(--text-main);">테마를 선택하세요.</div>
-
-            <input id="habitName" readonly value="테마를 선택하세요" style="margin-top: 20px; text-align: center; font-weight:700;">
-            <div style="display:flex; gap:8px; margin-top:10px;">
-                <button id="habitBtn" class="btn btn-primary">오늘 습관 완료 ✅</button>
-                <button id="timerBtn" class="btn" style="width:60px; background:#333; color:white; display:none;">⏱️</button>
-            </div>
-            <p id="status" style="margin-top:12px; font-size:14px; color:var(--primary); font-weight:700; min-height:20px;"></p>
-
-            <div id="stats" style="display:none; margin-top:20px; padding:16px; background:rgba(0,0,0,0.05); border-radius:12px;">
-              <h3 style="margin:0 0 10px; font-size:16px;">📊 통계</h3>
-              <p id="totalDays" style="margin:0; font-weight:700;"></p>
-            </div>
-
-            <button id="restoreStreakBtn" style="margin-top:10px; width:100%; padding:12px; border-radius:12px; background:var(--accent); color:white; border:none; display:none;">🔥 연속 기록 복구</button>
-
-            <div id="weeklyReport" style="display:none; width: 100%; margin-top: 30px; text-align: left;">
-              <div id="weeklyReportBody"></div>
-              <div id="weeklyReportLocked" style="display:none; padding: 24px; border: 2px dashed var(--card-border); border-radius: 16px; text-align: center;">
-                 🔒 PRO 회원이 되어 리포트를 확인하세요.
-                 <button class="btn btn-primary" style="margin-top: 15px; font-size:13px;" onclick="showProModal('PRO')">잠금 해제</button>
-              </div>
-            </div>
-
-            <div id="calendarSection" style="display:none; margin-top:30px; text-align:left;">
-              <h3 style="font-size:16px; margin-bottom:10px;">📅 캘린더</h3>
-              <div id="calendarGrid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px;"></div>
             </div>
           </div>
 
-          <div class="right-stack">
-              <div id="workoutSidePanel" class="workout-side-panel">
-                  <span class="master-badge-corner">MASTER</span>
-                  <div class="w-title">🔥 오늘의 챌린지</div>
-                  <div class="workout-tabs">
-                      <button class="w-tab active" data-type="walk" onclick="selectWorkoutTab('walk')">🚶 걷기</button>
-                      <button class="w-tab" data-type="run" onclick="selectWorkoutTab('run')">🏃 달리기</button>
-                      <button class="w-tab" data-type="gym" onclick="selectWorkoutTab('gym')">🏋️ 헬스</button>
-                  </div>
-                  <div class="workout-display">
-                      <div id="workoutResult" class="wd-main">❓</div>
-                      <div class="wd-sub">종목 선택 후 미션 뽑기!</div>
-                  </div>
-                  <button id="startWorkoutBtn" class="btn" style="background:var(--accent); color:#000; border:none; font-weight:900; box-shadow:0 4px 15px rgba(251,191,36,0.4);">🎰 미션 랜덤 뽑기</button>
-                  <button id="completeWorkoutBtn" class="btn" style="background:linear-gradient(to right, #22c55e, #16a34a); color:#fff; border:none; display:none;">✅ 완료 (코인 3배)</button>
-              </div>
-
-              <div id="memoPanel" class="glass memo-panel" style="display:none;">
-                  <div class="memo-header">
-                      <div class="memo-title">📝 오늘의 메모</div>
-                      <span class="memo-badge">PRO+</span>
-                  </div>
-                  <div id="memoLocked" class="panel-lock">
-                      <div style="font-size:30px; margin-bottom:10px;">🔒</div>
-                      <div>PRO 등급부터 사용 가능</div>
-                      <button class="btn btn-primary" style="margin-top:15px; width:auto; padding:8px 16px; font-size:12px;" onclick="showProModal('PRO')">잠금 해제</button>
-                  </div>
-                  <textarea id="dailyMemo" class="memo-input" placeholder="오늘의 다짐이나 할 일을 기록하세요..."></textarea>
-                  <button id="saveMemoBtn" class="btn btn-primary" style="margin-top:10px;">💾 저장하기</button>
-              </div>
-
-              <div id="memoHistoryPanel" class="glass memo-panel" style="display:none;">
-                  <div class="memo-header">
-                      <div class="memo-title">📂 지난 메모 기록</div>
-                  </div>
-                  <div id="memoHistoryList" class="memo-history-list">
-                      <div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>
-                  </div>
-              </div>
+          <div class="pet-container" id="petContainer">
+            <div id="petBubble" class="pet-bubble">응원합니다!</div>
+            <div id="petEmoji" class="pet-emoji">🥚</div>
           </div>
-      </div>
+
+          <button id="globalCheerBtn" class="btn"
+            style="background: #fff0f7; color: #ec4899; border: 1px solid #ec4899; width: 100%; margin-bottom: 15px;">
+            💖 모두에게 응원 보내기
+          </button>
+
+          <div class="heatmap-container"
+            style="margin: 15px 0; padding: 15px; border-radius: 16px; background: rgba(0,0,0,0.05); border: 1px solid var(--card-border);">
+            <div
+              style="font-size:12px; font-weight:700; color:var(--text-muted); display:flex; justify-content:space-between; margin-bottom: 5px;">
+              <span>🌿 최근 20일</span><span>Log</span>
+            </div>
+            <div id="heatmapGrid" class="heatmap-grid"></div>
+          </div>
+
+          <div id="tierBadge" style="display:none; margin: 20px 0;">
+            <p id="streakCount" style="font-size: 0.9rem; margin-top: 8px; font-weight:700;"></p>
+          </div>
+
+          <div id="themeSection" style="margin-top:24px;">
+            <p style="font-size: 0.9rem; font-weight: 700; margin-bottom:10px;">🎁 오늘의 루틴 팩</p>
+            <div class="tag-container">
+              <button class="theme-tag" data-theme="survival">🚑 생존</button>
+              <button class="theme-tag" data-theme="godsaeng">✨ 갓생</button>
+              <button class="theme-tag" data-theme="detox">📱 디톡스</button>
+              <button class="theme-tag" data-theme="custom">➕ 커스텀</button>
+            </div>
+          </div>
+
+          <div id="todaySuggestion"
+            style="margin-top:16px; font-size:0.9rem; padding:12px; background:rgba(99,102,241,0.1); border-radius:12px; color:var(--text-main);">
+            테마를 선택하세요.
+          </div>
+
+          <input id="habitName" readonly value="테마를 선택하세요"
+            style="margin-top: 20px; text-align: center; font-weight:700;">
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button id="habitBtn" class="btn btn-primary">오늘 습관 완료 ✅</button>
+            <button id="timerBtn" class="btn"
+              style="width:60px; background:#333; color:white; display:none;">⏱️</button>
+          </div>
+          <p id="status"
+            style="margin-top:12px; font-size:14px; color:var(--primary); font-weight:700; min-height:20px;"></p>
+
+          <div id="stats"
+            style="display:none; margin-top:20px; padding:16px; background:rgba(0,0,0,0.05); border-radius:12px;">
+            <h3 style="margin:0 0 10px; font-size:16px;">📊 통계</h3>
+            <p id="totalDays" style="margin:0; font-weight:700;"></p>
+          </div>
+        </div>
+
+        <div class="right-stack">
+          <div id="workoutSidePanel" class="workout-side-panel">
+            <span class="master-badge-corner">MASTER</span>
+            <div class="w-title">🔥 오늘의 챌린지</div>
+            <div class="workout-tabs">
+              <!-- ✅ inline onclick 제거하고 JS에서 안전하게 바인딩 -->
+              <button class="w-tab active" data-type="walk">🚶 걷기</button>
+              <button class="w-tab" data-type="run">🏃 달리기</button>
+              <button class="w-tab" data-type="gym">🏋️ 헬스</button>
+            </div>
+            <div class="workout-display">
+              <div id="workoutResult" class="wd-main">❓</div>
+              <div class="wd-sub">종목 선택 후 미션 뽑기!</div>
+            </div>
+            <button id="startWorkoutBtn" class="btn"
+              style="background:var(--accent); color:#000; border:none; font-weight:900; box-shadow:0 4px 15px rgba(251,191,36,0.4);">🎰
+              미션 랜덤 뽑기</button>
+            <button id="completeWorkoutBtn" class="btn"
+              style="background:linear-gradient(to right, #22c55e, #16a34a); color:#fff; border:none; display:none;">✅
+              완료 (코인 3배)</button>
+          </div>
+
+          <div id="memoPanel" class="glass memo-panel" style="display:none;">
+            <div class="memo-header">
+              <div class="memo-title">📝 오늘의 메모</div>
+              <span class="memo-badge">PRO+</span>
+            </div>
+            <div id="memoLocked" class="panel-lock">
+              <div style="font-size:30px; margin-bottom:10px;">🔒</div>
+              <div>PRO 등급부터 사용 가능</div>
+              <button class="btn btn-primary" id="memoUnlockBtn"
+                style="margin-top:15px; width:auto; padding:8px 16px; font-size:12px;">잠금 해제</button>
+            </div>
+            <textarea id="dailyMemo" class="memo-input" placeholder="오늘의 다짐이나 할 일을 기록하세요..."></textarea>
+            <button id="saveMemoBtn" class="btn btn-primary" style="margin-top:10px;">💾 저장하기</button>
+          </div>
+
+          <div id="memoHistoryPanel" class="glass memo-panel" style="display:none;">
+            <div class="memo-header">
+              <div class="memo-title">📂 지난 메모 기록</div>
+            </div>
+            <div id="memoHistoryList" class="memo-history-list">
+              <div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /dashboardLayout -->
     </div>
   </section>
 
   <section id="pricing">
     <div class="container">
-      <div class="section-head">
-        <span class="kicker">PRICING</span>
-        <h2>가격</h2>
-        <p>당신의 성장을 가속화할 최적의 플랜을 선택하세요.</p>
+      <div style="text-align:center; margin-bottom:36px;">
+        <span
+          style="display:inline-block; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; background: rgba(99, 102, 241, 0.15); color: var(--primary);">PRICING</span>
+        <h2 style="margin: 12px 0 8px;">가격</h2>
+        <p style="color:var(--text-muted);">당신의 성장을 가속화할 최적의 플랜을 선택하세요.</p>
       </div>
+
       <div class="pricing-grid">
         <div class="price-card glass">
-          <div><div class="plan">무료</div><div class="amount">₩0</div><div class="desc">가볍게 시작하는 입문자용</div><ul><li>✅ 하루 1습관 기록</li><li>✅ 기본 테마 추천</li></ul></div>
+          <div>
+            <div class="plan">무료</div>
+            <div class="amount">₩0</div>
+            <div class="desc">가볍게 시작하는 입문자용</div>
+            <ul>
+              <li>✅ 하루 1습관 기록</li>
+              <li>✅ 기본 테마 추천</li>
+            </ul>
+          </div>
         </div>
+
         <div class="price-card glass pro">
-          <div><div class="plan" style="color:var(--primary);">PRO</div><div class="amount">₩3,900</div><div class="desc">습관 패턴을 잡고 싶은 분</div><ul><li>✨ 습관 무제한 + 커스텀</li><li>✨ 주간 AI 분석 리포트</li><li>✨ 캘린더 뷰 / 복구권</li><li>📝 <b>오늘의 메모 & 히스토리</b></li></ul></div>
-          <button class="btn btn-primary" onclick="showProModal('PRO')">PRO 업그레이드</button>
+          <div>
+            <div class="plan" style="color:var(--primary);">PRO</div>
+            <div class="amount">₩3,900</div>
+            <div class="desc">습관 패턴을 잡고 싶은 분</div>
+            <ul>
+              <li>✨ 습관 무제한 + 커스텀</li>
+              <li>✨ 주간 AI 분석 리포트</li>
+              <li>✨ 캘린더 뷰 / 복구권</li>
+              <li>📝 <b>오늘의 메모 & 히스토리</b></li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" id="proUpgradeBtn">PRO 업그레이드</button>
         </div>
+
         <div class="price-card glass ultra">
-          <div><div class="plan" style="color:var(--accent);">ULTRA</div><div class="amount">₩5,900</div><div class="desc">나만의 감성으로 꾸미기</div><ul><li>🌈 앱 컬러 테마 변경</li><li>🎵 BGM 선곡권 (빗소리 등)</li><li>💰 코인 획득 2배</li><li>👑 PRO 기능 모두 포함</li></ul></div>
-          <button class="btn btn-primary" style="background:linear-gradient(135deg, #f59e0b, #d97706);" onclick="showProModal('ULTRA')">ULTRA 업그레이드</button>
+          <div>
+            <div class="plan" style="color:var(--accent);">ULTRA</div>
+            <div class="amount">₩5,900</div>
+            <div class="desc">나만의 감성으로 꾸미기</div>
+            <ul>
+              <li>🌈 앱 컬러 테마 변경</li>
+              <li>🎵 BGM 선곡권</li>
+              <li>💰 코인 획득 2배</li>
+              <li>👑 PRO 기능 모두 포함</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" id="ultraUpgradeBtn"
+            style="background:linear-gradient(135deg, #f59e0b, #d97706);">ULTRA 업그레이드</button>
         </div>
+
         <div class="price-card glass master">
-          <div><div class="plan">MASTER</div><div class="amount">₩7,900</div><div class="desc">극한의 성장을 위한 완전체</div><ul><li>💪 <b>매일 운동 챌린지 패널</b></li><li>⏱️ 포모도로 집중 타이머</li><li>✨ 마스터 전용 오라 이펙트</li><li>💰 코인 획득 3배</li></ul></div>
-          <button class="btn" onclick="showProModal('MASTER')">MASTER 업그레이드</button>
+          <div>
+            <div class="plan">MASTER</div>
+            <div class="amount">₩7,900</div>
+            <div class="desc">극한의 성장을 위한 완전체</div>
+            <ul>
+              <li>💪 <b>매일 운동 챌린지 패널</b></li>
+              <li>⏱️ 포모도로 집중 타이머</li>
+              <li>✨ 마스터 전용 오라</li>
+              <li>💰 코인 획득 3배</li>
+            </ul>
+          </div>
+          <button class="btn" id="masterUpgradeBtn">MASTER 업그레이드</button>
         </div>
       </div>
     </div>
   </section>
 
-  <footer><div class="container" style="text-align:center; padding-bottom:40px; color:var(--text-muted); font-size:14px;"><p>© 2026 HabitFlow. All rights reserved.</p></div></footer>
+  <footer>
+    <div class="container" style="text-align:center; padding-bottom:40px; color:var(--text-muted); font-size:14px;">
+      <p>© 2026 HabitFlow. All rights reserved.</p>
+    </div>
+  </footer>
 
-  <button id="trashModeBtn" style="display:none; position:fixed; bottom:50px; right:140px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🗑️</button>
-  <button id="themeBtn" style="display:none; position:fixed; bottom:50px; right:200px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#ec4899; color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🎨</button>
-  <button id="shopOpenBtn" style="display:none; position:fixed; bottom:50px; right:80px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#8b5cf6; color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🎁</button>
-  <button id="rankOpenBtn" style="display:none; position:fixed; bottom:50px; right:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:24px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🏆</button>
-  <button id="adminOpenBtn" style="display:none; position:fixed; bottom:50px; left:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#000; color:#0f0; border:2px solid #0f0; font-size:24px; cursor:pointer; box-shadow:0 0 20px #0f0;">😎</button>
-  <button id="bgmOpenBtn" style="display:none; position:fixed; bottom:50px; left:80px; z-index:99999; width:40px; height:40px; border-radius:50%; border:none; background:var(--panel-bg); color:var(--text-main); font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(5px);">🎵</button>
+  <!-- Floating buttons -->
+  <button id="trashModeBtn"
+    style="display:none; position:fixed; bottom:50px; right:140px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🗑️</button>
+  <button id="shopOpenBtn"
+    style="display:none; position:fixed; bottom:50px; right:80px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#8b5cf6; color:white; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🎁</button>
+  <button id="rankOpenBtn"
+    style="display:none; position:fixed; bottom:50px; right:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:24px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3);">🏆</button>
+  <button id="adminOpenBtn"
+    style="display:none; position:fixed; bottom:50px; left:20px; z-index:9990; width:50px; height:50px; border-radius:50%; border:none; background:#000; color:#0f0; border:2px solid #0f0; font-size:24px; cursor:pointer; box-shadow:0 0 20px #0f0;">😎</button>
 
-  <div id="shopPanel" class="glass" style="display:none; position:fixed; bottom:110px; right:20px; width:300px; padding:20px; z-index:10000; border:2px solid #8b5cf6; background:var(--panel-bg);">
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3 style="margin:0; color:#7c3aed;">🎁 상점</h3><button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
-    <div style="text-align:center; margin-bottom:20px;"><div style="font-size:60px;">🔮</div><button id="gachaBtn" class="btn btn-primary" style="margin-top:10px;">1코인 뽑기! (보유: <span id="shopCoinCount">0</span>)</button></div>
+  <!-- Shop panel -->
+  <div id="shopPanel" class="glass"
+    style="display:none; position:fixed; bottom:110px; right:20px; width:300px; padding:20px; z-index:10000; border:2px solid #8b5cf6; background:var(--panel-bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+      <h3 style="margin:0; color:#7c3aed;">🎁 상점</h3>
+      <button class="btn" id="shopCloseBtn" style="width:auto; padding:8px 10px;">✖</button>
+    </div>
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="font-size:60px;">🔮</div>
+      <button id="gachaBtn" class="btn btn-primary" style="margin-top:10px;">1코인 뽑기! (보유: <span
+          id="shopCoinCount">0</span>)</button>
+    </div>
     <div style="font-size:12px; font-weight:bold; margin-bottom:5px;">🎒 내 스티커</div>
-    <div id="inventoryList" style="height:150px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
-  </div>
-
-  <div id="rankPanel" class="glass" style="display:none; position:fixed; bottom:110px; right:20px; width:340px; padding:20px; z-index:10000; border:2px solid var(--accent); background:var(--panel-bg);">
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3 style="margin:0; color:var(--accent);">🏆 명예의 전당</h3><button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
-    <div id="rankList" style="height:300px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px;"></div>
-  </div>
-
-  <div id="themePanel" class="glass" style="display:none; position:fixed; bottom:110px; right:120px; width:200px; padding:20px; z-index:10000; background:var(--panel-bg);">
-    <div style="margin-bottom:10px; font-weight:bold;">🎨 테마 (ULTRA+)</div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <button onclick="changeTheme('purple')" style="background:#6366f1; height:40px; border-radius:8px; border:none;"></button>
-        <button onclick="changeTheme('blue')" style="background:#3b82f6; height:40px; border-radius:8px; border:none;"></button>
-        <button onclick="changeTheme('pink')" style="background:#ec4899; height:40px; border-radius:8px; border:none;"></button>
-        <button onclick="changeTheme('gold')" style="background:#d97706; height:40px; border-radius:8px; border:none;"></button>
+    <div id="inventoryList"
+      style="height:150px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
     </div>
   </div>
 
-  <div id="bgm" class="glass" style="display:none; position:fixed; bottom:100px; left:20px; padding:15px; width:240px; z-index:10000; background:var(--panel-bg);">
-    <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><b>🎵 BGM</b><button onclick="this.parentElement.parentElement.style.display='none'">✖</button></div>
-    <select id="bgmSelect" style="width:100%; padding:5px; margin-bottom:10px; display:none;"><option value="./bgm.mp3">기본</option><option value="rain">비오는 날</option><option value="forest">숲속</option></select>
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><button id="bgmToggle" style="flex:1; padding:6px; border-radius:6px; background:var(--primary); color:white; border:none;">재생</button></div>
-    <input id="bgmVol" type="range" min="0" max="1" step="0.01" value="0.25" style="width:100%;">
+  <!-- Rank panel -->
+  <div id="rankPanel" class="glass"
+    style="display:none; position:fixed; bottom:110px; right:20px; width:340px; padding:20px; z-index:10000; border:2px solid var(--accent); background:var(--panel-bg);">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+      <h3 style="margin:0; color:var(--accent);">🏆 명예의 전당</h3>
+      <button class="btn" id="rankCloseBtn" style="width:auto; padding:8px 10px;">✖</button>
+    </div>
+    <div id="rankList"
+      style="height:300px; overflow-y:auto; background:var(--input-bg); padding:10px; border-radius:8px;"></div>
   </div>
 
-  <div id="timerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:20000; align-items:center; justify-content:center;">
-      <div class="glass" style="padding:40px; text-align:center; background:var(--panel-bg); width:300px;">
-          <h2 style="margin:0;">⏱️ 집중 타이머</h2>
-          <div id="timerDisplay" style="font-size:60px; font-weight:900; margin:20px 0;">25:00</div>
-          <div style="display:flex; gap:10px;">
-              <button id="startTimerBtn" class="btn btn-primary">시작</button>
-              <button id="stopTimerBtn" class="btn">중지</button>
-          </div>
-          <button onclick="document.getElementById('timerModal').style.display='none'" style="margin-top:20px; border:none; background:none; text-decoration:underline;">닫기</button>
-      </div>
-  </div>
-
-  <div id="proModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10001; backdrop-filter:blur(5px);">
+  <!-- Pro modal -->
+  <div id="proModal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:10001; backdrop-filter:blur(5px);">
     <div class="glass" style="padding:40px; max-width:360px; width:90%; text-align:center; background:var(--panel-bg);">
       <h2 style="margin-top:0;" id="modalTitle">👑 업그레이드</h2>
       <p style="color:var(--text-muted); margin-bottom:20px;">더 강력한 기능으로 성장하세요.</p>
-      <button class="btn btn-primary" onclick="alert('결제 기능 준비중!')">시작하기</button>
-      <p style="margin-top:16px; font-size:13px; cursor:pointer; color:var(--text-muted);" onclick="this.closest('#proModal').style.display='none'">닫기</p>
+      <button class="btn btn-primary" id="modalPayBtn">시작하기</button>
+      <p style="margin-top:16px; font-size:13px; cursor:pointer; color:var(--text-muted);" id="modalCloseBtn">닫기</p>
     </div>
   </div>
 
-  <div id="levelUpOverlay" class="levelup-overlay" style="display:none; position: fixed; inset:0; background: rgba(0,0,0,0.85); z-index: 25000; flex-direction: column; align-items: center; justify-content: center; color: white;">
-    <div style="font-size:80px; margin-bottom:20px;">🆙</div>
-    <div style="font-size: 4rem; font-weight: 900; background: linear-gradient(to right, #ffd700, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">LEVEL UP!</div>
-    <p style="font-size:1.5rem; margin-top:10px; color:#fff;">축하합니다! 한 단계 성장하셨군요.</p>
-    <button class="btn btn-primary" onclick="document.getElementById('levelUpOverlay').style.display='none'" style="margin-top:30px; font-size:1.2rem; padding:15px 40px; width:auto;">계속하기</button>
-  </div>
-
+  <!-- Admin panel -->
   <div id="adminPanel">
     <div class="matrix-bg"></div>
-    <button class="admin-close-x" onclick="document.getElementById('adminPanel').style.display='none'">✖</button>
+    <button class="admin-close-x" id="adminCloseBtn">✖</button>
 
     <div class="admin-shell">
       <div class="admin-left">
@@ -566,7 +1565,7 @@
         </div>
 
         <div style="margin-top:auto; color:#666; font-size:11px;">
-          SECURE CONNECTION ESTABLISHED<br>v2.5.0 ULTIMATE
+          SECURE CONNECTION ESTABLISHED<br>v3.0.0 HARDENED
         </div>
       </div>
 
@@ -574,30 +1573,36 @@
         <div id="pane-dashboard" class="admin-pane active">
           <h2 style="color:#fff; margin-top:0;">시스템 현황</h2>
           <div class="admin-cards">
-            <div class="admin-card"><div class="k">TOTAL USERS</div><div class="v" id="dashTotal">0</div></div>
-            <div class="admin-card"><div class="k">PRO MEMBERS</div><div class="v" id="dashPro">0</div></div>
-            <div class="admin-card"><div class="k">ACTIVE (7D)</div><div class="v" id="dashActive">0</div></div>
+            <div class="admin-card">
+              <div class="k">TOTAL USERS</div>
+              <div class="v" id="dashTotal">0</div>
+            </div>
+            <div class="admin-card">
+              <div class="k">PRO MEMBERS</div>
+              <div class="v" id="dashPro">0</div>
+            </div>
+            <div class="admin-card">
+              <div class="k">ACTIVE (7D)</div>
+              <div class="v" id="dashActive">0</div>
+            </div>
           </div>
 
           <h4 style="color:#aaa; margin-bottom:5px;">USER TIER DISTRIBUTION</h4>
           <div class="chart-container" id="tierChart"></div>
-          <div class="chart-legend">
-             <span id="legendFree"><span class="dot" style="background:#444"></span>FREE</span>
-             <span id="legendPro"><span class="dot" style="background:#6366f1"></span>PRO</span>
-             <span id="legendMaster"><span class="dot" style="background:#ffd700"></span>MASTER</span>
-          </div>
 
           <h3 style="color:#0f0; margin-top:30px;">📟 THE MATRIX LOG</h3>
           <div id="matrixLog" class="matrix-terminal">
-            <div class="log-line"><span>[SYSTEM]</span> Initializing global surveillance...</div>
+            <div class="log-line"><span>[SYSTEM]</span> Booting admin console...</div>
           </div>
         </div>
 
         <div id="pane-users" class="admin-pane">
           <h2 style="color:#fff; margin-top:0;">유저 관리</h2>
           <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <input id="adminSearch" placeholder="이메일 검색..." style="flex:1; background:#222; border:1px solid #444; color:#fff;">
-            <button id="refreshAdminBtn" class="btn" style="background:#333; color:#fff; border:1px solid #555;">새로고침</button>
+            <input id="adminSearch" placeholder="이메일 검색..."
+              style="flex:1; background:#222; border:1px solid #444; color:#fff;">
+            <button id="refreshAdminBtn" class="btn"
+              style="background:#333; color:#fff; border:1px solid #555;">새로고침</button>
           </div>
           <div id="admUserList" style="display:grid; gap:10px;"></div>
         </div>
@@ -609,1533 +1614,1220 @@
             <div class="admin-card">
               <div class="k">💰 MASS GIFT</div>
               <p style="color:#888; font-size:12px; margin-bottom:15px;">모든 유저에게 100 코인을 선물합니다.</p>
-              <button onclick="godModeGift()" class="btn" style="width:100%; background:#ffd700; color:#000; border:none; font-weight:900;">전체 코인 발송</button>
+              <button id="godGiftBtn" class="btn"
+                style="width:100%; background:#ffd700; color:#000; border:none; font-weight:900;">전체 코인 발송</button>
             </div>
 
             <div class="admin-card">
               <div class="k">📢 EMERGENCY BROADCAST</div>
               <p style="color:#888; font-size:12px; margin-bottom:10px;">모든 유저 화면에 긴급 공지를 띄웁니다.</p>
               <div style="display:flex; gap:5px;">
-                <input id="broadcastInput" placeholder="공지 내용 입력" style="background:#222; border:1px solid #444; color:#fff; width:100%;">
-                <button onclick="godModeBroadcast()" class="btn" style="background:#ef4444; color:#fff; border:none; width:auto;">전송</button>
+                <input id="broadcastInput" placeholder="공지 내용 입력"
+                  style="background:#222; border:1px solid #444; color:#fff; width:100%;">
+                <button id="godBroadcastBtn" class="btn"
+                  style="background:#ef4444; color:#fff; border:none; width:auto;">전송</button>
               </div>
             </div>
           </div>
 
-          <div class="admin-card" style="margin-top:20px;">
-            <div class="k">📂 DATA BACKUP</div>
-            <p style="color:#888; font-size:12px;">유저 데이터를 CSV로 추출합니다.</p>
-            <button onclick="exportCSV()" class="btn" style="background:#333; color:#fff; border:1px solid #555;">CSV 다운로드</button>
-          </div>
-
-          <button onclick="document.getElementById('adminPanel').style.display='none'" class="btn" style="margin-top:30px; background:transparent; color:#ef4444; border:1px solid #ef4444; width:100%;">GOD MODE 종료</button>
+          <button id="adminExitBtn" class="btn"
+            style="margin-top:30px; background:transparent; color:#ef4444; border:1px solid #ef4444; width:100%;">GOD
+            MODE 종료</button>
         </div>
       </div>
     </div>
   </div>
 
-  <audio id="bgmAudio" src="./bgm.mp3" preload="auto" loop></audio>
+  <!-- =========================
+    SCRIPT (MODULE) - PART 1 시작
+  ========================= -->
+  <script type="module">
+    /* =========================
+      0) Imports
+    ========================= */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut,
+      sendPasswordResetEmail,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, getIdTokenResult, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, onSnapshot, addDoc, query, orderBy, limit, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+      getFirestore,
+      doc, setDoc, getDoc, updateDoc,
+      collection, getDocs, addDoc,
+      query, orderBy, limit,
+      onSnapshot, arrayUnion,
+      serverTimestamp,
+      runTransaction
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
-    authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
-    projectId: "giiiddd-36340523-3f595",
-    storageBucket: "giiiddd-36340523-3f595.firebasestorage.app",
-    messagingSenderId: "698901018936",
-    appId: "1:698901018936:web:2fb12a7a03cbd844c1e9cd"
-  };
+    /* =========================
+      1) Firebase Config
+    ========================= */
+    const firebaseConfig = {
+      apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
+      authDomain: "giiiddd-36340523-3f595.firebaseapp.com",
+      projectId: "giiiddd-36340523-3f595",
+      storageBucket: "giiiddd-36340523-3f595.firebasestorage.app",
+      messagingSenderId: "698901018936",
+      appId: "1:698901018936:web:2fb12a7a03cbd844c1e9cd"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  // 🚨 관리자 이메일 설정
-  const ADMIN_EMAILS = ["test@gmail.com"];
+    /* =========================
+      2) Admin Settings
+    ========================= */
+    const ADMIN_EMAILS = ["test@gmail.com"]; // ✅ 요청대로 1개만
 
-  // ===== Helpers (FIX: missing safeText / scrollToAuth) =====
-  function safeText(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-  }
-  window.scrollToAuth = () => {
-    document.getElementById("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+    /* =========================
+      3) Safe Helpers
+    ========================= */
+    const $ = (id) => document.getElementById(id);
 
-  // 🔊 Audio Manager
-  const sfx = {
+    function isAdminUser(user) {
+      return !!user?.email && ADMIN_EMAILS.includes(user.email);
+    }
+
+    function nowDateKey() {
+      const d = new Date();
+      return d.toISOString().slice(0, 10);
+    }
+
+    function dateKeyFromOffset(n) {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function toastAchievement(title) {
+      const box = $("achievementToast");
+      const t = $("achievementTitle");
+      if (!box || !t) return;
+      t.textContent = title;
+      box.style.display = "flex";
+      setTimeout(() => { box.style.display = "none"; }, 3500);
+    }
+
+    function safeConfetti(p = 120) {
+      try { confetti({ particleCount: p, spread: 70, origin: { y: 0.65 } }); } catch (_) { }
+    }
+
+    function appendTicker(msg) {
+      const track = $("tickerContent");
+      if (!track) return;
+      const item = document.createElement("div");
+      item.className = "ticker-item";
+      item.textContent = `⚡ ${msg}`;
+      track.appendChild(item);
+
+      const items = track.querySelectorAll(".ticker-item");
+      if (items.length > 30) items[0]?.remove();
+    }
+
+    function showProModal(type) {
+      $("modalTitle").textContent = `👑 ${type} 업그레이드`;
+      $("proModal").style.display = "flex";
+    }
+
+    function closeProModal() {
+      $("proModal").style.display = "none";
+    }
+
+    function toggleZenMode(force = null) {
+      const zen = $("zenOverlay");
+      if (!zen) return;
+      const isOpen = zen.style.display === "flex";
+      const next = (force === null) ? !isOpen : force;
+
+      if (next) {
+        zen.style.display = "flex";
+        requestAnimationFrame(() => { zen.style.opacity = "1"; });
+      } else {
+        zen.style.opacity = "0";
+        setTimeout(() => { zen.style.display = "none"; }, 250);
+      }
+    }
+
+    function applyTheme(primary, secondary) {
+      document.documentElement.style.setProperty("--primary", primary);
+      document.documentElement.style.setProperty("--secondary", secondary);
+      const b1 = document.querySelector(".blob-1");
+      const b2 = document.querySelector(".blob-2");
+      if (b1) b1.style.background = secondary;
+      if (b2) b2.style.background = primary;
+    }
+
+    /* =========================
+      4) Audio (Fail-safe)
+    ========================= */
+    const sfx = {
       click: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=click-124467.mp3"),
       success: new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_bb630cc098.mp3?filename=success-1-6297.mp3"),
-      levelUp: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_7368884964.mp3?filename=success-fanfare-trumpets-6185.mp3"),
-      adminOpen: new Audio("https://cdn.pixabay.com/download/audio/2022/03/24/audio_03e0545939.mp3?filename=sci-fi-click-903.mp3"),
-      play: (name) => { try { sfx[name].currentTime=0; sfx[name].play(); } catch(e){} }
-  };
+      admin: new Audio("https://cdn.pixabay.com/download/audio/2022/03/24/audio_03e0545939.mp3?filename=sci-fi-click-903.mp3"),
+      play(name) {
+        try {
+          const a = this[name];
+          if (!a) return;
+          a.currentTime = 0;
+          a.play();
+        } catch (_) { }
+      }
+    };
 
-  const STICKERS = ["🍎","💊","📚","🎸","💎","👑","🚀","🦄","🦖","🍕","🌈","🔥","💧","⭐","🍀","🍄"];
-  const themeData = {
-    survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋"],
-    godsaeng: ["📅 주간 계획", "🛏️ 이불 정리", "💰 가계부", "📚 독서 2p", "🗣️ 영단어 1개", "📝 감사일기"],
-    detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기", "🧘 명상 5분"],
-    custom: []
-  };
+    /* =========================
+      5) Data Pools
+    ========================= */
+    const STICKERS = ["🍎", "💊", "📚", "🎸", "💎", "👑", "🚀", "🦄", "🦖", "🍕", "🌈", "🔥", "💧", "⭐", "🍀", "🍄"];
 
-  // Rotating Recommendation
-  const recommendations = [
+    const themeData = {
+      survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋"],
+      godsaeng: ["📅 주간 계획", "🛏️ 이불 정리", "💰 가계부", "📚 독서 2p", "🗣️ 영단어 1개", "📝 감사일기"],
+      detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기", "🧘 명상 5분"],
+      custom: []
+    };
+
+    const recommendations = [
       { t: "🚑 생존 체력 팩", d: '직장인을 위한 "죽지 않으려고 하는 운동"' },
-      { t: "✨ 갓생 입문 팩", d: '성공 루틴을 2분짜리로 쪼개기' },
-      { t: "🧘 디톡스 힐링 팩", d: '스마트폰 내려놓고 뇌 휴식하기' }
-  ];
-  let recIdx = 0;
-  setInterval(() => {
-      const card = document.getElementById('heroRecommendCard');
-      if(card) {
-          recIdx = (recIdx + 1) % recommendations.length;
-          card.style.opacity = 0;
-          setTimeout(() => {
-              card.innerHTML = `<div><b>${recommendations[recIdx].t}</b></div><span style="font-size:12px; color:var(--text-muted)">${recommendations[recIdx].d}</span>`;
-              card.style.opacity = 1;
-          }, 500);
-      }
-  }, 4000);
+      { t: "✨ 갓생 입문 팩", d: "성공 루틴을 2분짜리로 쪼개기" },
+      { t: "🧘 디톡스 힐링 팩", d: "스마트폰 내려놓고 뇌 휴식하기" }
+    ];
 
-  // Workout Challenge (FIX: event usage removed)
-  window.selectWorkoutTab = (type) => {
-      sfx.play('click');
-      document.querySelectorAll('.w-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.type === type);
-      });
-      document.getElementById('startWorkoutBtn').dataset.type = type;
-      document.getElementById('workoutResult').innerHTML = '<span class="wd-main">❓</span><div class="wd-sub">종목 선택 후 미션 뽑기!</div>';
-      document.getElementById('completeWorkoutBtn').style.display = 'none';
-      document.getElementById('startWorkoutBtn').style.display = 'inline-block';
-  };
+    /* =========================
+      6) Global State
+    ========================= */
+    let recIdx = 0;
+    let unsubscribeLogs = null;
+    let unsubscribeBroadcast = null;
 
-  document.getElementById("startWorkoutBtn").onclick = () => {
-      sfx.play('click');
-      const type = document.getElementById('startWorkoutBtn').dataset.type;
-      if(!type) return alert("종목을 먼저 선택하세요!");
+    let isDeleteMode = false;
+    let dragCtx = null;
 
-      const res = document.getElementById("workoutResult");
-      res.innerHTML = '<span class="workout-anim">...두구두구...</span>';
-
+    /* =========================
+      7) Rotating Recommendation (safe)
+    ========================= */
+    setInterval(() => {
+      const card = $("heroRecommendCard");
+      if (!card) return;
+      recIdx = (recIdx + 1) % recommendations.length;
+      card.style.opacity = "0";
       setTimeout(() => {
-          let mainText = "";
-          let subText = "화이팅!";
-          if(type === 'walk') {
-              const times = [30, 60, 90, 120];
-              const t = times[Math.floor(Math.random()*times.length)];
-              mainText = `🚶 걷기 ${t}분`;
-              subText = "가볍게 시작해보세요!";
-          } else if(type === 'run') {
-              const times = [20, 30, 40, 60];
-              const t = times[Math.floor(Math.random()*times.length)];
-              mainText = `🏃 달리기 ${t}분`;
-              subText = "심장이 터질 때까지!";
-          } else {
-              const routines = ["스쿼트 100개", "푸쉬업 50개 + 플랭크 3분", "등 운동 5세트", "하체 집중 타격", "버피 50회"];
-              mainText = `🏋️ ${routines[Math.floor(Math.random()*routines.length)]}`;
-              subText = "근성장 가즈아!";
-          }
-          res.innerHTML = `<div class="wd-main">${mainText}</div><div class="wd-sub">${subText}</div>`;
-          document.getElementById('startWorkoutBtn').style.display = 'none';
-          document.getElementById('completeWorkoutBtn').style.display = 'inline-block';
-      }, 1000);
-  };
+        const r = recommendations[recIdx];
+        card.innerHTML = `<div><b>${r.t}</b></div><span style="font-size:12px; color:var(--text-muted)">${r.d}</span>`;
+        card.style.opacity = "1";
+      }, 350);
+    }, 4000);
 
-  document.getElementById("completeWorkoutBtn").onclick = async () => {
-      sfx.play('success');
-      const user = auth.currentUser;
-      if(!user) return;
-      const ref = doc(db,"users",user.uid);
-      const snap = await getDoc(ref);
-      let coins = snap.data().coins || 0;
-      coins += 3;
-      await updateDoc(ref, { coins });
-      alert("🔥 챌린지 완료! 코인 3개 획득!");
-      updateLevelUI(user.uid);
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      document.getElementById('completeWorkoutBtn').style.display = 'none';
-      document.getElementById('startWorkoutBtn').style.display = 'inline-block';
-      document.getElementById('workoutResult').innerHTML = '<div class="wd-main">✅ 완료</div><div class="wd-sub">내일 또 도전하세요!</div>';
-  };
+    /* =========================
+      8) Auth/UI Bindings (DOM ready)
+    ========================= */
+    function bindStaticUI() {
+      // scroll to auth
+      const goAuth = () => $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  function dateKeyFromOffset(n) { const d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
-  async function getConsecutiveStreak(uid) {
-    let c = 0, d = new Date();
-    while(true) {
-      if(!(await getDoc(doc(db,"users",uid,"habits",d.toISOString().slice(0,10)))).exists()) break;
-      c++; d.setDate(d.getDate()-1);
+      $("startNowBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
+      $("heroStartBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
+
+      // dark mode
+      $("darkModeToggle")?.addEventListener("click", () => {
+        sfx.play("click");
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
+      });
+      if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
+
+      // zen mode
+      $("zenToggleBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(); });
+      $("zenExitBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(false); });
+
+      // modal
+      $("modalCloseBtn")?.addEventListener("click", closeProModal);
+      $("modalPayBtn")?.addEventListener("click", () => alert("결제 기능 준비중!"));
+
+      $("proUpgradeBtn")?.addEventListener("click", () => showProModal("PRO"));
+      $("ultraUpgradeBtn")?.addEventListener("click", () => showProModal("ULTRA"));
+      $("masterUpgradeBtn")?.addEventListener("click", () => showProModal("MASTER"));
+      $("memoUnlockBtn")?.addEventListener("click", () => showProModal("PRO"));
     }
-    return c;
-  }
 
-  async function updateLevelUI(uid) {
-    const d = (await getDoc(doc(db,"users",uid))).data() || {};
-    const lvl = d.level||1;
-    document.getElementById("levelBadge").innerText = `Lv.${lvl}`;
-    document.getElementById("xpText").innerText = `${d.xp||0} / 100 XP`;
-    document.getElementById("xpBar").style.width = `${(d.xp||0)}%`;
-    document.getElementById("coinDisplay").style.display = 'flex';
-    document.getElementById("coinCount").innerText = d.coins||0;
-    document.getElementById("shopCoinCount").innerText = d.coins||0;
+    document.addEventListener("DOMContentLoaded", bindStaticUI);
 
-    // Title Rank System
-    let title = "입문자";
-    if(lvl >= 5) title = "숙련자";
-    if(lvl >= 10) title = "전문가";
-    if(lvl >= 20) title = "습관의 신";
-    document.getElementById("welcome").innerHTML = `👋 ${d.email.split('@')[0]} <span style="font-size:12px; color:var(--primary);">[${title}]</span>`;
+    /* =========================
+      PART 1 END HERE.
+      다음 파트(PART 2)에서:
+      - Auth 로직(회원가입/로그인/로그아웃/인증체크)
+      - Habit 완료/XP/코인
+      - 글로벌로그/브로드캐스트 구독
+      - 상점/스티커 드래그/삭제모드
+      - 랭킹 로드
+      - 관리자 패널 동작(열기/탭/유저목록/코인선물/방송)
+      를 이어서 완성함.
+    ========================= */
+    /* =========================
+      9) Firestore helpers
+    ========================= */
+    import { increment, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const petC = document.getElementById("petContainer");
-    if(d.isMaster) petC.classList.add("aura-effect");
-    else petC.classList.remove("aura-effect");
+    function userRef(uid) { return doc(db, "users", uid); }
+    function userLogRef(uid, dateKey) { return doc(db, "users", uid, "logs", dateKey); }
+    function userMemoRef(uid, dateKey) { return doc(db, "users", uid, "memos", dateKey); }
+    function systemBroadcastRef() { return doc(db, "system", "broadcast"); }
+    function systemTickerRef() { return doc(db, "system", "ticker"); }
 
-    let emoji = "🥚";
-    if(lvl>=16) emoji="👑"; else if(lvl>=8) emoji="🐲"; else if(lvl>=4) emoji="🐥"; else if(lvl>=2) emoji="🐣";
-    document.getElementById("petEmoji").innerText = emoji;
-  }
+    async function ensureUserDoc(user) {
+      const ref = userRef(user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          email: user.email || "",
+          createdAt: serverTimestamp(),
+          tier: "FREE",              // FREE | PRO | ULTRA | MASTER
+          xp: 0,
+          level: 1,
+          coins: 0,
+          streak: 0,
+          totalDays: 0,
+          lastCompletedDate: "",
+          lastActiveAt: serverTimestamp(),
+          theme: "",
+          inventory: [],
+          placedStickers: [],        // [{id,emoji,x,y,ts}]
+        }, { merge: true });
+      } else {
+        await updateDoc(ref, { lastActiveAt: serverTimestamp() }).catch(() => { });
+      }
+    }
 
-  // --- Sticker Logic ---
-  let isDeleteMode = false;
-  const trashBtn = document.getElementById("trashModeBtn");
-  trashBtn.onclick = () => {
-      sfx.play('click');
-      isDeleteMode = !isDeleteMode;
-      trashBtn.style.background = isDeleteMode ? "#ef4444" : "var(--accent)";
-      document.body.classList.toggle("is-delete-mode");
-      alert(isDeleteMode ? "🗑️ 삭제 모드 ON: 스티커를 클릭해서 지우세요." : "✨ 삭제 모드 OFF");
-  };
+    function calcLevelFromXp(xp) {
+      // 레벨업 곡선 (완만)
+      let level = 1;
+      let need = 100;
+      let remaining = xp;
+      while (remaining >= need) {
+        remaining -= need;
+        level += 1;
+        need = Math.floor(need * 1.2);
+        if (level > 99) break;
+      }
+      return { level, remain: remaining, need };
+    }
 
-  async function loadInventory(uid) {
-      const d = (await getDoc(doc(db,"users",uid))).data() || {};
-      const list = document.getElementById("inventoryList"); list.innerHTML = "";
-      (d.inventory||[]).forEach(s => {
-          const div = document.createElement("div"); div.innerText = s;
-          div.style.cssText = "font-size:30px; cursor:grab; background:white; border-radius:8px; text-align:center;";
-          div.onmousedown = (e) => startDrag(e,s,uid,true);
-          div.ontouchstart = (e) => startDrag(e,s,uid,true);
-          list.appendChild(div);
+    function setXpUI(xp) {
+      const { level, remain, need } = calcLevelFromXp(xp);
+      $("levelBadge").textContent = `Lv.${level}`;
+      $("xpText").textContent = `${remain} / ${need} XP`;
+      const pct = Math.max(0, Math.min(100, Math.round((remain / need) * 100)));
+      $("xpBar").style.width = `${pct}%`;
+      return level;
+    }
+
+    function setCoinsUI(coins) {
+      $("coinCount").textContent = String(coins || 0);
+      $("shopCoinCount").textContent = String(coins || 0);
+    }
+
+    function showDashboard(show) {
+      $("auth").style.display = show ? "none" : "block";
+      $("dashboardLayout").style.display = show ? "flex" : "none";
+      $("coinDisplay").style.display = show ? "block" : "none";
+      $("trashModeBtn").style.display = show ? "block" : "none";
+      $("shopOpenBtn").style.display = show ? "block" : "none";
+      $("rankOpenBtn").style.display = show ? "block" : "none";
+    }
+
+    function setTierUI(tier) {
+      const t = tier || "FREE";
+      // Memo panel (PRO+)
+      const memoOk = ["PRO", "ULTRA", "MASTER"].includes(t);
+      $("memoPanel").style.display = memoOk ? "flex" : "none";
+      $("memoHistoryPanel").style.display = memoOk ? "flex" : "none";
+      $("memoLocked").style.display = memoOk ? "none" : "flex";
+
+      // MASTER stuff
+      const isMaster = (t === "MASTER");
+      $("workoutSidePanel").style.display = isMaster ? "block" : "none";
+      $("timerBtn").style.display = isMaster ? "block" : "none";
+
+      // Aura effect on app
+      const appEl = $("app");
+      appEl.classList.toggle("aura-effect", isMaster);
+
+      // Tier badge text
+      const tb = $("tierBadge");
+      tb.style.display = "block";
+      tb.innerHTML = `<div style="font-weight:900;">등급: <span style="color:var(--primary)">${t}</span></div>`;
+    }
+
+    function setPetByLevel(level) {
+      const pet = $("petEmoji");
+      if (!pet) return;
+      if (level >= 30) pet.textContent = "🐉";
+      else if (level >= 20) pet.textContent = "🦄";
+      else if (level >= 12) pet.textContent = "🐣";
+      else if (level >= 6) pet.textContent = "🐤";
+      else pet.textContent = "🥚";
+    }
+
+    function petSay(msg) {
+      const bubble = $("petBubble");
+      if (!bubble) return;
+      bubble.textContent = msg;
+      bubble.style.opacity = "1";
+      clearTimeout(petSay._t);
+      petSay._t = setTimeout(() => bubble.style.opacity = "0", 2000);
+    }
+
+    /* =========================
+      10) Heatmap
+    ========================= */
+    function renderHeatmap(activeDatesSet) {
+      const grid = $("heatmapGrid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      for (let i = 19; i >= 0; i--) {
+        const key = dateKeyFromOffset(i);
+        const cell = document.createElement("div");
+        cell.className = "grass" + (activeDatesSet.has(key) ? " active" : "");
+        cell.title = key;
+        grid.appendChild(cell);
+      }
+    }
+
+    async function loadHeatmap(uid) {
+      const snaps = await getDocs(collection(db, "users", uid, "logs"));
+      const set = new Set();
+      snaps.forEach(s => {
+        if (s.exists() && s.id) set.add(s.id);
       });
-      document.getElementById("shopCoinCount").innerText = d.coins||0;
-  }
+      renderHeatmap(set);
+    }
 
-  async function loadPlacedStickers(uid) {
-      const d = (await getDoc(doc(db,"users",uid))).data() || {};
-      const layer = document.getElementById("stickerLayer"); layer.innerHTML = "";
-      (d.placedStickers||[]).forEach(s => createStickerEl(s, uid));
-  }
+    /* =========================
+      11) Theme + suggestion
+    ========================= */
+    function setThemeActive(theme) {
+      document.querySelectorAll(".theme-tag").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.theme === theme);
+      });
+    }
 
-  function createStickerEl(data, uid) {
-      const el = document.createElement("div"); el.className = "sticker"; el.innerText = data.char;
-      el.style.left = data.x+"%"; el.style.top = data.y+"%"; el.id = data.id;
+    function chooseSuggestion(theme) {
+      if (!theme) return "테마를 선택하세요.";
+      if (theme === "custom") return "커스텀은 입력한 루틴으로 진행돼요.";
+      const arr = themeData[theme] || [];
+      if (!arr.length) return "추천 루틴이 없습니다.";
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-      const dragStart = (e) => {
-          if(isDeleteMode) return;
-          startDrag(e, el, uid, false);
-      };
-      el.addEventListener('mousedown', dragStart);
-      el.addEventListener('touchstart', dragStart, {passive:false});
+    function bindThemeButtons(currentUser, currentTier) {
+      document.querySelectorAll(".theme-tag").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          sfx.play("click");
+          const theme = btn.dataset.theme;
 
-      el.addEventListener('click', async (e) => {
-          if(!isDeleteMode) return;
-          e.stopPropagation(); e.preventDefault();
-          if(confirm("이 스티커를 삭제할까요?")) {
-              el.remove();
-              const r = doc(db,"users",uid);
-              const p = (await getDoc(r)).data().placedStickers || [];
-              await updateDoc(r, { placedStickers: p.filter(s => s.id !== data.id) });
+          // FREE는 커스텀 금지
+          if (theme === "custom" && currentTier === "FREE") {
+            alert("커스텀 테마는 PRO부터 사용 가능합니다.");
+            return;
           }
-      });
-      document.getElementById("stickerLayer").appendChild(el);
-  }
 
-  let dragCtx = null;
-  function startDrag(e, target, uid, isNew) {
-      if(isDeleteMode) return;
-      e.preventDefault();
-      const el = isNew ? document.createElement("div") : target;
-      if(isNew) { el.className = "sticker"; el.innerText = target; el.style.pointerEvents="none"; document.body.appendChild(el); }
-
-      dragCtx = { el, isNew, char: isNew?target:null, uid };
-      const cx = e.clientX||e.touches[0].clientX;
-      const cy = e.clientY||e.touches[0].clientY;
-
-      if(!isNew) {
-          const r = el.getBoundingClientRect();
-          dragCtx.ox = cx - r.left; dragCtx.oy = cy - r.top;
-          el.style.zIndex = 1000;
-      } else {
-          el.style.left = (cx-20)+"px"; el.style.top = (cy-20)+"px";
-      }
-
-      document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
-      document.addEventListener('touchmove', onMove, {passive:false}); document.addEventListener('touchend', onEnd);
-  }
-
-  function onMove(e) {
-      if(!dragCtx) return;
-      e.preventDefault();
-      const cx = e.clientX||e.touches[0].clientX; const cy = e.clientY||e.touches[0].clientY;
-      if(dragCtx.isNew) { dragCtx.el.style.left=(cx-20)+"px"; dragCtx.el.style.top=(cy-20)+"px"; }
-      else { dragCtx.el.style.left=(cx-dragCtx.ox)+"px"; dragCtx.el.style.top=(cy-dragCtx.oy)+"px"; }
-  }
-
-  async function onEnd(e) {
-      document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onEnd);
-      document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onEnd);
-      if(!dragCtx) return;
-
-      const layer = document.getElementById("stickerLayer");
-      const r = layer.getBoundingClientRect();
-      const cx = e.clientX||(e.changedTouches?e.changedTouches[0].clientX:0);
-      const cy = e.clientY||(e.changedTouches?e.changedTouches[0].clientY:0);
-
-      let x, y;
-      if(dragCtx.isNew) {
-          x = ((cx - r.left)/r.width)*100; y = ((cy - r.top)/r.height)*100;
-          dragCtx.el.remove();
-      } else {
-          const er = dragCtx.el.getBoundingClientRect();
-          x = ((er.left - r.left)/r.width)*100; y = ((er.top - r.top)/r.height)*100;
-          dragCtx.el.style.zIndex="";
-      }
-
-      const ref = doc(db,"users",dragCtx.uid);
-      const placed = (await getDoc(ref)).data().placedStickers || [];
-
-      if(dragCtx.isNew) {
-          const s = { id: Date.now().toString(), char: dragCtx.char, x, y };
-          placed.push(s); createStickerEl(s, dragCtx.uid);
-      } else {
-          const i = placed.findIndex(s => s.id === dragCtx.el.id);
-          if(i>-1) { placed[i].x=x; placed[i].y=y; dragCtx.el.style.left=x+"%"; dragCtx.el.style.top=y+"%"; }
-      }
-      await updateDoc(ref, { placedStickers: placed });
-      dragCtx = null;
-  }
-
-  window.selectTheme = async (el, type) => {
-      sfx.play('click');
-      const user = auth.currentUser; if(!user) return alert("로그인 필요");
-      const input = document.getElementById("habitName");
-      document.querySelectorAll('.theme-tag').forEach(t=>t.classList.remove('active'));
-
-      if(type==='custom') {
-          const t = await getIdTokenResult(user);
-          if(!t.claims.pro && !t.claims.admin) return alert("🔒 PRO 전용");
-          input.readOnly=false; input.value=""; input.focus();
-      } else {
-          input.readOnly=true;
-          const pool = themeData[type];
-          input.value = pool[Math.floor(Math.random()*pool.length)];
-      }
-      if(el) el.classList.add('active');
-  };
-
-  window.showProModal = (type) => {
-      document.getElementById("modalTitle").innerText = `👑 ${type} 업그레이드`;
-      document.getElementById("proModal").style.display = 'flex';
-  };
-
-  window.changeTheme = async (c) => {
-      const user = auth.currentUser; if(!user) return;
-      const d = (await getDoc(doc(db,"users",user.uid))).data();
-      if(!d.isUltra && !d.isMaster && user.email!=="test@gmail.com") return alert("💎 ULTRA 전용");
-
-      let p, s;
-      if(c==='blue') { p='#3b82f6'; s='#60a5fa'; }
-      else if(c==='pink') { p='#ec4899'; s='#f472b6'; }
-      else if(c==='gold') { p='#d97706'; s='#fbbf24'; }
-      else { p='#6366f1'; s='#a855f7'; }
-      document.documentElement.style.setProperty('--primary', p);
-      document.documentElement.style.setProperty('--secondary', s);
-      document.querySelector('.blob-1').style.background = s;
-      document.querySelector('.blob-2').style.background = p;
-  };
-
-  async function loadStats(uid) {
-      const snap = await getDocs(collection(db,"users",uid,"habits"));
-      let successCount = 0;
-      snap.forEach(x => { if(x.data().done) successCount++; });
-      safeText("totalDays", `총 누적 성공: ${successCount}일`);
-  }
-
-  // Memo Saving
-  document.getElementById("saveMemoBtn").onclick = async () => {
-      sfx.play('click');
-      const user = auth.currentUser; if(!user) return;
-      const memo = document.getElementById("dailyMemo").value;
-      if(!memo.trim()) return alert("내용을 입력하세요");
-
-      const today = dateKeyFromOffset(0);
-      await setDoc(doc(db,"users",user.uid,"habits",today), { memo: memo }, { merge: true });
-      alert("✅ 메모 저장 완료!");
-      renderMemoHistory(user.uid);
-  };
-
-  async function renderMemoHistory(uid) {
-      const listDiv = document.getElementById("memoHistoryList");
-      listDiv.innerHTML = "로딩 중...";
-
-      const snap = await getDocs(collection(db,"users",uid,"habits"));
-      let memos = [];
-      snap.forEach(d => {
-          const data = d.data();
-          if(data.memo) memos.push({date: d.id, text: data.memo});
-      });
-
-      memos.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-      if(memos.length === 0) {
-          listDiv.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>';
-          return;
-      }
-
-      listDiv.innerHTML = "";
-      memos.forEach(m => {
-          const div = document.createElement("div");
-          div.className = "memo-item";
-          div.innerHTML = `<div class="memo-date">${m.date}</div><div>${m.text}</div>`;
-          listDiv.appendChild(div);
-      });
-  }
-
-  // Global Cheer
-  document.getElementById("globalCheerBtn").onclick = async () => {
-      sfx.play('success');
-      const user = auth.currentUser;
-      if(!user) return;
-      await addDoc(collection(db, "global_logs"), {
-          msg: "CHEER",
-          type: "cheer",
-          timestamp: new Date()
-      });
-      triggerHearts();
-  };
-
-  function triggerHearts() {
-      for(let i=0; i<5; i++) {
-          const heart = document.createElement("div");
-          heart.innerText = "💖";
-          heart.className = "cheer-heart";
-          heart.style.left = Math.random() * 100 + "vw";
-          heart.style.bottom = "-20px";
-          heart.style.animationDuration = (3 + Math.random()) + "s";
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 4000);
-      }
-  }
-
-  // ===== Missing stubs (kept safe) =====
-  function renderCalendar(){ /* (placeholder) */ }
-  function updateTierUI(streak) {
-      const el = document.getElementById("tierBadge");
-      if(el) {
-          el.style.display = 'block';
-          const txt = document.getElementById("streakCount");
-          if(streak >= 3) txt.innerHTML = `🔥 ${streak}일 연속 성공!`;
-          else txt.innerHTML = `🔥 ${streak}일 연속 성공 중!`;
-      }
-  }
-
-  // =====================================================
-  // 🔥 NEW FEATURE PACK (ADD-ONLY) - FIXED/INTEGRATED
-  // =====================================================
-
-  // 1️⃣ 실패 감정 기록
-  window.recordFailEmotion = async (emotion) => {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const today = dateKeyFromOffset(0);
-    await setDoc(
-      doc(db, "users", user.uid, "fail_logs", today),
-      { emotion, timestamp: new Date() },
-      { merge: true }
-    );
-
-    alert("기록했어요 👍 내일은 더 쉬워질 거예요.");
-  };
-
-  // 실패 감정 UI 자동 삽입 (1회만)
-  function injectFailBoxOnce() {
-    if (document.getElementById("failBox")) return;
-    const failBox = document.createElement("div");
-    failBox.id = "failBox";
-    failBox.style.cssText = `
-      margin-top:15px;
-      padding:12px;
-      border-radius:12px;
-      background:rgba(239,68,68,0.08);
-      font-size:13px;
-      text-align:left;
-      border:1px solid rgba(239,68,68,0.15);
-    `;
-    failBox.innerHTML = `
-      <b>오늘 못했다면 이유만 체크하세요</b>
-      <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
-        <button class="btn" style="width:auto; padding:8px 10px; font-size:12px;" onclick="recordFailEmotion('tired')">😵 지침</button>
-        <button class="btn" style="width:auto; padding:8px 10px; font-size:12px;" onclick="recordFailEmotion('lazy')">😐 귀찮음</button>
-        <button class="btn" style="width:auto; padding:8px 10px; font-size:12px;" onclick="recordFailEmotion('sad')">😭 의욕없음</button>
-        <button class="btn" style="width:auto; padding:8px 10px; font-size:12px;" onclick="recordFailEmotion('busy')">😡 바쁨</button>
-      </div>
-      <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
-        <button class="btn" style="width:auto; padding:8px 10px; font-size:12px; border:1px dashed var(--card-border);" onclick="analyzeHabitDNA(auth.currentUser?.uid)">🧬 습관 DNA</button>
-        <span style="font-size:12px; color:var(--text-muted);">(데이터 기반 타입 분석)</span>
-      </div>
-    `;
-    document.getElementById("app")?.appendChild(failBox);
-  }
-
-  // 2️⃣ 습관 미완료 알림 (브라우저) - FIX: 실제 '오늘 18:00'에 맞춤
-  function scheduleHabitReminderAt18() {
-    try {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const now = new Date();
-      const target = new Date();
-      target.setHours(18, 0, 0, 0);
-      if (now > target) target.setDate(target.getDate() + 1);
-      const ms = target.getTime() - now.getTime();
-
-      setTimeout(() => {
-        const u = auth.currentUser;
-        if (!u) return;
-
-        const today = dateKeyFromOffset(0);
-        getDoc(doc(db, "users", u.uid, "habits", today)).then(s => {
-          if (s.exists() && s.data().done) return;
-
-          if (!("Notification" in window)) return;
-          Notification.requestPermission().then(p => {
-            if (p === "granted") {
-              new Notification("⏰ HabitFlow", {
-                body: "오늘 습관 아직 안 했어요! 딱 1분이면 끝나요.",
-                icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png"
-              });
-            }
-          });
+          setThemeActive(theme);
+          const suggestion = chooseSuggestion(theme);
+          $("todaySuggestion").textContent = suggestion;
+          $("habitName").value = suggestion;
+          await updateDoc(userRef(currentUser.uid), { theme }).catch(() => { });
         });
-      }, ms);
-    } catch(e) {}
-  }
-
-  // 3️⃣ 연속 기록 위기 경고 (FIX: 오늘 완료 안했을 때만)
-  async function checkStreakDanger(uid) {
-    const today = dateKeyFromOffset(0);
-    const todaySnap = await getDoc(doc(db, "users", uid, "habits", today));
-    if (todaySnap.exists() && todaySnap.data().done) return;
-
-    // streak = 연속 기록(오늘 미완이면 어제까지 연속)
-    const streak = await getConsecutiveStreak(uid);
-    if (streak >= 3) {
-      alert(`🔥 ${streak}일 연속 중!\n오늘 안 하면 기록이 끊길 수 있어요!`);
+      });
     }
-  }
 
-  // 4️⃣ 습관 DNA 타입 자동 분석
-  async function analyzeHabitDNA(uid) {
-    if(!uid) return;
-    const snap = await getDocs(collection(db, "users", uid, "habits"));
-    const days = snap.size;
-
-    let type = "🐢 거북이형";
-    if (days > 20) type = "⚡ 폭주형";
-    else if (days > 10) type = "🔁 반복형";
-    else if (days <= 3) type = "💥 몰아치기형";
-
-    alert(`🧬 당신의 습관 DNA\n\n${type}`);
-  }
-  window.analyzeHabitDNA = analyzeHabitDNA;
-
-  // 5️⃣ 히든 업적
-  async function checkHiddenAchievement(uid) {
-    const streak = await getConsecutiveStreak(uid);
-    if (streak === 7) {
-      document.getElementById("achievementTitle").innerText = "🕵️ 숨겨진 7일 달성";
-      document.getElementById("achievementToast").style.display = "flex";
-      setTimeout(() => {
-        document.getElementById("achievementToast").style.display = "none";
-      }, 4000);
-    }
-  }
-
-  // =====================================================
-  // Auth State
-  // =====================================================
-  let globalLogsUnsub = null;
-  let broadcastUnsub = null;
-
-  onAuthStateChanged(auth, async user => {
-      if(!user) {
-          document.getElementById("auth").style.display='block';
-          document.getElementById("dashboardLayout").style.display='none';
-          document.getElementById("coinDisplay").style.display = 'none';
-          ['adminOpenBtn','rankOpenBtn','shopOpenBtn','trashModeBtn','bgmOpenBtn','themeBtn'].forEach(id=>document.getElementById(id).style.display='none');
-
-          // clean listeners
-          try { globalLogsUnsub && globalLogsUnsub(); } catch(e){}
-          try { broadcastUnsub && broadcastUnsub(); } catch(e){}
-          globalLogsUnsub = null; broadcastUnsub = null;
-
-          return;
-      }
-
-      const isAdmin = ADMIN_EMAILS.includes(user.email || "");
-      if(!user.emailVerified && !isAdmin) { alert("인증 필요"); await signOut(auth); return; }
-
-      document.getElementById("auth").style.display='none';
-      document.getElementById("dashboardLayout").style.display='flex';
-
-      ['rankOpenBtn','shopOpenBtn','trashModeBtn','bgmOpenBtn'].forEach(id=>document.getElementById(id).style.display='block');
-
-      const userRef = doc(db,"users",user.uid);
-      let snap = await getDoc(userRef);
-      if(!snap.exists()){
-          await setDoc(userRef, {
-              email: user.email, isPro: false, isUltra: false, isMaster: false, isBanned: false,
-              streakProtectionLeft: 2,
-              level: 1, xp: 0, coins: 0,
-              createdAt: new Date().toISOString()
-          }, {merge:true});
-          snap = await getDoc(userRef);
-      }
-
-      if(snap.data().isBanned){ alert("차단된 계정입니다."); await signOut(auth); return; }
-
-      let { isPro, isUltra, isMaster } = snap.data() || {};
-
-      if(isAdmin) {
-          isPro=true; isUltra=true; isMaster=true;
-          document.getElementById("adminOpenBtn").style.display='block';
-          globalLogsUnsub = subscribeToGlobalLogs(false);
-      } else {
-          globalLogsUnsub = subscribeToGlobalLogs(true);
-      }
-
-      broadcastUnsub = subscribeToBroadcast();
-
-      if(isUltra || isMaster) {
-          document.getElementById("themeBtn").style.display='block';
-          document.getElementById("bgmSelect").style.display='block';
-      }
-      if(isMaster) {
-          document.getElementById("workoutSidePanel").style.display='block';
-          document.getElementById("timerBtn").style.display='block';
-      } else {
-          document.getElementById("workoutSidePanel").style.display='none';
-          document.getElementById("timerBtn").style.display='none';
-      }
-
-      // Memo UI
-      document.getElementById("memoPanel").style.display = 'flex';
-      document.getElementById("memoHistoryPanel").style.display = 'flex';
-      if(isPro || isUltra || isMaster) {
-          document.getElementById("memoLocked").style.display='none';
-          const today = dateKeyFromOffset(0);
-          const s = await getDoc(doc(db,"users",user.uid,"habits",today));
-          if(s.exists() && s.data().memo) document.getElementById("dailyMemo").value = s.data().memo;
-          renderMemoHistory(user.uid);
-      } else {
-          document.getElementById("memoLocked").style.display='flex';
-          document.getElementById("memoHistoryPanel").style.display='none';
-      }
-
-      if(isPro||isUltra||isMaster) {
-          document.getElementById("stats").style.display='block';
-          safeText("status", isMaster?"👑 MASTER":isUltra?"💎 ULTRA":"🌟 PRO");
-          loadStats(user.uid);
-      } else {
-          safeText("status", "🌱 무료 회원");
-      }
-
-      updateLevelUI(user.uid);
-      loadPlacedStickers(user.uid);
-
-      const streak = await getConsecutiveStreak(user.uid);
-      updateTierUI(streak);
-
-      renderCalendar(user.uid, (isPro||isUltra||isMaster));
-
-      // Heatmap
-      const grid=document.getElementById("heatmapGrid"); grid.innerHTML="";
-      for(let i=19; i>=0; i--) {
-          const d = dateKeyFromOffset(i);
-          const div=document.createElement("div"); div.className="grass"; div.title=d;
-          if((await getDoc(doc(db,"users",user.uid,"habits",d))).exists()) div.classList.add("active");
-          grid.appendChild(div);
-      }
-
-      // NEW FEATURE PACK - auto run
-      injectFailBoxOnce();
-      scheduleHabitReminderAt18();
-      checkStreakDanger(user.uid);
-      checkHiddenAchievement(user.uid);
-  });
-
-  // Buttons Logic
-  document.getElementById("habitBtn").onclick = async () => {
-      sfx.play('success');
-      const user=auth.currentUser; if(!user) return;
-      const name = document.getElementById("habitName").value;
-      if(!name || name==="테마를 선택하세요") return alert("습관 입력");
-
-      await setDoc(doc(db,"users",user.uid,"habits",dateKeyFromOffset(0)), {done:true, name, timestamp:new Date()}, {merge:true});
-      await setDoc(doc(db,"users",user.uid), {updatedAt:new Date().toISOString(), lastActive: new Date()}, {merge:true});
-
-      const ref = doc(db,"users",user.uid);
-      const snap = await getDoc(ref);
-      let { level=1, xp=0, coins=0, isUltra, isMaster } = snap.data() || {};
-
-      xp+=20;
-      coins += isMaster ? 3 : (isUltra ? 2 : 1);
-
-      if(xp>=100) {
-          level++; xp-=100;
-          sfx.play('levelUp');
-          document.getElementById('levelUpOverlay').style.display = 'flex';
-          confetti({particleCount: 200, spread: 120});
-      } else {
-          confetti({particleCount: 100, origin:{y:0.7}});
-      }
-
-      await setDoc(ref, {level, xp, coins}, {merge:true});
-
-      await addDoc(collection(db, "global_logs"), {
-          msg: `${user.email.split('@')[0]}님이 [${name}] 완료!`,
-          type: "success",
-          timestamp: new Date()
-      });
-
-      updateLevelUI(user.uid);
-
-      const btn = document.getElementById("habitBtn");
-      btn.innerHTML = "완료함 ✨"; btn.disabled=true;
-  };
-
-  document.getElementById("gachaBtn").onclick = async () => {
-      sfx.play('click');
-      const user=auth.currentUser; if(!user) return;
-      const ref = doc(db,"users",user.uid);
-      const snap = await getDoc(ref);
-      let coins = snap.data().coins||0;
-      if(coins<1) return alert("코인 부족");
-
-      coins--;
-      const p = STICKERS[Math.floor(Math.random()*STICKERS.length)];
-      await updateDoc(ref, { coins, inventory: arrayUnion(p) });
-
-      alert(`🎉 [${p}] 획득!`);
-      updateLevelUI(user.uid); loadInventory(user.uid);
-  };
-
-  // Timer
-  let timer=null, timeLeft=1500;
-  document.getElementById("timerBtn").onclick = () => document.getElementById("timerModal").style.display='flex';
-  document.getElementById("startTimerBtn").onclick = () => {
-      if(timer) return;
-      sfx.play('click');
-      timer = setInterval(() => {
-          if(timeLeft<=0) { clearInterval(timer); timer=null; timeLeft=1500; sfx.play('success'); alert("집중 끝!"); return; }
-          timeLeft--;
-          const m = Math.floor(timeLeft/60), s = timeLeft%60;
-          document.getElementById("timerDisplay").innerText = `${m}:${s<10?'0':''}${s}`;
-      }, 1000);
-  };
-  document.getElementById("stopTimerBtn").onclick = () => { clearInterval(timer); timer=null; };
-
-  // Helper UIs
-  ['rank','shop'].forEach(k => {
-      document.getElementById(k+'OpenBtn').onclick = () => {
-          sfx.play('click');
-          const panel = document.getElementById(k+'Panel');
-          panel.style.display = panel.style.display==='none'?'block':'none';
-          if(k==='rank') loadLeaderboard();
-          if(k==='shop') loadInventory(auth.currentUser.uid);
-      }
-  });
-
-  async function loadLeaderboard() {
-      const list = document.getElementById("rankList"); list.innerHTML="로딩...";
-      const snap = await getDocs(collection(db,"users"));
-      let u = []; snap.forEach(d=>u.push(d.data()));
-      u.sort((a,b)=> (b.level||1) - (a.level||1));
-      list.innerHTML = u.slice(0,10).map((x,i)=>`<div style="padding:5px; border-bottom:1px solid #eee;">${i+1}. ${x.email?.slice(0,3)}*** Lv.${x.level||1}</div>`).join('');
-  }
-
-  // BGM Logic
-  const audio = document.getElementById("bgmAudio");
-  document.getElementById("bgmOpenBtn").onclick = () => document.getElementById("bgm").style.display='block';
-  document.getElementById("bgmToggle").onclick = () => { audio.paused ? audio.play() : audio.pause(); };
-  document.getElementById("bgmSelect").onchange = (e) => { audio.src = e.target.value; audio.play(); };
-  document.getElementById("bgmVol").oninput = (e) => { audio.volume = Number(e.target.value); };
-
-  // Theme Toggle
-  const toggle = document.getElementById("darkModeToggle");
-  toggle.onclick = () => {
-    sfx.play('click');
-    document.body.classList.toggle("dark-mode");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
-  };
-  if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
-
-  // Zen Mode
-  window.toggleZenMode = () => {
-      const zen = document.getElementById("zenOverlay");
-      if(zen.style.display === "flex") {
-          zen.style.opacity = 0;
-          setTimeout(()=>zen.style.display="none", 350);
-      } else {
-          zen.style.display = "flex";
-          setTimeout(()=>zen.style.opacity = 1, 10);
-      }
-  };
-
-  // Broadcast Listener (FIX: returns unsubscribe)
-  function subscribeToBroadcast() {
-      return onSnapshot(doc(db, "config", "broadcast"), (snap) => {
-          if(snap.exists()) {
-              const d = snap.data();
-              let ts = null;
-              if (d.timestamp?.toDate) ts = d.timestamp.toDate();
-              else ts = new Date(d.timestamp || Date.now());
-
-              const diff = (new Date() - ts) / 1000;
-              if(diff < 60) {
-                  sfx.play('success');
-                  const el = document.getElementById("broadcastOverlay");
-                  document.getElementById("broadcastMsg").innerText = d.message;
-                  el.classList.add("active");
-                  setTimeout(() => el.classList.remove("active"), 5000);
-              }
-          }
-      });
-  }
-
-  // Ticker / Matrix Listener (FIX: tickerContent id + safe append)
-  function subscribeToGlobalLogs(isPublic = false) {
-      const q = query(collection(db, "global_logs"), orderBy("timestamp", "desc"), limit(20));
-      return onSnapshot(q, (snap) => {
-          snap.docChanges().forEach(change => {
-              if (change.type === "added") {
-                  const data = change.doc.data();
-
-                  // Matrix Log (Admin Only)
-                  if(!isPublic) {
-                      const term = document.getElementById("matrixLog");
-                      if(term) {
-                          const div = document.createElement("div");
-                          div.className = "log-line";
-                          div.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${data.msg || ""}`;
-                          term.prepend(div);
-                      }
-                  }
-
-                  // Ticker & Cheer
-                  if (data.type === "cheer") {
-                      triggerHearts();
-                  } else {
-                      const track = document.getElementById("tickerContent");
-                      if(!track) return;
-                      const item = document.createElement("div");
-                      item.className = "ticker-item";
-                      item.innerHTML = `⚡ ${data.msg || ""}`;
-                      track.appendChild(item);
-
-                      // 너무 길어지면 정리
-                      const items = track.querySelectorAll(".ticker-item");
-                      if(items.length > 30) items[0].remove();
-                  }
-              }
-          });
-      });
-  }
-
-  // =========================================================
-  // 👑 GOD MODE ADMIN LOGIC
-  // =========================================================
-
-  const adminPanel = document.getElementById("adminPanel");
-  const adminNavBtns = document.querySelectorAll(".adminNavBtn");
-  const panes = document.querySelectorAll(".admin-pane");
-  const adminSubtitle = document.getElementById("adminSubtitle");
-  const refreshAdminBtn = document.getElementById("refreshAdminBtn"); // FIX: correct id
-
-  document.getElementById("adminOpenBtn").onclick = () => {
-      sfx.play('adminOpen');
-      adminPanel.style.display = "block";
-      adminSubtitle.textContent = `SYSTEM ACCESS: ${auth.currentUser.email}`;
-      window.refreshAdmin();
-  };
-
-  adminNavBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-          sfx.play('click');
-          adminNavBtns.forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          panes.forEach(p => p.classList.remove("active"));
-          document.getElementById(btn.dataset.pane).classList.add("active");
-      });
-  });
-
-  if(refreshAdminBtn) refreshAdminBtn.onclick = () => window.refreshAdmin();
-
-  window.refreshAdmin = async () => {
-      sfx.play('click');
-      const snap = await getDocs(collection(db, "users"));
-      const users = [];
-      snap.forEach(d => users.push({id: d.id, ...d.data()}));
-
-      const total = users.length;
-      const pro = users.filter(u=>u.isPro).length;
-      const master = users.filter(u=>u.isMaster).length;
-      const free = total - pro - master;
-
-      document.getElementById("dashTotal").innerText = total;
-      document.getElementById("dashPro").innerText = pro;
-      const active7 = users.filter(u=> u.lastActive && (u.lastActive.toDate ? u.lastActive.toDate() : new Date(u.lastActive.seconds*1000)) > new Date(Date.now()-86400000*7)).length;
-      document.getElementById("dashActive").innerText = active7;
-
-      const chart = document.getElementById("tierChart");
-      if(chart) {
-          const pFree = total > 0 ? (free/total)*100 : 0;
-          const pPro = total > 0 ? (pro/total)*100 : 0;
-          const pMaster = total > 0 ? (master/total)*100 : 0;
-          chart.innerHTML = `
-            <div class="chart-bar" style="width:${pFree}%; background:#444"></div>
-            <div class="chart-bar" style="width:${pPro}%; background:#6366f1"></div>
-            <div class="chart-bar" style="width:${pMaster}%; background:#ffd700"></div>
-          `;
-      }
-
-      const listDiv = document.getElementById("admUserList");
-      listDiv.innerHTML = "";
-      users.forEach(u => {
-          const el = document.createElement("div");
-          el.className = "admin-card";
-          el.style.display = "flex"; el.style.justifyContent = "space-between";
-          el.innerHTML = `
-              <div>
-                  <b>${u.email || "-"}</b> <span style="font-size:11px; color:#aaa;">${u.id.slice(0,5)}</span><br>
-                  <span style="font-size:12px;">${u.isPro?"PRO":"FREE"} | ${u.isBanned?"BANNED":"ACTIVE"}</span>
-              </div>
-              <button class="btn" style="font-size:11px; height:30px; width:auto;" onclick="togglePro('${u.id}', ${!!u.isPro})">등급변경</button>
-          `;
-          listDiv.appendChild(el);
-      });
-  };
-
-  window.togglePro = async (uid, current) => {
-      await updateDoc(doc(db,"users",uid), {isPro: !current});
-      window.refreshAdmin();
-  };
-
-  window.godModeGift = async () => {
-      sfx.play('adminOpen');
-      if(!confirm("전체 유저에게 100 코인을 선물합니까?")) return;
-      const snap = await getDocs(collection(db, "users"));
-      const tasks = [];
-      snap.forEach(d => {
-        tasks.push(updateDoc(doc(db,"users",d.id), { coins: (d.data().coins||0)+100 }));
-      });
-      await Promise.allSettled(tasks);
-      alert("선물 완료!");
-      window.refreshAdmin();
-  };
-
-  window.godModeBroadcast = async () => {
-      const msg = document.getElementById("broadcastInput").value;
-      if(!msg) return;
-      sfx.play('adminOpen');
-      await setDoc(doc(db, "config", "broadcast"), { message: msg, timestamp: new Date() });
-      alert("전송됨");
-  };
-
-  window.exportCSV = () => {
-      getDocs(collection(db,"users")).then(s => {
-          let csvContent = "data:text/csv;charset=utf-8,UID,Email,Level,Coins,IsPro\n";
-          s.forEach(d => {
-              const u = d.data();
-              csvContent += `${d.id},${u.email},${u.level||1},${u.coins||0},${u.isPro||false}\n`;
-          });
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", "habitflow_users.csv");
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-      });
-  };
-
-  // =========================================================
-  // Auth Buttons (회원가입/로그인/리셋) - 누락되어 있던 부분 복구
-  // =========================================================
-  document.getElementById("signupBtn").onclick = async () => {
-    try{
-      sfx.play('click');
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if(!email || !password) return alert("이메일/비밀번호를 입력하세요.");
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(cred.user);
-      alert("✅ 회원가입 완료! 이메일 인증 후 로그인하세요.");
-      await signOut(auth);
-    } catch(e){
-      alert(e?.message || "회원가입 실패");
-    }
-  };
-
-  document.getElementById("signinBtn").onclick = async () => {
-    try{
-      sfx.play('click');
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if(!email || !password) return alert("이메일/비밀번호를 입력하세요.");
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch(e){
-      alert(e?.message || "로그인 실패");
-    }
-  };
-
-  document.getElementById("logoutBtn").onclick = async () => {
-    sfx.play('click');
-    await signOut(auth);
-  };
-
-  document.getElementById("resetPwBtn").onclick = async () => {
-    try{
-      sfx.play('click');
-      const email = document.getElementById("email").value.trim();
-      if(!email) return alert("이메일을 먼저 입력하세요.");
-      await sendPasswordResetEmail(auth, email);
-      alert("📩 비밀번호 재설정 메일을 보냈어요.");
-    } catch(e){
-      alert(e?.message || "요청 실패");
-    }
-  };
-/* =====================================================
-   🛡️ PATCH 1 — CORE STABILITY LAYER
-   ===================================================== */
-
-/* ---------- 1️⃣ 안전 DOM 접근 헬퍼 ---------- */
-function $(id) {
-  return document.getElementById(id);
-}
-
-/* ---------- 2️⃣ 안전 실행 래퍼 ---------- */
-async function safeAsync(fn, label = "TASK") {
-  try {
-    await fn();
-  } catch (e) {
-    console.error(`❌ ${label} FAILED`, e);
-    alert("네트워크 또는 시스템 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
-  }
-}
-
-/* ---------- 3️⃣ Firebase Timestamp 통일 ---------- */
-import { serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-async function safeUpdateUser(uid, data) {
-  return updateDoc(doc(db, "users", uid), {
-    ...data,
-    updatedAt: serverTimestamp(),
-  });
-}
-
-/* ---------- 4️⃣ event.target 오류 제거 ---------- */
-window.selectWorkoutTab = (type, btnEl) => {
-  sfx.play('click');
-
-  document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
-
-  const startBtn = $("startWorkoutBtn");
-  const result = $("workoutResult");
-  const completeBtn = $("completeWorkoutBtn");
-
-  if (!startBtn || !result || !completeBtn) return;
-
-  startBtn.dataset.type = type;
-  result.innerHTML = '<span class="wd-main">❓</span><div class="wd-sub">종목 선택 후 미션 뽑기!</div>';
-  completeBtn.style.display = 'none';
-  startBtn.style.display = 'inline-block';
-};
-
-/* HTML 버튼에서 이렇게 호출하도록 변경 권장
-<button onclick="selectWorkoutTab('walk', this)">🚶 걷기</button>
-*/
-
-/* ---------- 5️⃣ tickerTrack ID 오류 수정 ---------- */
-function safeAppendTicker(msg) {
-  const track = $("tickerContent");
-  if (!track) return;
-
-  const item = document.createElement("div");
-  item.className = "ticker-item";
-  item.innerHTML = `⚡ ${msg}`;
-  track.appendChild(item);
-}
-
-/* ---------- 6️⃣ 글로벌 로그 구독 안정화 ---------- */
-let unsubscribeGlobalLogs = null;
-
-function subscribeToGlobalLogsSafe(isPublic = false) {
-  if (unsubscribeGlobalLogs) unsubscribeGlobalLogs();
-
-  const q = query(
-    collection(db, "global_logs"),
-    orderBy("timestamp", "desc"),
-    limit(20)
-  );
-
-  unsubscribeGlobalLogs = onSnapshot(q, snap => {
-    snap.docChanges().forEach(change => {
-      if (change.type !== "added") return;
-
-      const data = change.doc.data();
-
-      // ❤️ Cheer
-      if (data.type === "cheer") {
-        triggerHearts();
+    /* =========================
+      12) Habit complete (core)
+    ========================= */
+    async function completeHabit(user, userData) {
+      const today = nowDateKey();
+      const logRef = userLogRef(user.uid, today);
+
+      const logSnap = await getDoc(logRef);
+      if (logSnap.exists()) {
+        $("status").textContent = "이미 오늘 완료했어요 ✅";
+        petSay("오늘은 이미 했어! 멋져 😎");
         return;
       }
 
-      // 📟 Matrix (Admin only)
-      if (!isPublic) {
-        const term = $("matrixLog");
-        if (term) {
-          const div = document.createElement("div");
-          div.className = "log-line";
-          div.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${data.msg}`;
-          term.prepend(div);
+      const tier = userData.tier || "FREE";
+      let xpGain = 20;
+      let coinGain = 1;
+
+      if (tier === "PRO") { xpGain = 25; coinGain = 1; }
+      if (tier === "ULTRA") { xpGain = 25; coinGain = 2; }
+      if (tier === "MASTER") { xpGain = 30; coinGain = 3; }
+
+      await runTransaction(db, async (tx) => {
+        const uRef = userRef(user.uid);
+        const uSnap = await tx.get(uRef);
+        const d = uSnap.data();
+
+        const last = d.lastCompletedDate || "";
+        let streak = d.streak || 0;
+
+        // streak 계산
+        const yesterday = dateKeyFromOffset(1);
+        if (!last) streak = 1;
+        else if (last === yesterday) streak += 1;
+        else if (last === today) streak = streak; // (이미 처리됨)
+        else streak = 1;
+
+        tx.set(logRef, { completed: true, ts: serverTimestamp(), habit: $("habitName").value || "" }, { merge: true });
+
+        tx.update(uRef, {
+          xp: increment(xpGain),
+          coins: increment(coinGain),
+          totalDays: increment(1),
+          streak,
+          lastCompletedDate: today,
+          lastActiveAt: serverTimestamp()
+        });
+      });
+
+      sfx.play("success");
+      safeConfetti(160);
+
+      $("status").textContent = `완료! +XP ${tier === "MASTER" ? 30 : (tier === "ULTRA" ? 25 : (tier === "PRO" ? 25 : 20))} / +코인`;
+      petSay("완료! 오늘도 갓생 😤");
+
+      if ((userData.streak || 0) + 1 === 3) toastAchievement("작심삼일 탈출!");
+      if ((userData.streak || 0) + 1 === 7) toastAchievement("일주일 연속!");
+      if ((userData.streak || 0) + 1 === 30) toastAchievement("30일 연속 미쳤다!");
+
+      appendTicker(`${user.email} 님이 오늘 습관을 완료했습니다!`);
+
+      // heatmap 업데이트
+      await loadHeatmap(user.uid).catch(() => { });
+    }
+
+    /* =========================
+      13) Memo (PRO+)
+    ========================= */
+    async function saveMemo(user) {
+      const today = nowDateKey();
+      const text = ($("dailyMemo").value || "").trim();
+      if (!text) return alert("메모를 입력하세요.");
+      await setDoc(userMemoRef(user.uid, today), {
+        date: today,
+        text,
+        ts: serverTimestamp()
+      }, { merge: true });
+      petSay("메모 저장 완료 ✍️");
+      $("dailyMemo").value = "";
+      await loadMemoHistory(user.uid);
+    }
+
+    async function loadMemoHistory(uid) {
+      const list = $("memoHistoryList");
+      if (!list) return;
+
+      // date 필드 기준 정렬 (문자열 YYYY-MM-DD)
+      const qy = query(collection(db, "users", uid, "memos"), orderBy("date", "desc"), limit(20));
+      const snaps = await getDocs(qy);
+      list.innerHTML = "";
+      if (snaps.empty) {
+        list.innerHTML = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>`;
+        return;
+      }
+      snaps.forEach(s => {
+        const d = s.data();
+        const item = document.createElement("div");
+        item.className = "memo-item";
+        item.innerHTML = `<div class="memo-date">${d.date}</div><div>${(d.text || "").replace(/</g, "&lt;")}</div>`;
+        list.appendChild(item);
+      });
+    }
+
+    /* =========================
+      14) Shop + Stickers
+    ========================= */
+    function renderInventory(inv) {
+      const box = $("inventoryList");
+      if (!box) return;
+      box.innerHTML = "";
+      (inv || []).forEach((emoji) => {
+        const b = document.createElement("button");
+        b.className = "btn";
+        b.style.width = "100%";
+        b.style.padding = "10px 0";
+        b.style.borderRadius = "10px";
+        b.style.background = "rgba(0,0,0,0.04)";
+        b.style.boxShadow = "none";
+        b.textContent = emoji;
+        b.title = "클릭하면 화면에 배치";
+        b.addEventListener("click", () => spawnSticker(emoji, true));
+        box.appendChild(b);
+      });
+    }
+
+    function spawnSticker(emoji, save = false, preset = null) {
+      const layer = $("stickerLayer");
+      if (!layer) return;
+
+      const st = document.createElement("div");
+      st.className = "sticker";
+      st.textContent = emoji;
+
+      const id = preset?.id || crypto.randomUUID();
+      st.dataset.id = id;
+
+      const x = preset?.x ?? Math.floor(40 + Math.random() * (window.innerWidth - 120));
+      const y = preset?.y ?? Math.floor(120 + Math.random() * (window.innerHeight - 220));
+
+      st.style.left = `${x}px`;
+      st.style.top = `${y}px`;
+
+      // delete mode click
+      st.addEventListener("click", async (e) => {
+        if (!isDeleteMode) return;
+        e.stopPropagation();
+        st.remove();
+        await removePlacedSticker(id).catch(() => { });
+        petSay("삭제 완료 🗑️");
+      });
+
+      // drag
+      st.addEventListener("pointerdown", (e) => {
+        if (isDeleteMode) return;
+        dragCtx = { el: st, startX: e.clientX, startY: e.clientY, origX: parseInt(st.style.left, 10), origY: parseInt(st.style.top, 10) };
+        st.setPointerCapture(e.pointerId);
+      });
+      st.addEventListener("pointermove", (e) => {
+        if (!dragCtx || dragCtx.el !== st) return;
+        const nx = dragCtx.origX + (e.clientX - dragCtx.startX);
+        const ny = dragCtx.origY + (e.clientY - dragCtx.startY);
+        st.style.left = `${nx}px`;
+        st.style.top = `${ny}px`;
+      });
+      st.addEventListener("pointerup", async (e) => {
+        if (!dragCtx || dragCtx.el !== st) return;
+        dragCtx = null;
+        // 저장 갱신
+        await updatePlacedSticker(id, parseInt(st.style.left, 10), parseInt(st.style.top, 10)).catch(() => { });
+      });
+
+      layer.appendChild(st);
+
+      if (save) addPlacedSticker({ id, emoji, x, y });
+    }
+
+    let currentUserCache = null;
+
+    async function addPlacedSticker(stickerObj) {
+      if (!currentUserCache) return;
+      const u = currentUserCache;
+      await updateDoc(userRef(u.uid), {
+        placedStickers: arrayUnion({ ...stickerObj, ts: Date.now() })
+      }).catch(() => { });
+    }
+
+    async function updatePlacedSticker(id, x, y) {
+      if (!currentUserCache) return;
+      const u = currentUserCache;
+      const snap = await getDoc(userRef(u.uid));
+      const d = snap.data();
+      const arr = (d.placedStickers || []).map(s => (s.id === id ? { ...s, x, y } : s));
+      await updateDoc(userRef(u.uid), { placedStickers: arr }).catch(() => { });
+    }
+
+    async function removePlacedSticker(id) {
+      if (!currentUserCache) return;
+      const u = currentUserCache;
+      const snap = await getDoc(userRef(u.uid));
+      const d = snap.data();
+      const arr = (d.placedStickers || []).filter(s => s.id !== id);
+      await updateDoc(userRef(u.uid), { placedStickers: arr }).catch(() => { });
+    }
+
+    async function loadPlacedStickers(uid) {
+      const layer = $("stickerLayer");
+      if (!layer) return;
+      layer.innerHTML = "";
+      const snap = await getDoc(userRef(uid));
+      const d = snap.data();
+      (d.placedStickers || []).forEach(s => spawnSticker(s.emoji, false, s));
+    }
+
+    async function gachaRoll(user) {
+      const uRef = userRef(user.uid);
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(uRef);
+        const d = snap.data();
+        const coins = d.coins || 0;
+        if (coins < 1) throw new Error("NO_COIN");
+        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+        tx.update(uRef, { coins: increment(-1), inventory: arrayUnion(pick), lastActiveAt: serverTimestamp() });
+      }).then(async () => {
+        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+        // 위 트랜잭션에서 pick과 동일 보장하려면 pick을 밖에서 만들고 tx에 넣어야 함.
+        // 안정성을 위해 다시 한번 user doc에서 마지막 added를 못 읽으니, 여기서는 효과만.
+        petSay("스티커 GET! 🎉");
+        safeConfetti(120);
+      }).catch((e) => {
+        if (e.message === "NO_COIN") alert("코인이 부족합니다!");
+        else console.error(e);
+      });
+    }
+
+    /* =========================
+      15) Ranking
+    ========================= */
+    async function loadRanking() {
+      const box = $("rankList");
+      if (!box) return;
+      box.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">불러오는 중...</div>`;
+      const qy = query(collection(db, "users"), orderBy("totalDays", "desc"), limit(20));
+      const snaps = await getDocs(qy);
+      box.innerHTML = "";
+      let i = 1;
+      snaps.forEach(s => {
+        const d = s.data();
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.padding = "10px";
+        row.style.borderRadius = "10px";
+        row.style.marginBottom = "8px";
+        row.style.background = "rgba(0,0,0,0.04)";
+        row.innerHTML = `
+          <div style="display:flex; flex-direction:column;">
+            <b>${i}. ${(d.email || "unknown").replace(/</g, "&lt;")}</b>
+            <span style="font-size:12px; color:var(--text-muted);">등급: ${d.tier || "FREE"} · 연속 ${d.streak || 0}일</span>
+          </div>
+          <div style="font-weight:900; color:var(--primary);">${d.totalDays || 0}회</div>
+        `;
+        box.appendChild(row);
+        i++;
+      });
+    }
+
+    /* =========================
+      16) Global Cheer (hearts)
+    ========================= */
+    function spawnHeart() {
+      const h = document.createElement("div");
+      h.className = "cheer-heart";
+      h.textContent = "💖";
+      h.style.left = `${Math.random() * (window.innerWidth - 20)}px`;
+      h.style.bottom = "10px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 3000);
+    }
+
+    /* =========================
+      17) Workout (MASTER)
+    ========================= */
+    const workoutMissions = {
+      walk: ["10분 빠르게 걷기", "계단 5층 오르기", "산책 20분", "만보의 10% 달성"],
+      run: ["1km 러닝", "인터벌 5세트", "가벼운 조깅 15분", "200m 스프린트 3회"],
+      gym: ["스쿼트 30개", "푸쉬업 20개", "플랭크 60초", "데드리프트/스쿼트 가볍게 3세트"]
+    };
+    let workoutType = "walk";
+    let lastWorkoutMission = "";
+
+    function bindWorkoutPanel(user) {
+      document.querySelectorAll(".w-tab").forEach(b => {
+        b.addEventListener("click", () => {
+          sfx.play("click");
+          document.querySelectorAll(".w-tab").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+          workoutType = b.dataset.type;
+          $("workoutResult").textContent = "❓";
+          $("completeWorkoutBtn").style.display = "none";
+        });
+      });
+
+      $("startWorkoutBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        const arr = workoutMissions[workoutType] || ["오늘은 쉬어도 됨"];
+        lastWorkoutMission = arr[Math.floor(Math.random() * arr.length)];
+        $("workoutResult").innerHTML = `<div class="workout-anim">${lastWorkoutMission}</div>`;
+        $("completeWorkoutBtn").style.display = "block";
+      });
+
+      $("completeWorkoutBtn")?.addEventListener("click", async () => {
+        if (!lastWorkoutMission) return;
+        // 코인 3배 보너스(추가로 +6)
+        await updateDoc(userRef(user.uid), { coins: increment(6), lastActiveAt: serverTimestamp() }).catch(() => { });
+        safeConfetti(140);
+        petSay("운동 완료! 코인 보너스 💰");
+        $("completeWorkoutBtn").style.display = "none";
+        lastWorkoutMission = "";
+      });
+    }
+
+    /* =========================
+      18) Pomodoro (MASTER)
+    ========================= */
+    let timerInterval = null;
+    function startPomodoro(minutes = 25) {
+      let remaining = minutes * 60;
+      $("status").textContent = `⏱️ ${minutes}분 집중 시작!`;
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        remaining--;
+        const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
+        const ss = String(remaining % 60).padStart(2, "0");
+        $("timerBtn").textContent = `${mm}:${ss}`;
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          $("timerBtn").textContent = "⏱️";
+          safeConfetti(120);
+          toastAchievement("집중 완료!");
+          alert("포모도로 종료! 5분 쉬어요.");
         }
-      }
-
-      // 📢 Ticker
-      safeAppendTicker(data.msg);
-    });
-  });
-}
-
-/* ---------- 7️⃣ 알림(Notification) 안전 처리 ---------- */
-async function scheduleHabitNotification(uid) {
-  if (!("Notification" in window)) return;
-
-  const perm = await Notification.requestPermission();
-  if (perm !== "granted") return;
-
-  // 오늘 이미 완료했으면 취소
-  const today = dateKeyFromOffset(0);
-  const doneSnap = await getDoc(doc(db, "users", uid, "habits", today));
-  if (doneSnap.exists() && doneSnap.data().done) return;
-
-  // 다음 18:00 계산
-  const now = new Date();
-  const target = new Date();
-  target.setHours(18, 0, 0, 0);
-  if (now > target) target.setDate(target.getDate() + 1);
-
-  const delay = target - now;
-
-  setTimeout(() => {
-    new Notification("⏰ HabitFlow", {
-      body: "오늘 습관 아직 안 했어요! 딱 1분이면 끝나요.",
-      icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png"
-    });
-  }, delay);
-}
-
-/* ---------- 8️⃣ 단일 로그인 후 처리 ---------- */
-let afterLoginExecuted = false;
-
-async function afterLogin(user, snap) {
-  if (afterLoginExecuted) return;
-  afterLoginExecuted = true;
-
-  const uid = user.uid;
-  const data = snap.data() || {};
-  const isAdmin = ADMIN_EMAILS.includes(user.email || "");
-
-  // 🔐 권한 플래그 통일
-  const flags = {
-    isPro: !!data.isPro || isAdmin,
-    isUltra: !!data.isUltra || isAdmin,
-    isMaster: !!data.isMaster || isAdmin,
-  };
-
-  // 🎧 글로벌 로그
-  subscribeToGlobalLogsSafe(!isAdmin);
-
-  // 🔔 알림
-  scheduleHabitNotification(uid);
-
-  // 🔥 스트릭 위험 체크
-  checkStreakDanger(uid);
-
-  // 🕵️ 히든 업적
-  checkHiddenAchievement(uid);
-
-  // 🧬 DNA 분석 (주 1회 정도만 실행 권장)
-  // analyzeHabitDNA(uid);
-}
-
-/* ---------- 9️⃣ 기존 onAuthStateChanged 덮어쓰기 ---------- */
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    afterLoginExecuted = false;
-    return;
-  }
-
-  const ref = doc(db, "users", user.uid);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
-
-  await afterLogin(user, snap);
-});
-
-/* =====================================================
-   ✅ PATCH 1 END
-   ===================================================== */
-   /* =====================================================
-   🛡️ PATCH 2 — ASYNC / DATA CONSISTENCY LAYER
-   ===================================================== */
-
-/* ---------- 1️⃣ 안전 Timestamp 읽기 ---------- */
-function normalizeTimestamp(ts) {
-  if (!ts) return null;
-  if (ts.seconds) return new Date(ts.seconds * 1000);
-  if (ts.toDate) return ts.toDate();
-  return new Date(ts);
-}
-
-/* ---------- 2️⃣ 버튼 중복 클릭 방지 ---------- */
-function lockButton(btn, label = "처리 중...") {
-  if (!btn) return () => {};
-  const original = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = label;
-
-  return () => {
-    btn.disabled = false;
-    btn.innerHTML = original;
-  };
-}
-
-/* ---------- 3️⃣ 습관 완료 처리 안정화 ---------- */
-window.completeHabitSafe = async function (uid, habitData = {}) {
-  const btn = $("completeWorkoutBtn");
-  const unlock = lockButton(btn, "저장 중...");
-
-  await safeAsync(async () => {
-    const today = dateKeyFromOffset(0);
-    const ref = doc(db, "users", uid, "habits", today);
-
-    const snap = await getDoc(ref);
-    if (snap.exists() && snap.data().done === true) {
-      unlock();
-      return;
+      }, 1000);
     }
 
-    await setDoc(ref, {
-      ...habitData,
-      done: true,
-      completedAt: serverTimestamp(),
-    }, { merge: true });
-
-    await safeUpdateUser(uid, {
-      lastActive: serverTimestamp(),
-    });
-
-    fireConfetti();
-    sfx.play("success");
-  }, "COMPLETE_HABIT");
-
-  unlock();
-};
-
-/* ---------- 4️⃣ 관리자 전체 지급 (forEach async 제거) ---------- */
-window.adminGrantAllUsersSafe = async function (payload = {}) {
-  const btn = $("adminGrantBtn");
-  const unlock = lockButton(btn, "지급 중...");
-
-  await safeAsync(async () => {
-    const q = query(collection(db, "users"));
-    const snap = await getDocs(q);
-
-    const jobs = [];
-    snap.forEach(docSnap => {
-      jobs.push(
-        updateDoc(doc(db, "users", docSnap.id), {
-          ...payload,
-          updatedAt: serverTimestamp(),
-        })
-      );
-    });
-
-    await Promise.all(jobs);
-    alert("✅ 전체 지급 완료");
-  }, "ADMIN_GRANT");
-
-  unlock();
-};
-
-/* ---------- 5️⃣ lastActive / streak 계산 안정화 ---------- */
-async function calculateStreakSafe(uid, days = 30) {
-  const base = collection(db, "users", uid, "habits");
-  const q = query(base, orderBy("completedAt", "desc"), limit(days));
-
-  const snap = await getDocs(q);
-  let streak = 0;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  snap.docs.some(docSnap => {
-    const data = docSnap.data();
-    if (!data.done || !data.completedAt) return false;
-
-    const d = normalizeTimestamp(data.completedAt);
-    if (!d) return false;
-
-    d.setHours(0, 0, 0, 0);
-
-    const diff = (today - d) / 86400000;
-    if (diff === streak) {
-      streak++;
-      return false;
+    /* =========================
+      19) Broadcast (system)
+    ========================= */
+    function bindBroadcastListener() {
+      if (unsubscribeBroadcast) unsubscribeBroadcast();
+      unsubscribeBroadcast = onSnapshot(systemBroadcastRef(), (snap) => {
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (d?.active) {
+          $("broadcastMsg").textContent = d.message || "긴급 공지";
+          $("broadcastOverlay").classList.add("active");
+          setTimeout(() => $("broadcastOverlay").classList.remove("active"), 6000);
+        }
+      });
     }
-    return true;
-  });
 
-  return streak;
-}
+    /* =========================
+      20) Admin Panel Logic
+    ========================= */
+    function logAdmin(msg) {
+      const box = $("matrixLog");
+      if (!box) return;
+      const line = document.createElement("div");
+      line.className = "log-line";
+      const ts = new Date().toLocaleTimeString();
+      line.innerHTML = `<span>[${ts}]</span><div>${msg}</div>`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
+    }
 
-/* ---------- 6️⃣ streak danger 알림 안정화 ---------- */
-async function checkStreakDanger(uid) {
-  const streak = await calculateStreakSafe(uid, 3);
-  if (streak >= 2) return;
+    function openAdmin() {
+      sfx.play("admin");
+      $("adminPanel").style.display = "block";
+      logAdmin("ADMIN CONSOLE OPENED");
+    }
+    function closeAdmin() {
+      $("adminPanel").style.display = "none";
+    }
 
-  safeAppendTicker("🔥 스트릭이 위험해요! 오늘 습관을 완료하세요.");
-}
+    function bindAdminNav() {
+      document.querySelectorAll(".adminNavBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".adminNavBtn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          const pane = btn.dataset.pane;
+          document.querySelectorAll(".admin-pane").forEach(p => p.classList.remove("active"));
+          $(pane).classList.add("active");
+        });
+      });
+    }
 
-/* ---------- 7️⃣ heatmap / 캘린더용 데이터 안전 로딩 ---------- */
-async function loadHabitCalendarSafe(uid, days = 90) {
-  const base = collection(db, "users", uid, "habits");
-  const q = query(base, orderBy("completedAt", "desc"), limit(days));
-  const snap = await getDocs(q);
+    async function adminRefreshDashboard() {
+      const snaps = await getDocs(collection(db, "users"));
+      let total = 0, pro = 0, active = 0;
+      const tiers = { FREE: 0, PRO: 0, ULTRA: 0, MASTER: 0 };
 
-  const map = {};
-  snap.forEach(docSnap => {
-    const data = docSnap.data();
-    if (!data.completedAt) return;
+      const now = Date.now();
+      const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
 
-    const d = normalizeTimestamp(data.completedAt);
-    if (!d) return;
+      snaps.forEach(s => {
+        total++;
+        const d = s.data();
+        const tier = d.tier || "FREE";
+        tiers[tier] = (tiers[tier] ?? 0) + 1;
+        if (["PRO", "ULTRA", "MASTER"].includes(tier)) pro++;
 
-    const key = d.toISOString().slice(0, 10);
-    map[key] = data.done ? "done" : "fail";
-  });
+        // lastActiveAt은 Timestamp일 수 있음
+        const la = d.lastActiveAt?.toMillis ? d.lastActiveAt.toMillis() : 0;
+        if (la && la >= weekAgo) active++;
+      });
 
-  return map;
-}
+      $("dashTotal").textContent = String(total);
+      $("dashPro").textContent = String(pro);
+      $("dashActive").textContent = String(active);
 
-/* ---------- 8️⃣ 관리자 로그 출력 안정화 ---------- */
-function adminLogSafe(msg) {
-  const el = $("matrixLog");
-  if (!el) return;
+      // tier chart
+      const chart = $("tierChart");
+      chart.innerHTML = "";
+      const max = Math.max(1, ...Object.values(tiers));
+      Object.entries(tiers).forEach(([k, v]) => {
+        const bar = document.createElement("div");
+        bar.className = "chart-bar";
+        bar.style.width = `${Math.round((v / max) * 100)}%`;
+        bar.title = `${k}: ${v}`;
+        // 색은 CSS 지정 못하니 inline(요청 없음) 대신 간단히 등급별 고정
+        bar.style.background = k === "MASTER" ? "#ffd700" : (k === "ULTRA" ? "#f59e0b" : (k === "PRO" ? "#6366f1" : "#555"));
+        chart.appendChild(bar);
+      });
 
-  const line = document.createElement("div");
-  line.className = "log-line";
-  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  el.prepend(line);
-}
+      logAdmin(`DASH REFRESHED: total=${total}, pro=${pro}, active7d=${active}`);
+    }
 
-/* ---------- 9️⃣ Firestore 읽기 폭탄 방지 ---------- */
-async function getUserSafe(uid) {
-  const ref = doc(db, "users", uid);
-  const snap = await getDoc(ref);
-  return snap.exists() ? snap.data() : null;
-}
+    async function adminLoadUsers(filterEmail = "") {
+      const box = $("admUserList");
+      box.innerHTML = `<div style="color:#666;">Loading...</div>`;
+      const snaps = await getDocs(collection(db, "users"));
 
-/* ---------- 🔟 글로벌 에러 캐치 ---------- */
-window.addEventListener("unhandledrejection", e => {
-  console.error("❌ UNHANDLED PROMISE", e.reason);
-});
+      const rows = [];
+      snaps.forEach(s => {
+        const d = s.data();
+        if (filterEmail && !(d.email || "").includes(filterEmail)) return;
+        rows.push({ id: s.id, ...d });
+      });
 
-window.addEventListener("error", e => {
-  console.error("❌ GLOBAL ERROR", e.message);
-});
-
-/* =====================================================
-   ✅ PATCH 2 END
-   ===================================================== */
-/* =====================================================
-   🛡️ PATCH 3 — SECURITY / REWARD / PRODUCTION LAYER
-   ===================================================== */
-
-/* ---------- 1️⃣ 환경 가드 ---------- */
-const ENV = {
-  PROD: location.hostname !== "localhost",
-  DEBUG: location.hostname === "localhost"
-};
-
-function devLog(...args) {
-  if (ENV.DEBUG) console.log("[DEV]", ...args);
-}
-
-/* ---------- 2️⃣ 전역 가드(미정의 함수 방지) ---------- */
-function guard(fn, name = "anonymous") {
-  return (...args) => {
-    try {
-      if (typeof fn !== "function") {
-        console.warn(`⚠️ ${name} is not a function`);
+      box.innerHTML = "";
+      if (!rows.length) {
+        box.innerHTML = `<div style="color:#666;">No users.</div>`;
         return;
       }
-      return fn(...args);
-    } catch (e) {
-      console.error(`❌ ${name} crashed`, e);
-    }
-  };
-}
 
-/* ---------- 3️⃣ 권한/등급 클라이언트 보호 ---------- */
-/*
-  ⚠️ 실제 보안은 Firestore Rules / Cloud Functions에서 완성됨
-  이 레이어는 "실수로 클라에서 업데이트" 방지용
-*/
-const PROTECTED_FIELDS = ["isPro", "isUltra", "isMaster", "role", "coins"];
+      rows.slice(0, 200).forEach(u => {
+        const el = document.createElement("div");
+        el.className = "admin-card";
+        el.style.display = "grid";
+        el.style.gridTemplateColumns = "1fr auto";
+        el.style.gap = "12px";
+        el.innerHTML = `
+          <div>
+            <div style="font-weight:900; color:#fff;">${(u.email || "unknown").replace(/</g, "&lt;")}</div>
+            <div style="color:#888; font-size:12px; margin-top:6px;">
+              tier: <b style="color:#fff">${u.tier || "FREE"}</b> · streak: <b style="color:#fff">${u.streak || 0}</b> · total: <b style="color:#fff">${u.totalDays || 0}</b> · coins: <b style="color:#fff">${u.coins || 0}</b>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <button class="btn" data-act="give10" style="background:#222; color:#fff; border:1px solid #444; width:auto;">+10💰</button>
+            <button class="btn" data-act="ban" style="background:#ef4444; color:#fff; border:none; width:auto;">(샘플)제한</button>
+          </div>
+        `;
 
-async function safeClientUpdate(uid, data) {
-  const clean = {};
-  Object.keys(data || {}).forEach(k => {
-    if (!PROTECTED_FIELDS.includes(k)) clean[k] = data[k];
-  });
+        el.querySelector('[data-act="give10"]').addEventListener("click", async () => {
+          await updateDoc(userRef(u.id), { coins: increment(10) }).catch(() => { });
+          logAdmin(`GIFTED +10 coins -> ${u.email}`);
+          adminRefreshDashboard();
+        });
 
-  if (Object.keys(clean).length === 0) return;
-  await updateDoc(doc(db, "users", uid), {
-    ...clean,
-    updatedAt: serverTimestamp()
-  });
-}
+        el.querySelector('[data-act="ban"]').addEventListener("click", () => {
+          alert("데모 버튼입니다. (실제 차단 기능은 별도 설계 필요)");
+        });
 
-/* ---------- 4️⃣ 코인/보상 중복 지급 차단 (Transaction) ---------- */
-import { runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-async function grantCoinsOnce(uid, key, amount) {
-  const userRef = doc(db, "users", uid);
-  const rewardRef = doc(db, "users", uid, "rewards", key);
-
-  await runTransaction(db, async (tx) => {
-    const rewardSnap = await tx.get(rewardRef);
-    if (rewardSnap.exists()) {
-      throw new Error("ALREADY_GRANTED");
+        box.appendChild(el);
+      });
     }
 
-    const userSnap = await tx.get(userRef);
-    if (!userSnap.exists()) throw new Error("NO_USER");
+    async function adminMassGiftCoins(amount = 100) {
+      const snaps = await getDocs(collection(db, "users"));
+      const docs = [];
+      snaps.forEach(s => docs.push(s));
 
-    const coins = userSnap.data().coins || 0;
+      // batch in chunks
+      let i = 0;
+      while (i < docs.length) {
+        const batch = writeBatch(db);
+        const chunk = docs.slice(i, i + 400);
+        chunk.forEach(s => batch.update(s.ref, { coins: increment(amount) }));
+        await batch.commit();
+        i += 400;
+      }
+      logAdmin(`MASS GIFT completed: +${amount} coins to ${docs.length} users`);
+      await adminRefreshDashboard();
+    }
 
-    tx.set(rewardRef, {
-      amount,
-      grantedAt: serverTimestamp()
+    async function adminBroadcast(message) {
+      const msg = (message || "").trim();
+      if (!msg) return alert("내용을 입력하세요.");
+      await setDoc(systemBroadcastRef(), { active: true, message: msg, ts: serverTimestamp() }, { merge: true });
+      logAdmin(`BROADCAST SENT: "${msg}"`);
+      setTimeout(() => setDoc(systemBroadcastRef(), { active: false }, { merge: true }).catch(() => { }), 6500);
+    }
+
+    /* =========================
+      21) UI Bindings (after login)
+    ========================= */
+    function bindAuthedUI(user, getUserData) {
+      $("logoutBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        await signOut(auth);
+      });
+
+      $("habitBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        const data = await getUserData();
+        await completeHabit(user, data);
+      });
+
+      $("saveMemoBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        await saveMemo(user);
+      });
+
+      $("petContainer")?.addEventListener("click", () => {
+        sfx.play("click");
+        petSay(["할 수 있어!", "오늘도 한 걸음!", "멈추지마!", "너는 된다!"][Math.floor(Math.random() * 4)]);
+      });
+
+      $("globalCheerBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 120);
+        appendTicker(`💖 ${user.email} 님이 모두에게 응원을 보냈습니다!`);
+        petSay("응원 발사 💖");
+      });
+
+      // shop open/close
+      $("shopOpenBtn")?.addEventListener("click", () => { sfx.play("click"); $("shopPanel").style.display = "block"; });
+      $("shopCloseBtn")?.addEventListener("click", () => { sfx.play("click"); $("shopPanel").style.display = "none"; });
+
+      // rank open/close
+      $("rankOpenBtn")?.addEventListener("click", async () => { sfx.play("click"); $("rankPanel").style.display = "block"; await loadRanking(); });
+      $("rankCloseBtn")?.addEventListener("click", () => { sfx.play("click"); $("rankPanel").style.display = "none"; });
+
+      // gacha
+      $("gachaBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        // 트랜잭션 안에서 pick을 고정하려면 이렇게:
+        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
+        await runTransaction(db, async (tx) => {
+          const uRef = userRef(user.uid);
+          const snap = await tx.get(uRef);
+          const d = snap.data();
+          const coins = d.coins || 0;
+          if (coins < 1) throw new Error("NO_COIN");
+          tx.update(uRef, { coins: increment(-1), inventory: arrayUnion(pick), lastActiveAt: serverTimestamp() });
+        }).then(() => {
+          petSay(`스티커 GET! ${pick}`);
+          safeConfetti(120);
+          spawnSticker(pick, true);
+        }).catch((e) => {
+          if (e.message === "NO_COIN") alert("코인이 부족합니다!");
+          else console.error(e);
+        });
+      });
+
+      // delete mode
+      $("trashModeBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        isDeleteMode = !isDeleteMode;
+        $("trashModeBtn").style.filter = isDeleteMode ? "drop-shadow(0 0 10px rgba(245,158,11,0.9))" : "none";
+        petSay(isDeleteMode ? "삭제 모드 ON (스티커 클릭해서 삭제)" : "삭제 모드 OFF");
+      });
+
+      // pomodoro
+      $("timerBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        const data = await getUserData();
+        if ((data.tier || "FREE") !== "MASTER") return;
+        startPomodoro(25);
+      });
+
+      // admin buttons (only admin)
+      $("adminOpenBtn")?.addEventListener("click", () => openAdmin());
+      $("adminCloseBtn")?.addEventListener("click", closeAdmin);
+      $("adminExitBtn")?.addEventListener("click", closeAdmin);
+      bindAdminNav();
+
+      $("refreshAdminBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        await adminRefreshDashboard();
+        await adminLoadUsers($("adminSearch").value.trim());
+      });
+
+      $("adminSearch")?.addEventListener("input", async () => {
+        const v = $("adminSearch").value.trim();
+        await adminLoadUsers(v);
+      });
+
+      $("godGiftBtn")?.addEventListener("click", async () => {
+        if (!confirm("모든 유저에게 100코인을 선물할까요?")) return;
+        await adminMassGiftCoins(100);
+      });
+
+      $("godBroadcastBtn")?.addEventListener("click", async () => {
+        await adminBroadcast($("broadcastInput").value);
+        $("broadcastInput").value = "";
+      });
+
+      // close panels on background click? (safe)
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          $("shopPanel").style.display = "none";
+          $("rankPanel").style.display = "none";
+          closeProModal();
+          closeAdmin();
+          toggleZenMode(false);
+        }
+      });
+    }
+
+    /* =========================
+      22) Auth actions
+    ========================= */
+    $("signupBtn")?.addEventListener("click", async () => {
+      sfx.play("click");
+      const email = ($("email").value || "").trim();
+      const password = ($("password").value || "").trim();
+      if (!email || !password) return alert("이메일/비밀번호를 입력하세요.");
+      if (password.length < 6) return alert("비밀번호는 6자 이상이어야 합니다.");
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        // 인증메일(원하면)
+        try { await sendEmailVerification(cred.user); } catch (_) { }
+        alert("회원가입 완료! (원하면 이메일 인증을 진행하세요)");
+      } catch (e) {
+        alert(e?.message || "회원가입 실패");
+        console.error(e);
+      }
     });
 
-    tx.update(userRef, {
-      coins: coins + amount,
-      updatedAt: serverTimestamp()
+    $("signinBtn")?.addEventListener("click", async () => {
+      sfx.play("click");
+      const email = ($("email").value || "").trim();
+      const password = ($("password").value || "").trim();
+      if (!email || !password) return alert("이메일/비밀번호를 입력하세요.");
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("로그인 실패: 이메일/비밀번호 확인");
+        console.error(e);
+      }
     });
-  });
-}
 
-/* ---------- 5️⃣ 습관 완료 시 보상 안전 지급 ---------- */
-async function rewardForHabit(uid) {
-  try {
-    await grantCoinsOnce(uid, `habit_${dateKeyFromOffset(0)}`, 5);
-    devLog("💰 Habit reward granted");
-  } catch (e) {
-    if (e.message !== "ALREADY_GRANTED") {
-      console.error("Reward error", e);
-    }
-  }
-}
+    $("resetPwBtn")?.addEventListener("click", async () => {
+      sfx.play("click");
+      const email = ($("email").value || "").trim();
+      if (!email) return alert("이메일을 입력하세요.");
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("비밀번호 재설정 메일을 보냈습니다.");
+      } catch (e) {
+        alert("전송 실패: 이메일 확인");
+        console.error(e);
+      }
+    });
 
-/* PATCH 2의 completeHabitSafe 이후에 호출 권장 */
-// rewardForHabit(uid);
+    /* =========================
+      23) Single Auth Observer (NO DUPLICATE)
+    ========================= */
+    let userDataCache = null;
+    let userUnsub = null;
 
-/* ---------- 6️⃣ AI / 분석 기능 호출 제한 ---------- */
-const AI_LIMIT = {
-  daily: 5
-};
+    onAuthStateChanged(auth, async (user) => {
+      // cleanup
+      if (userUnsub) { userUnsub(); userUnsub = null; }
+      if (unsubscribeLogs) { unsubscribeLogs(); unsubscribeLogs = null; }
 
-async function canUseAI(uid) {
-  const today = dateKeyFromOffset(0);
-  const ref = doc(db, "users", uid, "usage", today);
+      if (!user) {
+        currentUserCache = null;
+        userDataCache = null;
+        showDashboard(false);
+        $("welcome").textContent = "";
+        $("stickerLayer").innerHTML = "";
+        $("adminOpenBtn").style.display = "none";
+        return;
+      }
 
-  const snap = await getDoc(ref);
-  if (!snap.exists()) {
-    await setDoc(ref, { ai: 1, date: today });
-    return true;
-  }
+      currentUserCache = user;
+      showDashboard(true);
+      $("welcome").textContent = `${user.email} 님`;
 
-  const used = snap.data().ai || 0;
-  if (used >= AI_LIMIT.daily) return false;
+      await ensureUserDoc(user);
+      bindBroadcastListener();
 
-  await updateDoc(ref, { ai: used + 1 });
-  return true;
-}
+      // live user doc subscribe
+      userUnsub = onSnapshot(userRef(user.uid), async (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        userDataCache = data;
 
-/* ---------- 7️⃣ AI 호출 래퍼 ---------- */
-async function runAISafe(uid, taskFn) {
-  const allowed = await canUseAI(uid);
-  if (!allowed) {
-    alert("오늘 AI 사용 한도를 초과했어요 🙏");
-    return null;
-  }
+        // UI updates
+        const level = setXpUI(data.xp || 0);
+        setPetByLevel(level);
 
-  return await safeAsync(async () => {
-    return await taskFn();
-  }, "AI_TASK");
-}
+        setCoinsUI(data.coins || 0);
+        setTierUI(data.tier || "FREE");
 
-/* ---------- 8️⃣ 관리자 전용 함수 가드 ---------- */
-function requireAdmin(user, fn) {
-  return (...args) => {
-    if (!user || !ADMIN_EMAILS.includes(user.email)) {
-      alert("⛔ 관리자 전용 기능입니다.");
-      return;
-    }
-    return fn(...args);
-  };
-}
+        $("streakCount").textContent = `🔥 연속 ${data.streak || 0}일 / 총 ${data.totalDays || 0}회`;
 
-/* ---------- 9️⃣ 전역 노출 최소화 ---------- */
-window.App = Object.freeze({
-  completeHabitSafe: guard(window.completeHabitSafe, "completeHabitSafe"),
-  rewardForHabit: guard(rewardForHabit, "rewardForHabit"),
-  runAISafe: guard(runAISafe, "runAISafe"),
-  adminGrantAllUsersSafe: guard(window.adminGrantAllUsersSafe, "adminGrantAllUsersSafe"),
-});
+        // theme
+        const theme = data.theme || "";
+        if (theme) {
+          setThemeActive(theme);
+          const suggestion = chooseSuggestion(theme);
+          $("todaySuggestion").textContent = suggestion;
+          $("habitName").value = suggestion;
+        } else {
+          setThemeActive("");
+          $("todaySuggestion").textContent = "테마를 선택하세요.";
+          $("habitName").value = "테마를 선택하세요";
+        }
 
-/* ---------- 🔟 프로덕션 안전 가드 ---------- */
-if (ENV.PROD) {
-  window.console.log = () => {};
-  window.console.warn = () => {};
-}
+        // inventory
+        renderInventory(data.inventory || []);
 
-/* ---------- 11️⃣ 상태 점검 ---------- */
-devLog("✅ PATCH 3 LOADED");
+        // placed stickers
+        await loadPlacedStickers(user.uid).catch(() => { });
 
-/* =====================================================
-   ✅ PATCH 3 END
-   ===================================================== */
+        // heatmap
+        await loadHeatmap(user.uid).catch(() => { });
 
-</script>
+        // memo history
+        if (["PRO", "ULTRA", "MASTER"].includes(data.tier || "FREE")) {
+          await loadMemoHistory(user.uid).catch(() => { });
+        }
+
+        // admin visibility
+        const admin = isAdminUser(user);
+        $("adminOpenBtn").style.display = admin ? "block" : "none";
+        if (admin) {
+          // admin live refresh (light)
+          await adminRefreshDashboard().catch(() => { });
+          await adminLoadUsers($("adminSearch").value.trim()).catch(() => { });
+        }
+      });
+
+      // bind one-time UI handlers that need user reference
+      const getUserData = async () => userDataCache || (await getDoc(userRef(user.uid))).data();
+
+      // theme buttons
+      bindThemeButtons(user, (userDataCache?.tier || "FREE"));
+
+      // workout panel bindings
+      bindWorkoutPanel(user);
+
+      // authed UI events
+      bindAuthedUI(user, getUserData);
+
+      // initial ticker
+      appendTicker(`${user.email} 님이 접속했습니다.`);
+    });
+
+    /* =========================
+      24) Safety: prevent overlay blocking clicks
+    ========================= */
+    // (이미 CSS로 pointer-events 정리되어 있음)
+
+  </script>
 </body>
+
 </html>
