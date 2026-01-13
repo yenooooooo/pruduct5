@@ -843,25 +843,31 @@
 
       .hero-grid,
       .pricing-grid,
-      .dashboard-layout {
+      .problem-grid {
         grid-template-columns: 1fr;
-        flex-direction: column;
-        align-items: center;
+      }
+
+      /* ✅ 대시보드는 컬럼으로 안 내림 (오른쪽 기능 유지) */
+      .dashboard-layout {
+        flex-direction: row;
+        align-items: flex-start;
       }
 
       .workout-side-panel,
       .right-stack {
-        width: 100%;
-        max-width: 480px;
+        width: 340px;
+        max-width: 340px;
       }
+    }
 
-      .admin-shell {
-        grid-template-columns: 1fr;
-      }
 
-      .admin-left {
-        display: none;
-      }
+    .admin-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-left {
+      display: none;
+    }
     }
 
     /* Live ticker */
@@ -1189,16 +1195,600 @@
     .log-line span {
       opacity: 0.5;
     }
+
+    /* ===== 오늘의 추천 루틴 UI 정리 ===== */
+    .routine-state {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .routine-state.hidden {
+      display: none;
+    }
+
+    .today-card h3 {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .routine-badge {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .routine-desc {
+      font-size: 14px;
+      color: #475569;
+    }
+
+    /* ================================
+   AI 추천 카드: 테두리 UI + 애니메이션
+   ================================ */
+
+    /* 카드 전체 테두리(그라데이션) */
+    .ai-rec-box {
+      position: relative;
+      border-radius: 18px;
+      padding: 14px;
+      overflow: hidden;
+      background: var(--panel-bg);
+      border: 1px solid rgba(99, 102, 241, 0.18);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    /* 바깥 그라데이션 테두리 느낌 (pseudo) */
+    .ai-rec-box::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.55), rgba(168, 85, 247, 0.45), rgba(245, 158, 11, 0.35));
+      filter: blur(10px);
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    /* 내부 실제 컨텐츠 박스 */
+    .ai-rec-box::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 17px;
+      background: var(--panel-bg);
+      z-index: 0;
+    }
+
+    .ai-rec-top,
+    .ai-rec-main {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 상단 라벨 라인 */
+    .ai-rec-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ai-badge {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--primary);
+      border: 1px solid rgba(99, 102, 241, 0.18);
+    }
+
+    .ai-small {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .ai-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.9);
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+      animation: aiPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes aiPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.0);
+      }
+    }
+
+    /* 메인 텍스트 */
+    .ai-rec-title {
+      font-size: 18px;
+      font-weight: 1000;
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+
+    /* 문구 페이드 슬라이드 애니메이션 래퍼 */
+    .ai-rec-desc-wrap {
+      position: relative;
+      min-height: 22px;
+      /* 문구 높이 고정해서 덜 흔들리게 */
+      overflow: hidden;
+    }
+
+    .ai-rec-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* 전환 애니메이션 클래스 */
+    .ai-rec-desc.fade-out {
+      animation: aiFadeOut 260ms ease forwards;
+    }
+
+    .ai-rec-desc.fade-in {
+      animation: aiFadeIn 380ms ease forwards;
+    }
+
+    @keyframes aiFadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+    }
+
+    @keyframes aiFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 하단 divider */
+    .ai-rec-divider {
+      margin: 12px 0 10px;
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.22), transparent);
+    }
+
+    .ai-rec-hint {
+      font-size: 12px;
+      color: var(--text-main);
+      font-weight: 700;
+      opacity: 0.85;
+    }
+
+    /* 다크모드 보정 */
+    body.dark-mode .ai-rec-box {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    body.dark-mode .ai-rec-box::after {
+      background: rgba(30, 41, 59, 0.85);
+    }
+
+    body.dark-mode .ai-rec-hint {
+      color: #e2e8f0;
+      opacity: 0.9;
+    }
+
+    /* ✅ WHY 랜딩 섹션 */
+    .why-section {
+      padding: 70px 0 30px;
+      position: relative;
+    }
+
+    .why-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 18px;
+      text-align: center;
+    }
+
+    .why-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .3px;
+      background: rgba(99, 102, 241, .10);
+      border: 1px solid rgba(99, 102, 241, .22);
+      color: #3730a3;
+      margin-bottom: 12px;
+    }
+
+    .why-title {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -.4px;
+    }
+
+    .why-sub {
+      margin: 12px auto 28px;
+      max-width: 720px;
+      color: rgba(15, 23, 42, .72);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .why-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 10px;
+    }
+
+    .why-card {
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid rgba(255, 255, 255, .55);
+      box-shadow: 0 18px 40px rgba(2, 6, 23, .08);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      text-align: left;
+      backdrop-filter: blur(8px);
+    }
+
+    .why-ico {
+      font-size: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(99, 102, 241, .10);
+      border: 1px solid rgba(99, 102, 241, .18);
+      margin-bottom: 10px;
+    }
+
+    .why-h {
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .why-p {
+      color: rgba(15, 23, 42, .70);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 900px) {
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .why-section {
+        padding: 52px 0 18px;
+      }
+    }
+
+    /* =========================
+  TOPBAR (Promotional Header)
+========================= */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.65);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+    }
+
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--primary);
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.55);
+    }
+
+    .brand-name {
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.22);
+    }
+
+    .topnav {
+      display: flex;
+      gap: 16px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .topnav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+
+    .topnav a:hover {
+      background: rgba(0, 0, 0, 0.04);
+      color: var(--text-main);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--card-border);
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .live-bolt {
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
+    }
+
+    @media (max-width: 900px) {
+      .topnav {
+        display: none;
+      }
+    }
+
+    .hero-proof {
+      margin-top: 16px;
+    }
+
+    .proof-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .proof-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid var(--card-border);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .proof-quote {
+      margin-top: 10px;
+      color: var(--text-main);
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid var(--card-border);
+    }
+
+    .proof-by {
+      color: var(--text-muted);
+      font-weight: 800;
+      margin-left: 8px;
+    }
+
+    /* =========================
+  BOTTOM LIVE TICKER (fixed)
+========================= */
+    .bottom-ticker {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9998;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.65);
+      border-top: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .bottom-ticker .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+      padding-left: 100%;
+      will-change: transform;
+      animation: ticker-move 18s linear infinite;
+    }
+
+    /* 각 아이템(appendTicker에서 만드는 .ticker-item) */
+    .bottom-ticker .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: rgba(0, 0, 0, 0.04);
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    @keyframes ticker-move {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* ✅ 맨 아래 바 때문에 내용 가리지 않게 여백 확보 */
+    body {
+      padding-bottom: 56px;
+    }
+
+    /* ✅ 헤더 배경을 깔끔하게 고정 */
+    header,
+    .navbar,
+    .topbar {
+      background: rgba(255, 255, 255, 0.82) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6) !important;
+    }
+
+    /* ===== Header Controls (NEW) ===== */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hbtn {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(10px);
+      color: var(--text-main);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    .hbtn:hover {
+      transform: translateY(-1px);
+    }
+
+    .hbtn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      color: white;
+    }
+
+    .coin-pill {
+      height: 38px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(10px);
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    /* 다크모드 헤더 버튼 톤 */
+    body.dark-mode .hbtn,
+    body.dark-mode .coin-pill {
+      background: rgba(17, 24, 39, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
   </style>
 </head>
 
 <body>
-  <!-- Live ticker -->
-  <div id="liveTicker" class="live-ticker">
-    <div class="ticker-content" id="tickerContent">
-      <div class="ticker-item">⚡ HabitFlow LIVE: 전 세계 유저들이 갓생을 살고 있습니다.</div>
+  <!-- ✅ TOP HEADER (홍보용) -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <span class="dot"></span>
+        <span class="brand-name">HabitFlow</span>
+        <span class="brand-tag">LIVE</span>
+      </div>
+
+      <nav class="topnav">
+        <a href="#why">WHY</a>
+        <a href="#pricing">가격</a>
+        <a href="#authSection">시작하기</a>
+      </nav>
+      <!-- ✅ HEADER RIGHT CONTROLS (여기 붙여넣기) -->
+      <div class="header-controls">
+        <button id="focusToggleBtn" class="hbtn">🧘 Deep Focus</button>
+        <button id="themeToggleBtn" class="hbtn">🌙</button>
+        <div id="coinPill" class="coin-pill">⭐ <span id="coinCount">0</span></div>
+      </div>
+
+      <div class="topbar-right">
+        <div id="liveBadge" class="live-badge" title="실시간 활동">
+          <span class="live-bolt">⚡</span>
+          <span id="liveText">지금 접속 중…</span>
+        </div>
+
+        <button id="topStartBtn" class="btn btn-primary" style="width:auto; padding:10px 14px;">시작하기</button>
+      </div>
     </div>
-  </div>
+  </header>
+
+
 
   <!-- Zen overlay -->
   <div id="zenOverlay" class="zen-overlay">
@@ -1267,16 +1857,100 @@
           <div class="metric-card"><b>Report</b><span>주간 리포트</span></div>
         </div>
       </div>
-      <div class="hero-right glass">
-        <h3 style="margin-top:0;">오늘의 추천 루틴</h3>
-        <p style="color:var(--text-muted); font-size:14px;">로그인 후 테마를 선택하면 매일 다른 루틴이 추천됩니다.</p>
-        <div id="heroRecommendCard" class="recommend-card" style="transition: opacity 0.5s;">
-          <div>🚑 <b>생존 체력 팩</b></div>
-          <span style="font-size:12px; color:var(--text-muted);">직장인을 위한 "죽지 않으려고 하는 운동"</span>
+
+      <!-- 🔽 오늘의 추천 루틴 카드 (교체본) -->
+      <div class="today-card">
+
+        <!-- 상태 1: 로그인 전 -->
+        <div id="routineBeforeLogin" class="routine-state">
+          <h3>오늘의 추천 루틴</h3>
+          <p class="muted">
+            로그인 후 테마를 선택하면<br>
+            매일 다른 루틴이 추천됩니다.
+          </p>
+        </div>
+
+        <!-- 상태 2: 로그인 후 / 테마 미선택 -->
+        <div id="routineNoTheme" class="routine-state hidden">
+          <h3>오늘의 추천 루틴</h3>
+          <p class="muted">테마를 선택해 주세요.</p>
+        </div>
+
+        <!-- 상태 3: 추천 결과 -->
+        <!-- 상태 3: 추천 결과 -->
+        <div id="routineResult" class="routine-state hidden">
+
+          <!-- ✅ 테두리 UI + 애니메이션 컨테이너 -->
+          <div class="ai-rec-box">
+            <div class="ai-rec-top">
+              <div class="ai-badge">AI 추천</div>
+              <div class="ai-dot" aria-hidden="true"></div>
+              <div class="ai-small">매일 자동 업데이트</div>
+            </div>
+
+            <div class="ai-rec-main">
+              <div id="aiRecTitle" class="ai-rec-title">🚑 생존 체력 팩</div>
+
+              <!-- 자연스럽게 바뀌는 문구 -->
+              <div class="ai-rec-desc-wrap">
+                <div id="aiRecDesc" class="ai-rec-desc">
+                  직장인을 위한 ‘죽지 않으려고 하는 운동’
+                </div>
+              </div>
+
+              <!-- 하단 보더 라인 -->
+              <div class="ai-rec-divider"></div>
+
+              <!-- 작은 힌트 -->
+              <div id="aiRecHint" class="ai-rec-hint">오늘은 가볍게 시작해요.</div>
+            </div>
+          </div>
+
+        </div>
+        <div class="hero-proof">
+          <div class="proof-badges">
+            <span class="proof-pill">⚡ 버튼 1번</span>
+            <span class="proof-pill">🔥 연속기록</span>
+            <span class="proof-pill">🎁 코인 리워드</span>
+          </div>
+          <div class="proof-quote">
+            “작심삼일이 아니라, <b>작은 승리</b>가 쌓이게 해주는 앱.”
+            <span class="proof-by">— 사용자 후기</span>
+          </div>
+        </div>
+
+  </section>
+  <!-- ✅ WHY 랜딩 섹션 (hero 아래, 대시보드 위) -->
+  <section class="why-section" id="why">
+    <div class="why-inner">
+      <div class="why-pill">WHY</div>
+      <h2 class="why-title">왜 습관은 항상 실패할까?</h2>
+      <p class="why-sub">
+        HabitFlow는 <b>“딱 1개만, 버튼 1번”</b>으로 실행 장벽을 최소화합니다.
+      </p>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-ico">🎯</div>
+          <div class="why-h">목표가 너무 많다</div>
+          <div class="why-p">욕심이 커질수록 시작이 어려워져요. 하루 1개만 남깁니다.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-ico">📝</div>
+          <div class="why-h">기록이 귀찮다</div>
+          <div class="why-p">기록이 번거로우면 포기 확률이 올라가요. 버튼 한 번이면 끝.</div>
+        </div>
+
+        <div class="why-card">
+          <div class="why-ico">📈</div>
+          <div class="why-h">성취가 눈에 안 보인다</div>
+          <div class="why-p">쌓이는 느낌이 없으면 지속이 어렵죠. 연속 기록을 즉시 보여줍니다.</div>
         </div>
       </div>
     </div>
   </section>
+
 
   <section id="authSection" style="padding-top: 40px; min-height: 80vh;">
     <div class="container" style="display:flex; justify-content:center;">
@@ -1730,6 +2404,8 @@
 
       const items = track.querySelectorAll(".ticker-item");
       if (items.length > 30) items[0]?.remove();
+
+      const lt = document.getElementById("liveText"); if (lt) lt.textContent = msg;
     }
 
     function showProModal(type) {
@@ -1754,6 +2430,12 @@
         zen.style.opacity = "0";
         setTimeout(() => { zen.style.display = "none"; }, 250);
       }
+    }
+    function showRoutineState(state) {
+      ["routineBeforeLogin", "routineNoTheme", "routineResult"].forEach(id => {
+        document.getElementById(id)?.classList.add("hidden");
+      });
+      document.getElementById(state)?.classList.remove("hidden");
     }
 
     function applyTheme(primary, secondary) {
@@ -1793,6 +2475,62 @@
       detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기", "🧘 명상 5분"],
       custom: []
     };
+    // ===============================
+    // AI 추천 문구 자연 전환 로테이터
+    // ===============================
+    const AI_RECS = [
+      { title: "🚑 생존 체력 팩", desc: "직장인을 위한 ‘죽지 않으려고 하는 운동’", hint: "오늘은 무리하지 말고 3분만!" },
+      { title: "✨ 갓생 입문 팩", desc: "성공 루틴을 2분짜리로 쪼개기", hint: "작게 시작하면 내일이 쉬워요." },
+      { title: "🧘 디톡스 힐링 팩", desc: "스마트폰 내려놓고 뇌 휴식하기", hint: "폰은 잠깐, 내 호흡은 길게." },
+      { title: "🧠 집중 부스터", desc: "25분 몰입 + 5분 쉬기", hint: "타이머 켜고, 하나만 끝내요." }
+    ];
+
+    let aiRecIdx = 0;
+    let aiRecTimer = null;
+
+    function setAIRecContent(rec) {
+      const titleEl = document.getElementById("aiRecTitle");
+      const descEl = document.getElementById("aiRecDesc");
+      const hintEl = document.getElementById("aiRecHint");
+      if (!titleEl || !descEl || !hintEl) return;
+
+      titleEl.textContent = rec.title;
+      hintEl.textContent = rec.hint || "";
+      descEl.textContent = rec.desc;
+    }
+
+    function rotateAIRec() {
+      const descEl = document.getElementById("aiRecDesc");
+      if (!descEl) return;
+
+      // fade out
+      descEl.classList.remove("fade-in");
+      descEl.classList.add("fade-out");
+
+      setTimeout(() => {
+        aiRecIdx = (aiRecIdx + 1) % AI_RECS.length;
+        const next = AI_RECS[aiRecIdx];
+
+        // 내용 교체
+        setAIRecContent(next);
+
+        // fade in
+        descEl.classList.remove("fade-out");
+        descEl.classList.add("fade-in");
+      }, 260);
+    }
+
+    function startAIRecRotation() {
+      stopAIRecRotation();
+      // 초기 1회 세팅
+      setAIRecContent(AI_RECS[aiRecIdx]);
+      aiRecTimer = setInterval(rotateAIRec, 4200);
+    }
+
+    function stopAIRecRotation() {
+      if (aiRecTimer) clearInterval(aiRecTimer);
+      aiRecTimer = null;
+    }
 
     const recommendations = [
       { t: "🚑 생존 체력 팩", d: '직장인을 위한 "죽지 않으려고 하는 운동"' },
@@ -1832,6 +2570,7 @@
       // scroll to auth
       const goAuth = () => $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
+      $("topStartBtn")?.addEventListener("click", () => { sfx.play("click"); $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" }); });
       $("startNowBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
       $("heroStartBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
 
@@ -1855,6 +2594,25 @@
       $("ultraUpgradeBtn")?.addEventListener("click", () => showProModal("ULTRA"));
       $("masterUpgradeBtn")?.addEventListener("click", () => showProModal("MASTER"));
       $("memoUnlockBtn")?.addEventListener("click", () => showProModal("PRO"));
+      // ✅ header controls
+      $("headerStartBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      $("themeToggleBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
+        $("themeToggleBtn").textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+      });
+
+      // Deep Focus(=Zen)
+      $("focusToggleBtn")?.addEventListener("click", () => {
+        sfx.play("click");
+        toggleZenMode(); // 기존 너 함수 그대로 사용
+      });
+
     }
 
     document.addEventListener("DOMContentLoaded", bindStaticUI);
@@ -2746,15 +3504,15 @@
         $("adminOpenBtn").style.display = "none";
         return;
       }
-// ✅ 관리자 버튼 강제 표시 패치
-const adminBtn = document.getElementById("adminOpenBtn");
-if (adminBtn && user.email === "test@gmail.com") {
-  adminBtn.style.display = "block";
+      // ✅ 관리자 버튼 강제 표시 패치
+      const adminBtn = document.getElementById("adminOpenBtn");
+      if (adminBtn && user.email === "test@gmail.com") {
+        adminBtn.style.display = "block";
 
-  adminBtn.onclick = () => {
-    document.getElementById("adminPanel").style.display = "block";
-  };
-}
+        adminBtn.onclick = () => {
+          document.getElementById("adminPanel").style.display = "block";
+        };
+      }
       currentUserCache = user;
       showDashboard(true);
       $("welcome").textContent = `${user.email} 님`;
@@ -2763,56 +3521,69 @@ if (adminBtn && user.email === "test@gmail.com") {
       bindBroadcastListener();
 
       // live user doc subscribe
-      userUnsub = onSnapshot(userRef(user.uid), async (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        userDataCache = data;
+      userUnsub = onSnapshot(
+        userRef(user.uid),
+        async (snap) => {
+          console.log("[onSnapshot] fired", snap.exists(), snap.id);
 
-        // UI updates
-        const level = setXpUI(data.xp || 0);
-        setPetByLevel(level);
+          if (!snap.exists()) {
+            console.warn("[onSnapshot] user doc missing -> ensureUserDoc again");
+            await ensureUserDoc(user);
+            return;
+          }
 
-        setCoinsUI(data.coins || 0);
-        setTierUI(data.tier || "FREE");
+          const data = snap.data();
 
-        $("streakCount").textContent = `🔥 연속 ${data.streak || 0}일 / 총 ${data.totalDays || 0}회`;
+          // ✅ ADMIN이면 tier를 먼저 MASTER로 강제 (UI 업데이트보다 먼저!)
+          const isAdmin = isAdminUser(user);
+          if (isAdmin) {
+            data.tier = "MASTER";
+          }
 
-        // theme
-        const theme = data.theme || "";
-        if (theme) {
-          setThemeActive(theme);
-          const suggestion = chooseSuggestion(theme);
-          $("todaySuggestion").textContent = suggestion;
-          $("habitName").value = suggestion;
-        } else {
-          setThemeActive("");
-          $("todaySuggestion").textContent = "테마를 선택하세요.";
-          $("habitName").value = "테마를 선택하세요";
-        }
 
-        // inventory
-        renderInventory(data.inventory || []);
+          // ---- UI updates ----
+          const level = setXpUI(data.xp || 0);
+          setPetByLevel(level);
 
-        // placed stickers
-        await loadPlacedStickers(user.uid).catch(() => { });
+          setCoinsUI(data.coins || 0);
+          setTierUI(data.tier || "FREE");
 
-        // heatmap
-        await loadHeatmap(user.uid).catch(() => { });
+          $("streakCount").textContent = `🔥 연속 ${data.streak || 0}일 / 총 ${data.totalDays || 0}회`;
 
-        // memo history
-        if (["PRO", "ULTRA", "MASTER"].includes(data.tier || "FREE")) {
-          await loadMemoHistory(user.uid).catch(() => { });
-        }
+          // theme
+          const theme = data.theme || "";
+          if (theme) {
+            setThemeActive(theme);
+            const suggestion = chooseSuggestion(theme);
+            $("todaySuggestion").textContent = suggestion;
+            $("habitName").value = suggestion;
+          } else {
+            setThemeActive("");
+            $("todaySuggestion").textContent = "테마를 선택하세요.";
+            $("habitName").value = "테마를 선택하세요.";
+          }
 
-        // admin visibility
-        const admin = isAdminUser(user);
-        $("adminOpenBtn").style.display = admin ? "block" : "none";
-        if (admin) {
-          // admin live refresh (light)
-          await adminRefreshDashboard().catch(() => { });
-          await adminLoadUsers($("adminSearch").value.trim()).catch(() => { });
-        }
-      });
+          // inventory
+          renderInventory(data.inventory || []);
+
+          // placed stickers
+          await loadPlacedStickers(user.uid).catch(() => ({}));
+
+          // heatmap
+          await loadHeatmap(user.uid).catch(() => ({}));
+
+          // memo history (tier 기준)
+          if (["PRO", "ULTRA", "MASTER"].includes(data.tier || "FREE")) {
+            await loadMemoHistory(user.uid).catch(() => ({}));
+          }
+
+          // ✅ admin visibility (위에서 구한 isAdmin 재사용)
+          $("adminOpenBtn").style.display = isAdmin ? "block" : "none";
+          if (isAdmin) {
+            await adminRefreshDashboard().catch(() => ({}));
+            await adminLoadUsers($("adminSearch").value.trim()).catch(() => ({}));
+          }
+        });
 
       // bind one-time UI handlers that need user reference
       const getUserData = async () => userDataCache || (await getDoc(userRef(user.uid))).data();
@@ -2828,6 +3599,10 @@ if (adminBtn && user.email === "test@gmail.com") {
 
       // initial ticker
       appendTicker(`${user.email} 님이 접속했습니다.`);
+      // ✅ 기능 전체 바인딩 (이게 빠져 있었음)
+      bindThemeButtons(user, userDataCache?.tier || "FREE");
+      bindWorkoutPanel(user);
+      bindAuthedUI(user, async () => userDataCache);
     });
 
     /* =========================
@@ -2836,6 +3611,167 @@ if (adminBtn && user.email === "test@gmail.com") {
     // (이미 CSS로 pointer-events 정리되어 있음)
 
   </script>
+  <!-- ===================== DASHBOARD (로그인 후 보임) ===================== -->
+  <section id="dashboard" style="display:none;">
+    <div class="dashboard-layout">
+
+      <!-- ✅ 왼쪽: 메인 카드 -->
+      <div class="glass card main-card">
+        <div class="top-row">
+          <div>
+            <div id="welcome" class="welcome">-</div>
+            <div class="level-row">
+              <span id="levelText" class="level">Lv.1</span>
+              <span id="xpText" class="xp">0 / 100 XP</span>
+            </div>
+            <div class="xp-bar">
+              <div id="xpBarFill" class="xp-fill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <button id="logoutBtn" class="ghost-btn">로그아웃</button>
+        </div>
+
+        <div class="pet-wrap">
+          <div id="pet" class="pet">🥚</div>
+        </div>
+
+        <button id="broadcastBtn" class="primary-btn">💌 모두에게 응원 보내기</button>
+
+        <div class="mini-row">
+          <div id="streakCount" class="mini-pill">🔥 연속 0일 / 총 0회</div>
+          <button id="openLogBtn" class="mini-link">Log</button>
+        </div>
+
+        <div class="tier-row">
+          <div class="tier-label">등급: <b id="tierText">FREE</b></div>
+          <div class="coins">⭐ <b id="coinsText">0</b></div>
+        </div>
+
+        <hr class="sep" />
+
+        <!-- ✅ 오늘의 루틴 팩 -->
+        <div class="section-title">🎁 오늘의 루틴 팩</div>
+        <div class="theme-tabs">
+          <button class="theme-btn" data-theme="survival">🚑 생존</button>
+          <button class="theme-btn" data-theme="growth">✨ 갓생</button>
+          <button class="theme-btn" data-theme="detox">📵 디톡스</button>
+          <button class="theme-btn" data-theme="custom">➕ 커스텀</button>
+        </div>
+
+        <div class="suggest-card">
+          <div class="suggest-title">오늘의 추천 루틴</div>
+          <div id="todaySuggestion" class="suggest-text">테마를 선택하면 추천이 뜹니다.</div>
+        </div>
+
+        <div class="input-row">
+          <input id="habitName" class="input" placeholder="오늘 할 '딱 1개' 습관" />
+          <button id="addHabitBtn" class="accent-btn">추가</button>
+        </div>
+
+        <div id="habitList" class="habit-list"></div>
+
+        <button id="completeDayBtn" class="big-done">오늘 습관 완료 ✅</button>
+      </div>
+
+      <!-- ✅ 오른쪽: 운동/메모/히트맵/인벤토리 패널 -->
+      <div class="right-stack">
+
+        <!-- 운동 패널 -->
+        <div id="workoutSidePanel" class="glass card workout-side-panel">
+          <div class="w-title">🔥 오늘의 챌린지</div>
+          <div class="workout-tabs">
+            <button class="w-tab active" data-type="walk">🚶 걷기</button>
+            <button class="w-tab" data-type="run">🏃 달리기</button>
+            <button class="w-tab" data-type="gym">🏋️ 헬스</button>
+          </div>
+
+          <div class="workout-display">
+            <div id="workoutResult" class="wd-main">?</div>
+            <div class="wd-sub">종목 선택 후 미션 뽑기!</div>
+          </div>
+
+          <button id="startWorkoutBtn" class="btn">미션 랜덤 뽑기</button>
+          <button id="completeWorkoutBtn" class="btn done" style="display:none;">완료 (코인 3배)</button>
+        </div>
+
+        <!-- 메모 패널 -->
+        <div id="memoPanel" class="glass card memo-panel" style="display:none;">
+          <div class="memo-header">
+            <div class="memo-title">📝 오늘의 메모</div>
+            <span class="memo-badge">PRO+</span>
+          </div>
+
+          <textarea id="memoInput" class="memo-input" placeholder="오늘 느낀 점, 회고, 내일 계획..."></textarea>
+          <div class="memo-actions">
+            <button id="saveMemoBtn" class="accent-btn">저장</button>
+            <button id="openMemoHistoryBtn" class="ghost-btn">기록 보기</button>
+          </div>
+
+          <div id="memoHistory" class="memo-history" style="display:none;"></div>
+        </div>
+
+        <!-- 히트맵 -->
+        <div class="glass card">
+          <div class="section-title">📈 히트맵</div>
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+
+        <!-- 인벤토리 -->
+        <div class="glass card">
+          <div class="section-title">🎒 인벤토리</div>
+          <div id="inventory" class="inventory"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ 관리자 버튼 / 관리자 패널 -->
+  <button id="adminOpenBtn" class="admin-fab" style="display:none;">🛠 관리자</button>
+
+  <section id="adminPanel" class="admin-panel" style="display:none;">
+    <div class="glass card admin-shell">
+      <div class="admin-top">
+        <div class="admin-title">🛠 관리자 패널</div>
+        <button id="adminCloseBtn" class="ghost-btn">닫기</button>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-box">
+          <div class="admin-box-title">유저 검색</div>
+          <div class="input-row">
+            <input id="adminSearch" class="input" placeholder="이메일로 검색" />
+            <button id="adminSearchBtn" class="accent-btn">검색</button>
+          </div>
+          <div id="adminUserList" class="admin-list"></div>
+        </div>
+
+        <div class="admin-box">
+          <div class="admin-box-title">관리자 로그인 강제</div>
+          <div class="admin-desc">
+            관리자 이메일/비번을 설정하면, 선택한 유저를 로그인된 상태”로 전환하는 기능(세션 스위치)을 붙일 수 있어요.
+            (Firebase Auth 특성상 서버 없이 완전한 강제로그인은 제한이 있어 별도 구현 필요)
+          </div>
+
+          <div class="input-row">
+            <input id="adminEmail" class="input" placeholder="관리자 이메일" value="test@gmail.com" />
+          </div>
+          <div class="input-row">
+            <input id="adminPass" class="input" placeholder="관리자 비밀번호" type="password" />
+            <button id="saveAdminCredBtn" class="accent-btn">저장</button>
+          </div>
+
+          <div id="adminStatus" class="admin-status">-</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ✅ BOTTOM LIVE TICKER (site bottom, one-line marquee) -->
+  <div id="bottomTicker" class="bottom-ticker" aria-label="실시간 활동">
+    <div class="ticker-track" id="tickerContent"></div>
+  </div>
+
 </body>
 
 </html>
