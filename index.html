@@ -1873,6 +1873,82 @@
       font-weight: 600;
       color: #64748b;
     }
+    /* =========================
+   RIGHT CARD: LIVE PREVIEW
+========================= */
+.today-card.live-preview{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.65);
+  backdrop-filter: blur(16px);
+  box-shadow:0 20px 40px rgba(15,23,42,0.12);
+}
+
+.lp-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:900;
+  color:#16a34a;
+  margin-bottom:12px;
+}
+
+.lp-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  animation:pulse 1.6s infinite;
+}
+
+@keyframes pulse{
+  0%{ transform:scale(1); opacity:1; }
+  50%{ transform:scale(1.6); opacity:.4; }
+  100%{ transform:scale(1); opacity:1; }
+}
+
+.lp-body{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.lp-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  font-weight:700;
+}
+
+.lp-label{
+  color:#64748b;
+}
+
+.lp-value.reward{
+  color:#6366f1;
+  font-weight:900;
+}
+
+.lp-action{
+  margin-top:10px;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  color:white;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  box-shadow:0 10px 20px rgba(99,102,241,0.35);
+}
+
+.lp-footer{
+  margin-top:14px;
+  font-size:12px;
+  color:#475569;
+  text-align:center;
+}
+
   </style>
 </head>
 
@@ -2007,21 +2083,38 @@
 
       <!-- 🔽 오늘의 추천 루틴 카드 (교체본) -->
       <div class="today-card">
-
-        <!-- 상태 1: 로그인 전 -->
-        <div id="routineBeforeLogin" class="routine-state">
-          <h3>오늘의 추천 루틴</h3>
-          <p class="muted">
-            로그인 후 테마를 선택하면<br>
-            매일 다른 루틴이 추천됩니다.
-          </p>
+        <div class="today-card live-preview">
+          <div class="lp-header">
+            <span class="lp-dot"></span>
+            <span class="lp-title">LIVE · HabitFlow</span>
+          </div>
+        
+          <div class="lp-body">
+            <div class="lp-row">
+              <span class="lp-label">오늘의 루틴</span>
+              <span class="lp-value">📖 독서 2페이지</span>
+            </div>
+        
+            <div class="lp-row">
+              <span class="lp-label">예상 소요</span>
+              <span class="lp-value">⏱ 1분</span>
+            </div>
+        
+            <div class="lp-row">
+              <span class="lp-label">보상</span>
+              <span class="lp-value reward">+20 XP · +1 ⭐</span>
+            </div>
+        
+            <button class="lp-action">
+              오늘 습관 완료
+            </button>
+          </div>
+        
+          <div class="lp-footer">
+            🔥 지금 이 순간에도 누군가는 완료 중
+          </div>
         </div>
-
-        <!-- 상태 2: 로그인 후 / 테마 미선택 -->
-        <div id="routineNoTheme" class="routine-state hidden">
-          <h3>오늘의 추천 루틴</h3>
-          <p class="muted">테마를 선택해 주세요.</p>
-        </div>
+        
 
         <!-- 상태 3: 추천 결과 -->
         <!-- 상태 3: 추천 결과 -->
@@ -2763,6 +2856,28 @@
     }
 
     document.addEventListener("DOMContentLoaded", bindStaticUI);
+
+    // ===============================
+// PATCH A-2: blob 애니메이션 강제 적용(덮어쓰기 방지)
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const b1 = document.querySelector(".blob-1");
+  const b2 = document.querySelector(".blob-2");
+
+  console.log("[blob check]", !!b1, !!b2);
+
+  if (b1) {
+    b1.style.willChange = "transform, filter";
+    b1.style.filter = "blur(80px)";
+    b1.style.animation = "hf-float-1 12s ease-in-out infinite";
+  }
+  if (b2) {
+    b2.style.willChange = "transform, filter";
+    b2.style.filter = "blur(80px)";
+    b2.style.animation = "hf-float-2 15s ease-in-out infinite";
+  }
+});
+
 
     /* =========================
       PART 1 END HERE.
