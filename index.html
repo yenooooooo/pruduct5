@@ -1,4 +1,4 @@
-<!-- =========================
+ard<!-- =========================
   HabitFlow (Hardened Build)
   PART 1 / 2  (<= ~800 lines)
   - 관리자 패널 포함
@@ -291,7 +291,26 @@
       grid-template-columns: 1.2fr 1fr;
       gap: 48px;
       align-items: center;
+
     }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 48px;
+      align-items: start;
+      /* ⭐ 중요: center → start */
+    }
+
+    /* ✅ 오른쪽 컬럼 전용 */
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      /* 파란 ↔ 빨간 간격 */
+      align-items: stretch;
+    }
+
 
     .hero-pill {
       display: inline-block;
@@ -1856,6 +1875,12 @@
       margin-top: 28px;
     }
 
+    .hero-reasons {
+      margin-top: -40px;
+      /* 숫자 조절 */
+    }
+
+
     .reason-card {
       flex: 1;
       padding: 16px;
@@ -1873,82 +1898,93 @@
       font-weight: 600;
       color: #64748b;
     }
+
     /* =========================
    RIGHT CARD: LIVE PREVIEW
 ========================= */
-.today-card.live-preview{
-  padding:18px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.65);
-  backdrop-filter: blur(16px);
-  box-shadow:0 20px 40px rgba(15,23,42,0.12);
-}
+    .today-card.live-preview {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+    }
 
-.lp-header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:12px;
-  font-weight:900;
-  color:#16a34a;
-  margin-bottom:12px;
-}
+    .lp-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #16a34a;
+      margin-bottom: 12px;
+    }
 
-.lp-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#22c55e;
-  animation:pulse 1.6s infinite;
-}
+    .lp-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 1.6s infinite;
+    }
 
-@keyframes pulse{
-  0%{ transform:scale(1); opacity:1; }
-  50%{ transform:scale(1.6); opacity:.4; }
-  100%{ transform:scale(1); opacity:1; }
-}
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
 
-.lp-body{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+      50% {
+        transform: scale(1.6);
+        opacity: .4;
+      }
 
-.lp-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  font-weight:700;
-}
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
 
-.lp-label{
-  color:#64748b;
-}
+    .lp-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.lp-value.reward{
-  color:#6366f1;
-  font-weight:900;
-}
+    .lp-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 700;
+    }
 
-.lp-action{
-  margin-top:10px;
-  padding:12px;
-  border-radius:14px;
-  border:none;
-  cursor:pointer;
-  font-weight:900;
-  color:white;
-  background:linear-gradient(135deg,var(--primary),var(--secondary));
-  box-shadow:0 10px 20px rgba(99,102,241,0.35);
-}
+    .lp-label {
+      color: #64748b;
+    }
 
-.lp-footer{
-  margin-top:14px;
-  font-size:12px;
-  color:#475569;
-  text-align:center;
-}
+    .lp-value.reward {
+      color: #6366f1;
+      font-weight: 900;
+    }
 
+    .lp-action {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .lp-footer {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #475569;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -2077,87 +2113,86 @@
         </div>
       </div>
 
+      <!-- ✅ 여기! 목표는 1개 UI 바로 밑으로 내려옴 -->
+      <div class="today-card live-preview">
+        <div class="lp-header">
+          <span class="lp-dot"></span>
+          <span class="lp-title">LIVE · HabitFlow</span>
+        </div>
+
+        <div class="lp-body">
+          <div class="lp-row">
+            <span class="lp-label">오늘의 루틴</span>
+            <span class="lp-value">📖 독서 2페이지</span>
+          </div>
+
+          <div class="lp-row">
+            <span class="lp-label">예상 소요</span>
+            <span class="lp-value">⏱ 1분</span>
+          </div>
+
+          <div class="lp-row">
+            <span class="lp-label">보상</span>
+            <span class="lp-value reward">+20 XP · +1 ⭐</span>
+          </div>
+
+          <button class="lp-action">오늘 습관 완료</button>
+        </div>
+
+        <div class="lp-footer">🔥 지금 이 순간에도 누군가는 완료 중</div>
+      </div>
+
+
 
 
 
 
       <!-- 🔽 오늘의 추천 루틴 카드 (교체본) -->
-      <div class="today-card">
-        <div class="today-card live-preview">
-          <div class="lp-header">
-            <span class="lp-dot"></span>
-            <span class="lp-title">LIVE · HabitFlow</span>
+
+
+
+      <!-- 상태 3: 추천 결과 -->
+      <!-- 상태 3: 추천 결과 -->
+      <div id="routineResult" class="routine-state hidden">
+
+        <!-- ✅ 테두리 UI + 애니메이션 컨테이너 -->
+        <div class="ai-rec-box">
+          <div class="ai-rec-top">
+            <div class="ai-badge">AI 추천</div>
+            <div class="ai-dot" aria-hidden="true"></div>
+            <div class="ai-small">매일 자동 업데이트</div>
           </div>
-        
-          <div class="lp-body">
-            <div class="lp-row">
-              <span class="lp-label">오늘의 루틴</span>
-              <span class="lp-value">📖 독서 2페이지</span>
-            </div>
-        
-            <div class="lp-row">
-              <span class="lp-label">예상 소요</span>
-              <span class="lp-value">⏱ 1분</span>
-            </div>
-        
-            <div class="lp-row">
-              <span class="lp-label">보상</span>
-              <span class="lp-value reward">+20 XP · +1 ⭐</span>
-            </div>
-        
-            <button class="lp-action">
-              오늘 습관 완료
-            </button>
-          </div>
-        
-          <div class="lp-footer">
-            🔥 지금 이 순간에도 누군가는 완료 중
-          </div>
-        </div>
-        
 
-        <!-- 상태 3: 추천 결과 -->
-        <!-- 상태 3: 추천 결과 -->
-        <div id="routineResult" class="routine-state hidden">
+          <div class="ai-rec-main">
+            <div id="aiRecTitle" class="ai-rec-title">🚑 생존 체력 팩</div>
 
-          <!-- ✅ 테두리 UI + 애니메이션 컨테이너 -->
-          <div class="ai-rec-box">
-            <div class="ai-rec-top">
-              <div class="ai-badge">AI 추천</div>
-              <div class="ai-dot" aria-hidden="true"></div>
-              <div class="ai-small">매일 자동 업데이트</div>
-            </div>
-
-            <div class="ai-rec-main">
-              <div id="aiRecTitle" class="ai-rec-title">🚑 생존 체력 팩</div>
-
-              <!-- 자연스럽게 바뀌는 문구 -->
-              <div class="ai-rec-desc-wrap">
-                <div id="aiRecDesc" class="ai-rec-desc">
-                  직장인을 위한 ‘죽지 않으려고 하는 운동’
-                </div>
+            <!-- 자연스럽게 바뀌는 문구 -->
+            <div class="ai-rec-desc-wrap">
+              <div id="aiRecDesc" class="ai-rec-desc">
+                직장인을 위한 ‘죽지 않으려고 하는 운동’
               </div>
-
-              <!-- 하단 보더 라인 -->
-              <div class="ai-rec-divider"></div>
-
-              <!-- 작은 힌트 -->
-              <div id="aiRecHint" class="ai-rec-hint">오늘은 가볍게 시작해요.</div>
             </div>
-          </div>
 
-        </div>
-        <div class="hero-proof">
-          <div class="proof-badges">
-            <span class="proof-pill">⚡ 버튼 1번</span>
-            <span class="proof-pill">🔥 연속기록</span>
-            <span class="proof-pill">🎁 코인 리워드</span>
-          </div>
-          <div class="proof-quote">
-            “작심삼일이 아니라, <b>작은 승리</b>가 쌓이게 해주는 앱.”
-            <span class="proof-by">— 사용자 후기</span>
+            <!-- 하단 보더 라인 -->
+            <div class="ai-rec-divider"></div>
+
+            <!-- 작은 힌트 -->
+            <div id="aiRecHint" class="ai-rec-hint">오늘은 가볍게 시작해요.</div>
           </div>
         </div>
+
+      </div>
+      <div class="hero-proof">
+        <div class="proof-badges">
+          <span class="proof-pill">⚡ 버튼 1번</span>
+          <span class="proof-pill">🔥 연속기록</span>
+          <span class="proof-pill">🎁 코인 리워드</span>
+        </div>
+        <div class="proof-quote">
+          “작심삼일이 아니라, <b>작은 승리</b>가 쌓이게 해주는 앱.”
+          <span class="proof-by">— 사용자 후기</span>
+        </div>
+      </div>
 
   </section>
   <!-- ✅ WHY 랜딩 섹션 (hero 아래, 대시보드 위) -->
@@ -2858,25 +2893,25 @@
     document.addEventListener("DOMContentLoaded", bindStaticUI);
 
     // ===============================
-// PATCH A-2: blob 애니메이션 강제 적용(덮어쓰기 방지)
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
-  const b1 = document.querySelector(".blob-1");
-  const b2 = document.querySelector(".blob-2");
+    // PATCH A-2: blob 애니메이션 강제 적용(덮어쓰기 방지)
+    // ===============================
+    document.addEventListener("DOMContentLoaded", () => {
+      const b1 = document.querySelector(".blob-1");
+      const b2 = document.querySelector(".blob-2");
 
-  console.log("[blob check]", !!b1, !!b2);
+      console.log("[blob check]", !!b1, !!b2);
 
-  if (b1) {
-    b1.style.willChange = "transform, filter";
-    b1.style.filter = "blur(80px)";
-    b1.style.animation = "hf-float-1 12s ease-in-out infinite";
-  }
-  if (b2) {
-    b2.style.willChange = "transform, filter";
-    b2.style.filter = "blur(80px)";
-    b2.style.animation = "hf-float-2 15s ease-in-out infinite";
-  }
-});
+      if (b1) {
+        b1.style.willChange = "transform, filter";
+        b1.style.filter = "blur(80px)";
+        b1.style.animation = "hf-float-1 12s ease-in-out infinite";
+      }
+      if (b2) {
+        b2.style.willChange = "transform, filter";
+        b2.style.filter = "blur(80px)";
+        b2.style.animation = "hf-float-2 15s ease-in-out infinite";
+      }
+    });
 
 
     /* =========================
