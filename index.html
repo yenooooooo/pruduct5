@@ -55,7 +55,7 @@
     ul { list-style: none; padding: 0; margin: 0; }
     button { font-family: inherit; }
 
-    section { width: 100%; padding: 84px 20px; position: relative; z-index: 1; pointer-events: none; }
+    section { width: 100%; padding: 84px 20px; position: relative; z-index: 1; pointer-events: auto; }
     .container, .glass, button, input, .card, .price-card, .workout-side-panel, .problem-card, .memo-panel { pointer-events: auto; }
     .container { width: 100%; max-width: 1080px; margin: 0 auto; }
 
@@ -218,6 +218,8 @@
     .chart-bar { height: 100%; transition: width 0.5s; }
     .chart-legend { display: flex; gap: 15px; margin-top: 5px; font-size: 11px; color: #888; }
     .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+    .sticker { pointer-events: auto; }
+
 
     /* New User Features */
     .live-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); color: white; padding: 8px 0; z-index: 9000; overflow: hidden; white-space: nowrap; font-size: 13px; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.1); }
@@ -275,7 +277,7 @@
   </div>
 
   <!-- FIX: pointer-events auto so stickers can drag/click -->
-  <div id="stickerLayer" style="position: absolute; top:0; left:0; width:100%; height:100%; overflow:hidden; pointer-events:auto; z-index:5;"></div>
+  <div id="stickerLayer" style="position: fixed; inset:0; overflow:hidden; pointer-events:none; z-index:9997;"></div>
 
   <div id="coinDisplay" style="position: fixed; top: 20px; right: 20px; z-index: 500; background: var(--panel-bg); padding: 8px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; display:none; border: 2px solid var(--accent); color: var(--text-main); box-shadow: var(--shadow);">
       <span>⭐</span> <span id="coinCount">0</span>
@@ -1617,6 +1619,522 @@
       alert(e?.message || "요청 실패");
     }
   };
+/* =====================================================
+   🛡️ PATCH 1 — CORE STABILITY LAYER
+   ===================================================== */
+
+/* ---------- 1️⃣ 안전 DOM 접근 헬퍼 ---------- */
+function $(id) {
+  return document.getElementById(id);
+}
+
+/* ---------- 2️⃣ 안전 실행 래퍼 ---------- */
+async function safeAsync(fn, label = "TASK") {
+  try {
+    await fn();
+  } catch (e) {
+    console.error(`❌ ${label} FAILED`, e);
+    alert("네트워크 또는 시스템 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
+  }
+}
+
+/* ---------- 3️⃣ Firebase Timestamp 통일 ---------- */
+import { serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function safeUpdateUser(uid, data) {
+  return updateDoc(doc(db, "users", uid), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/* ---------- 4️⃣ event.target 오류 제거 ---------- */
+window.selectWorkoutTab = (type, btnEl) => {
+  sfx.play('click');
+
+  document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  const startBtn = $("startWorkoutBtn");
+  const result = $("workoutResult");
+  const completeBtn = $("completeWorkoutBtn");
+
+  if (!startBtn || !result || !completeBtn) return;
+
+  startBtn.dataset.type = type;
+  result.innerHTML = '<span class="wd-main">❓</span><div class="wd-sub">종목 선택 후 미션 뽑기!</div>';
+  completeBtn.style.display = 'none';
+  startBtn.style.display = 'inline-block';
+};
+
+/* HTML 버튼에서 이렇게 호출하도록 변경 권장
+<button onclick="selectWorkoutTab('walk', this)">🚶 걷기</button>
+*/
+
+/* ---------- 5️⃣ tickerTrack ID 오류 수정 ---------- */
+function safeAppendTicker(msg) {
+  const track = $("tickerContent");
+  if (!track) return;
+
+  const item = document.createElement("div");
+  item.className = "ticker-item";
+  item.innerHTML = `⚡ ${msg}`;
+  track.appendChild(item);
+}
+
+/* ---------- 6️⃣ 글로벌 로그 구독 안정화 ---------- */
+let unsubscribeGlobalLogs = null;
+
+function subscribeToGlobalLogsSafe(isPublic = false) {
+  if (unsubscribeGlobalLogs) unsubscribeGlobalLogs();
+
+  const q = query(
+    collection(db, "global_logs"),
+    orderBy("timestamp", "desc"),
+    limit(20)
+  );
+
+  unsubscribeGlobalLogs = onSnapshot(q, snap => {
+    snap.docChanges().forEach(change => {
+      if (change.type !== "added") return;
+
+      const data = change.doc.data();
+
+      // ❤️ Cheer
+      if (data.type === "cheer") {
+        triggerHearts();
+        return;
+      }
+
+      // 📟 Matrix (Admin only)
+      if (!isPublic) {
+        const term = $("matrixLog");
+        if (term) {
+          const div = document.createElement("div");
+          div.className = "log-line";
+          div.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${data.msg}`;
+          term.prepend(div);
+        }
+      }
+
+      // 📢 Ticker
+      safeAppendTicker(data.msg);
+    });
+  });
+}
+
+/* ---------- 7️⃣ 알림(Notification) 안전 처리 ---------- */
+async function scheduleHabitNotification(uid) {
+  if (!("Notification" in window)) return;
+
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") return;
+
+  // 오늘 이미 완료했으면 취소
+  const today = dateKeyFromOffset(0);
+  const doneSnap = await getDoc(doc(db, "users", uid, "habits", today));
+  if (doneSnap.exists() && doneSnap.data().done) return;
+
+  // 다음 18:00 계산
+  const now = new Date();
+  const target = new Date();
+  target.setHours(18, 0, 0, 0);
+  if (now > target) target.setDate(target.getDate() + 1);
+
+  const delay = target - now;
+
+  setTimeout(() => {
+    new Notification("⏰ HabitFlow", {
+      body: "오늘 습관 아직 안 했어요! 딱 1분이면 끝나요.",
+      icon: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png"
+    });
+  }, delay);
+}
+
+/* ---------- 8️⃣ 단일 로그인 후 처리 ---------- */
+let afterLoginExecuted = false;
+
+async function afterLogin(user, snap) {
+  if (afterLoginExecuted) return;
+  afterLoginExecuted = true;
+
+  const uid = user.uid;
+  const data = snap.data() || {};
+  const isAdmin = ADMIN_EMAILS.includes(user.email || "");
+
+  // 🔐 권한 플래그 통일
+  const flags = {
+    isPro: !!data.isPro || isAdmin,
+    isUltra: !!data.isUltra || isAdmin,
+    isMaster: !!data.isMaster || isAdmin,
+  };
+
+  // 🎧 글로벌 로그
+  subscribeToGlobalLogsSafe(!isAdmin);
+
+  // 🔔 알림
+  scheduleHabitNotification(uid);
+
+  // 🔥 스트릭 위험 체크
+  checkStreakDanger(uid);
+
+  // 🕵️ 히든 업적
+  checkHiddenAchievement(uid);
+
+  // 🧬 DNA 분석 (주 1회 정도만 실행 권장)
+  // analyzeHabitDNA(uid);
+}
+
+/* ---------- 9️⃣ 기존 onAuthStateChanged 덮어쓰기 ---------- */
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    afterLoginExecuted = false;
+    return;
+  }
+
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
+
+  await afterLogin(user, snap);
+});
+
+/* =====================================================
+   ✅ PATCH 1 END
+   ===================================================== */
+   /* =====================================================
+   🛡️ PATCH 2 — ASYNC / DATA CONSISTENCY LAYER
+   ===================================================== */
+
+/* ---------- 1️⃣ 안전 Timestamp 읽기 ---------- */
+function normalizeTimestamp(ts) {
+  if (!ts) return null;
+  if (ts.seconds) return new Date(ts.seconds * 1000);
+  if (ts.toDate) return ts.toDate();
+  return new Date(ts);
+}
+
+/* ---------- 2️⃣ 버튼 중복 클릭 방지 ---------- */
+function lockButton(btn, label = "처리 중...") {
+  if (!btn) return () => {};
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = label;
+
+  return () => {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  };
+}
+
+/* ---------- 3️⃣ 습관 완료 처리 안정화 ---------- */
+window.completeHabitSafe = async function (uid, habitData = {}) {
+  const btn = $("completeWorkoutBtn");
+  const unlock = lockButton(btn, "저장 중...");
+
+  await safeAsync(async () => {
+    const today = dateKeyFromOffset(0);
+    const ref = doc(db, "users", uid, "habits", today);
+
+    const snap = await getDoc(ref);
+    if (snap.exists() && snap.data().done === true) {
+      unlock();
+      return;
+    }
+
+    await setDoc(ref, {
+      ...habitData,
+      done: true,
+      completedAt: serverTimestamp(),
+    }, { merge: true });
+
+    await safeUpdateUser(uid, {
+      lastActive: serverTimestamp(),
+    });
+
+    fireConfetti();
+    sfx.play("success");
+  }, "COMPLETE_HABIT");
+
+  unlock();
+};
+
+/* ---------- 4️⃣ 관리자 전체 지급 (forEach async 제거) ---------- */
+window.adminGrantAllUsersSafe = async function (payload = {}) {
+  const btn = $("adminGrantBtn");
+  const unlock = lockButton(btn, "지급 중...");
+
+  await safeAsync(async () => {
+    const q = query(collection(db, "users"));
+    const snap = await getDocs(q);
+
+    const jobs = [];
+    snap.forEach(docSnap => {
+      jobs.push(
+        updateDoc(doc(db, "users", docSnap.id), {
+          ...payload,
+          updatedAt: serverTimestamp(),
+        })
+      );
+    });
+
+    await Promise.all(jobs);
+    alert("✅ 전체 지급 완료");
+  }, "ADMIN_GRANT");
+
+  unlock();
+};
+
+/* ---------- 5️⃣ lastActive / streak 계산 안정화 ---------- */
+async function calculateStreakSafe(uid, days = 30) {
+  const base = collection(db, "users", uid, "habits");
+  const q = query(base, orderBy("completedAt", "desc"), limit(days));
+
+  const snap = await getDocs(q);
+  let streak = 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  snap.docs.some(docSnap => {
+    const data = docSnap.data();
+    if (!data.done || !data.completedAt) return false;
+
+    const d = normalizeTimestamp(data.completedAt);
+    if (!d) return false;
+
+    d.setHours(0, 0, 0, 0);
+
+    const diff = (today - d) / 86400000;
+    if (diff === streak) {
+      streak++;
+      return false;
+    }
+    return true;
+  });
+
+  return streak;
+}
+
+/* ---------- 6️⃣ streak danger 알림 안정화 ---------- */
+async function checkStreakDanger(uid) {
+  const streak = await calculateStreakSafe(uid, 3);
+  if (streak >= 2) return;
+
+  safeAppendTicker("🔥 스트릭이 위험해요! 오늘 습관을 완료하세요.");
+}
+
+/* ---------- 7️⃣ heatmap / 캘린더용 데이터 안전 로딩 ---------- */
+async function loadHabitCalendarSafe(uid, days = 90) {
+  const base = collection(db, "users", uid, "habits");
+  const q = query(base, orderBy("completedAt", "desc"), limit(days));
+  const snap = await getDocs(q);
+
+  const map = {};
+  snap.forEach(docSnap => {
+    const data = docSnap.data();
+    if (!data.completedAt) return;
+
+    const d = normalizeTimestamp(data.completedAt);
+    if (!d) return;
+
+    const key = d.toISOString().slice(0, 10);
+    map[key] = data.done ? "done" : "fail";
+  });
+
+  return map;
+}
+
+/* ---------- 8️⃣ 관리자 로그 출력 안정화 ---------- */
+function adminLogSafe(msg) {
+  const el = $("matrixLog");
+  if (!el) return;
+
+  const line = document.createElement("div");
+  line.className = "log-line";
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.prepend(line);
+}
+
+/* ---------- 9️⃣ Firestore 읽기 폭탄 방지 ---------- */
+async function getUserSafe(uid) {
+  const ref = doc(db, "users", uid);
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+
+/* ---------- 🔟 글로벌 에러 캐치 ---------- */
+window.addEventListener("unhandledrejection", e => {
+  console.error("❌ UNHANDLED PROMISE", e.reason);
+});
+
+window.addEventListener("error", e => {
+  console.error("❌ GLOBAL ERROR", e.message);
+});
+
+/* =====================================================
+   ✅ PATCH 2 END
+   ===================================================== */
+/* =====================================================
+   🛡️ PATCH 3 — SECURITY / REWARD / PRODUCTION LAYER
+   ===================================================== */
+
+/* ---------- 1️⃣ 환경 가드 ---------- */
+const ENV = {
+  PROD: location.hostname !== "localhost",
+  DEBUG: location.hostname === "localhost"
+};
+
+function devLog(...args) {
+  if (ENV.DEBUG) console.log("[DEV]", ...args);
+}
+
+/* ---------- 2️⃣ 전역 가드(미정의 함수 방지) ---------- */
+function guard(fn, name = "anonymous") {
+  return (...args) => {
+    try {
+      if (typeof fn !== "function") {
+        console.warn(`⚠️ ${name} is not a function`);
+        return;
+      }
+      return fn(...args);
+    } catch (e) {
+      console.error(`❌ ${name} crashed`, e);
+    }
+  };
+}
+
+/* ---------- 3️⃣ 권한/등급 클라이언트 보호 ---------- */
+/*
+  ⚠️ 실제 보안은 Firestore Rules / Cloud Functions에서 완성됨
+  이 레이어는 "실수로 클라에서 업데이트" 방지용
+*/
+const PROTECTED_FIELDS = ["isPro", "isUltra", "isMaster", "role", "coins"];
+
+async function safeClientUpdate(uid, data) {
+  const clean = {};
+  Object.keys(data || {}).forEach(k => {
+    if (!PROTECTED_FIELDS.includes(k)) clean[k] = data[k];
+  });
+
+  if (Object.keys(clean).length === 0) return;
+  await updateDoc(doc(db, "users", uid), {
+    ...clean,
+    updatedAt: serverTimestamp()
+  });
+}
+
+/* ---------- 4️⃣ 코인/보상 중복 지급 차단 (Transaction) ---------- */
+import { runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function grantCoinsOnce(uid, key, amount) {
+  const userRef = doc(db, "users", uid);
+  const rewardRef = doc(db, "users", uid, "rewards", key);
+
+  await runTransaction(db, async (tx) => {
+    const rewardSnap = await tx.get(rewardRef);
+    if (rewardSnap.exists()) {
+      throw new Error("ALREADY_GRANTED");
+    }
+
+    const userSnap = await tx.get(userRef);
+    if (!userSnap.exists()) throw new Error("NO_USER");
+
+    const coins = userSnap.data().coins || 0;
+
+    tx.set(rewardRef, {
+      amount,
+      grantedAt: serverTimestamp()
+    });
+
+    tx.update(userRef, {
+      coins: coins + amount,
+      updatedAt: serverTimestamp()
+    });
+  });
+}
+
+/* ---------- 5️⃣ 습관 완료 시 보상 안전 지급 ---------- */
+async function rewardForHabit(uid) {
+  try {
+    await grantCoinsOnce(uid, `habit_${dateKeyFromOffset(0)}`, 5);
+    devLog("💰 Habit reward granted");
+  } catch (e) {
+    if (e.message !== "ALREADY_GRANTED") {
+      console.error("Reward error", e);
+    }
+  }
+}
+
+/* PATCH 2의 completeHabitSafe 이후에 호출 권장 */
+// rewardForHabit(uid);
+
+/* ---------- 6️⃣ AI / 분석 기능 호출 제한 ---------- */
+const AI_LIMIT = {
+  daily: 5
+};
+
+async function canUseAI(uid) {
+  const today = dateKeyFromOffset(0);
+  const ref = doc(db, "users", uid, "usage", today);
+
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, { ai: 1, date: today });
+    return true;
+  }
+
+  const used = snap.data().ai || 0;
+  if (used >= AI_LIMIT.daily) return false;
+
+  await updateDoc(ref, { ai: used + 1 });
+  return true;
+}
+
+/* ---------- 7️⃣ AI 호출 래퍼 ---------- */
+async function runAISafe(uid, taskFn) {
+  const allowed = await canUseAI(uid);
+  if (!allowed) {
+    alert("오늘 AI 사용 한도를 초과했어요 🙏");
+    return null;
+  }
+
+  return await safeAsync(async () => {
+    return await taskFn();
+  }, "AI_TASK");
+}
+
+/* ---------- 8️⃣ 관리자 전용 함수 가드 ---------- */
+function requireAdmin(user, fn) {
+  return (...args) => {
+    if (!user || !ADMIN_EMAILS.includes(user.email)) {
+      alert("⛔ 관리자 전용 기능입니다.");
+      return;
+    }
+    return fn(...args);
+  };
+}
+
+/* ---------- 9️⃣ 전역 노출 최소화 ---------- */
+window.App = Object.freeze({
+  completeHabitSafe: guard(window.completeHabitSafe, "completeHabitSafe"),
+  rewardForHabit: guard(rewardForHabit, "rewardForHabit"),
+  runAISafe: guard(runAISafe, "runAISafe"),
+  adminGrantAllUsersSafe: guard(window.adminGrantAllUsersSafe, "adminGrantAllUsersSafe"),
+});
+
+/* ---------- 🔟 프로덕션 안전 가드 ---------- */
+if (ENV.PROD) {
+  window.console.log = () => {};
+  window.console.warn = () => {};
+}
+
+/* ---------- 11️⃣ 상태 점검 ---------- */
+devLog("✅ PATCH 3 LOADED");
+
+/* =====================================================
+   ✅ PATCH 3 END
+   ===================================================== */
 
 </script>
 </body>
