@@ -1,4 +1,4 @@
-ard<!-- =========================
+<!-- =========================
   HabitFlow (Hardened Build)
   PART 1 / 2  (<= ~800 lines)
   - 관리자 패널 포함
@@ -288,18 +288,23 @@ ard<!-- =========================
 
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 48px;
+      grid-template-columns: 1fr 1fr;
+      /* 1:1 비율로 깔끔하게 */
+      gap: 60px;
       align-items: center;
-
+      /* 수직 중앙 정렬 */
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 48px;
-      align-items: start;
-      /* ⭐ 중요: center → start */
+    /* 모바일에서는 세로로 배치 */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero-reasons {
+        flex-direction: column;
+      }
     }
 
     /* ✅ 오른쪽 컬럼 전용 */
@@ -1985,6 +1990,56 @@ ard<!-- =========================
       color: #475569;
       text-align: center;
     }
+
+    /* 관리자 패널 액션 버튼 스타일 */
+    .admin-act-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      background: #333;
+      border: 1px solid #555;
+      color: #eee;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .admin-act-btn:hover {
+      background: #444;
+      border-color: #777;
+    }
+
+    /* 관리자 패널 액션 버튼 스타일 */
+    .admin-act-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      background: #333;
+      border: 1px solid #555;
+      color: #eee;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .admin-act-btn:hover {
+      background: #444;
+      border-color: #777;
+    }
+
+    /* [강제 적용] 관리자 패널의 모든 버튼 클릭 허용 */
+    #adminPanel button,
+    #adminUserList button {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      z-index: 999999 !important;
+      position: relative !important;
+    }
+
+    /* 관리자 패널이 맨 위에 오도록 */
+    #adminPanel {
+      z-index: 20000 !important;
+    }
   </style>
 </head>
 
@@ -2084,21 +2139,46 @@ ard<!-- =========================
   </section>
 
   <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-left">
-        <span class="hero-pill">✨ 하루 하나로 충분해요</span>
-        <h1 class="hero-title">하루 하나,<br />인생을 바꾸는 습관</h1>
-        <p class="hero-desc">작심삼일을 끝내는 가장 단순한 방식.<br>버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" id="heroStartBtn" style="width:auto;">지금 시작하기</button>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <span class="hero-pill">✨ 하루 하나로 충분해요</span>
+          <h1 class="hero-title">하루 하나,<br />인생을 바꾸는 습관</h1>
+          <p class="hero-desc">작심삼일을 끝내는 가장 단순한 방식.<br>버튼 한 번으로 기록하고, 연속 기록으로 동기부여를 유지하세요.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="heroStartBtn" style="width:auto;">지금 시작하기</button>
+          </div>
+          <div class="hero-metrics">
+            <div class="metric-card"><b>1 Habit</b><span>하루 딱 하나</span></div>
+            <div class="metric-card"><b>Streak</b><span>연속 기록</span></div>
+            <div class="metric-card"><b>Report</b><span>주간 리포트</span></div>
+          </div>
         </div>
-        <div class="hero-metrics">
-          <div class="metric-card"><b>1 Habit</b><span>하루 딱 하나</span></div>
-          <div class="metric-card"><b>Streak</b><span>연속 기록</span></div>
-          <div class="metric-card"><b>Report</b><span>주간 리포트</span></div>
+
+        <div class="today-card live-preview" style="margin: 0; align-self: center;">
+          <div class="lp-header">
+            <span class="lp-dot"></span>
+            <span class="lp-title">LIVE · HabitFlow</span>
+          </div>
+          <div class="lp-body">
+            <div class="lp-row">
+              <span class="lp-label">오늘의 루틴</span>
+              <span class="lp-value">📖 독서 2페이지</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-label">예상 소요</span>
+              <span class="lp-value">⏱ 1분</span>
+            </div>
+            <div class="lp-row">
+              <span class="lp-label">보상</span>
+              <span class="lp-value reward">+20 XP · +1 ⭐</span>
+            </div>
+            <button class="lp-action">오늘 습관 완료</button>
+          </div>
+          <div class="lp-footer">🔥 지금 이 순간에도 누군가는 완료 중</div>
         </div>
       </div>
-      <div class="hero-reasons">
+      <div class="hero-reasons" style="margin-top: 60px; justify-content: center;">
         <div class="reason-card">
           🎯 <b>목표는 1개</b>
           <span>결정 피로를 제거합니다</span>
@@ -2113,77 +2193,8 @@ ard<!-- =========================
         </div>
       </div>
 
-      <!-- ✅ 여기! 목표는 1개 UI 바로 밑으로 내려옴 -->
-      <div class="today-card live-preview">
-        <div class="lp-header">
-          <span class="lp-dot"></span>
-          <span class="lp-title">LIVE · HabitFlow</span>
-        </div>
-
-        <div class="lp-body">
-          <div class="lp-row">
-            <span class="lp-label">오늘의 루틴</span>
-            <span class="lp-value">📖 독서 2페이지</span>
-          </div>
-
-          <div class="lp-row">
-            <span class="lp-label">예상 소요</span>
-            <span class="lp-value">⏱ 1분</span>
-          </div>
-
-          <div class="lp-row">
-            <span class="lp-label">보상</span>
-            <span class="lp-value reward">+20 XP · +1 ⭐</span>
-          </div>
-
-          <button class="lp-action">오늘 습관 완료</button>
-        </div>
-
-        <div class="lp-footer">🔥 지금 이 순간에도 누군가는 완료 중</div>
-      </div>
-
-
-
-
-
-
-      <!-- 🔽 오늘의 추천 루틴 카드 (교체본) -->
-
-
-
-      <!-- 상태 3: 추천 결과 -->
-      <!-- 상태 3: 추천 결과 -->
-      <div id="routineResult" class="routine-state hidden">
-
-        <!-- ✅ 테두리 UI + 애니메이션 컨테이너 -->
-        <div class="ai-rec-box">
-          <div class="ai-rec-top">
-            <div class="ai-badge">AI 추천</div>
-            <div class="ai-dot" aria-hidden="true"></div>
-            <div class="ai-small">매일 자동 업데이트</div>
-          </div>
-
-          <div class="ai-rec-main">
-            <div id="aiRecTitle" class="ai-rec-title">🚑 생존 체력 팩</div>
-
-            <!-- 자연스럽게 바뀌는 문구 -->
-            <div class="ai-rec-desc-wrap">
-              <div id="aiRecDesc" class="ai-rec-desc">
-                직장인을 위한 ‘죽지 않으려고 하는 운동’
-              </div>
-            </div>
-
-            <!-- 하단 보더 라인 -->
-            <div class="ai-rec-divider"></div>
-
-            <!-- 작은 힌트 -->
-            <div id="aiRecHint" class="ai-rec-hint">오늘은 가볍게 시작해요.</div>
-          </div>
-        </div>
-
-      </div>
-      <div class="hero-proof">
-        <div class="proof-badges">
+      <div class="hero-proof" style="text-align: center; margin-top: 40px;">
+        <div class="proof-badges" style="justify-content: center;">
           <span class="proof-pill">⚡ 버튼 1번</span>
           <span class="proof-pill">🔥 연속기록</span>
           <span class="proof-pill">🎁 코인 리워드</span>
@@ -2194,6 +2205,7 @@ ard<!-- =========================
         </div>
       </div>
 
+    </div>
   </section>
   <!-- ✅ WHY 랜딩 섹션 (hero 아래, 대시보드 위) -->
   <section class="why-section" id="why">
@@ -2551,9 +2563,9 @@ ard<!-- =========================
             <input id="adminSearch" placeholder="이메일 검색..."
               style="flex:1; background:#222; border:1px solid #444; color:#fff;">
             <button id="refreshAdminBtn" class="btn"
-              style="background:#333; color:#fff; border:1px solid #555;">새로고침</button>
+              style="background:#333; color:#fff; border:1px solid #555; width: auto;">새로고침</button>
           </div>
-          <div id="admUserList" style="display:grid; gap:10px;"></div>
+          <div id="adminUserList" style="display:grid; gap:10px;"></div>
         </div>
 
         <div id="pane-tools" class="admin-pane">
@@ -2592,7 +2604,7 @@ ard<!-- =========================
   ========================= -->
   <script type="module">
     /* =========================
-      0) Imports
+       0) Imports
     ========================= */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
@@ -2612,11 +2624,13 @@ ard<!-- =========================
       query, orderBy, limit,
       onSnapshot, arrayUnion,
       serverTimestamp,
-      runTransaction
+      runTransaction,
+      increment,
+      writeBatch
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     /* =========================
-      1) Firebase Config
+       1) Firebase Config
     ========================= */
     const firebaseConfig = {
       apiKey: "AIzaSyAIaroNs2VsMamnnNJV1cP9LdXqIDhl3Ig",
@@ -2632,12 +2646,12 @@ ard<!-- =========================
     const db = getFirestore(app);
 
     /* =========================
-      2) Admin Settings
+       2) Admin Settings
     ========================= */
-    const ADMIN_EMAILS = ["test@gmail.com"]; // ✅ 요청대로 1개만
+    const ADMIN_EMAILS = ["test@gmail.com"];
 
     /* =========================
-      3) Safe Helpers
+       3) Safe Helpers
     ========================= */
     const $ = (id) => document.getElementById(id);
 
@@ -2680,7 +2694,8 @@ ard<!-- =========================
       const items = track.querySelectorAll(".ticker-item");
       if (items.length > 30) items[0]?.remove();
 
-      const lt = document.getElementById("liveText"); if (lt) lt.textContent = msg;
+      const lt = document.getElementById("liveText");
+      if (lt) lt.textContent = msg;
     }
 
     function showProModal(type) {
@@ -2706,265 +2721,41 @@ ard<!-- =========================
         setTimeout(() => { zen.style.display = "none"; }, 250);
       }
     }
-    function showRoutineState(state) {
-      ["routineBeforeLogin", "routineNoTheme", "routineResult"].forEach(id => {
-        document.getElementById(id)?.classList.add("hidden");
+
+    function setThemeActive(theme) {
+      document.querySelectorAll(".theme-tag").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.theme === theme);
       });
-      document.getElementById(state)?.classList.remove("hidden");
     }
 
-    function applyTheme(primary, secondary) {
-      document.documentElement.style.setProperty("--primary", primary);
-      document.documentElement.style.setProperty("--secondary", secondary);
-      const b1 = document.querySelector(".blob-1");
-      const b2 = document.querySelector(".blob-2");
-      if (b1) b1.style.background = secondary;
-      if (b2) b2.style.background = primary;
-    }
-
-    /* =========================
-      4) Audio (Fail-safe)
-    ========================= */
     const sfx = {
       click: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=click-124467.mp3"),
       success: new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_bb630cc098.mp3?filename=success-1-6297.mp3"),
       admin: new Audio("https://cdn.pixabay.com/download/audio/2022/03/24/audio_03e0545939.mp3?filename=sci-fi-click-903.mp3"),
-      play(name) {
-        try {
-          const a = this[name];
-          if (!a) return;
-          a.currentTime = 0;
-          a.play();
-        } catch (_) { }
-      }
+      play(name) { try { const a = this[name]; if (!a) return; a.currentTime = 0; a.play(); } catch (_) { } }
     };
 
     /* =========================
-      5) Data Pools
+       4) Data Pools & Helpers
     ========================= */
     const STICKERS = ["🍎", "💊", "📚", "🎸", "💎", "👑", "🚀", "🦄", "🦖", "🍕", "🌈", "🔥", "💧", "⭐", "🍀", "🍄"];
-
     const themeData = {
-      survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭", "👁️ 먼 산 보기", "🧹 책상 위 리셋"],
-      godsaeng: ["📅 주간 계획", "🛏️ 이불 정리", "💰 가계부", "📚 독서 2p", "🗣️ 영단어 1개", "📝 감사일기"],
-      detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기", "🧘 명상 5분"],
+      survival: ["🛌 밤 11시 폰 끄기", "💧 공복 물 한 잔", "💊 영양제 챙겨먹기", "🐢 거북목 스트레칭"],
+      godsaeng: ["📅 주간 계획", "🛏️ 이불 정리", "💰 가계부", "📚 독서 2p"],
+      detox: ["📝 손기록", "📵 기상후 노폰", "🍽️ 밥먹을때 폰X", "🎧 이어폰 빼기"],
       custom: []
     };
-    // ===============================
-    // AI 추천 문구 자연 전환 로테이터
-    // ===============================
-    const AI_RECS = [
-      { title: "🚑 생존 체력 팩", desc: "직장인을 위한 ‘죽지 않으려고 하는 운동’", hint: "오늘은 무리하지 말고 3분만!" },
-      { title: "✨ 갓생 입문 팩", desc: "성공 루틴을 2분짜리로 쪼개기", hint: "작게 시작하면 내일이 쉬워요." },
-      { title: "🧘 디톡스 힐링 팩", desc: "스마트폰 내려놓고 뇌 휴식하기", hint: "폰은 잠깐, 내 호흡은 길게." },
-      { title: "🧠 집중 부스터", desc: "25분 몰입 + 5분 쉬기", hint: "타이머 켜고, 하나만 끝내요." }
-    ];
 
-    let aiRecIdx = 0;
-    let aiRecTimer = null;
-
-    function setAIRecContent(rec) {
-      const titleEl = document.getElementById("aiRecTitle");
-      const descEl = document.getElementById("aiRecDesc");
-      const hintEl = document.getElementById("aiRecHint");
-      if (!titleEl || !descEl || !hintEl) return;
-
-      titleEl.textContent = rec.title;
-      hintEl.textContent = rec.hint || "";
-      descEl.textContent = rec.desc;
-    }
-
-    function rotateAIRec() {
-      const descEl = document.getElementById("aiRecDesc");
-      if (!descEl) return;
-
-      // fade out
-      descEl.classList.remove("fade-in");
-      descEl.classList.add("fade-out");
-
-      setTimeout(() => {
-        aiRecIdx = (aiRecIdx + 1) % AI_RECS.length;
-        const next = AI_RECS[aiRecIdx];
-
-        // 내용 교체
-        setAIRecContent(next);
-
-        // fade in
-        descEl.classList.remove("fade-out");
-        descEl.classList.add("fade-in");
-      }, 260);
-    }
-
-    function startAIRecRotation() {
-      stopAIRecRotation();
-      // 초기 1회 세팅
-      setAIRecContent(AI_RECS[aiRecIdx]);
-      aiRecTimer = setInterval(rotateAIRec, 4200);
-    }
-
-    function stopAIRecRotation() {
-      if (aiRecTimer) clearInterval(aiRecTimer);
-      aiRecTimer = null;
-    }
-
-    const recommendations = [
-      { t: "🚑 생존 체력 팩", d: '직장인을 위한 "죽지 않으려고 하는 운동"' },
-      { t: "✨ 갓생 입문 팩", d: "성공 루틴을 2분짜리로 쪼개기" },
-      { t: "🧘 디톡스 힐링 팩", d: "스마트폰 내려놓고 뇌 휴식하기" }
-    ];
-
-    /* =========================
-      6) Global State
-    ========================= */
-    let recIdx = 0;
-    let unsubscribeLogs = null;
-    let unsubscribeBroadcast = null;
-
-    let isDeleteMode = false;
-    let dragCtx = null;
-
-    /* =========================
-      7) Rotating Recommendation (safe)
-    ========================= */
-    setInterval(() => {
-      const card = $("heroRecommendCard");
-      if (!card) return;
-      recIdx = (recIdx + 1) % recommendations.length;
-      card.style.opacity = "0";
-      setTimeout(() => {
-        const r = recommendations[recIdx];
-        card.innerHTML = `<div><b>${r.t}</b></div><span style="font-size:12px; color:var(--text-muted)">${r.d}</span>`;
-        card.style.opacity = "1";
-      }, 350);
-    }, 4000);
-
-    /* =========================
-      8) Auth/UI Bindings (DOM ready)
-    ========================= */
-    function bindStaticUI() {
-      // scroll to auth
-      const goAuth = () => $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-      $("topStartBtn")?.addEventListener("click", () => { sfx.play("click"); $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" }); });
-      $("startNowBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
-      $("heroStartBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
-
-      // dark mode
-      $("darkModeToggle")?.addEventListener("click", () => {
-        sfx.play("click");
-        document.body.classList.toggle("dark-mode");
-        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
-      });
-      if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
-
-      // zen mode
-      $("zenToggleBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(); });
-      $("zenExitBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(false); });
-
-      // modal
-      $("modalCloseBtn")?.addEventListener("click", closeProModal);
-      $("modalPayBtn")?.addEventListener("click", () => alert("결제 기능 준비중!"));
-
-      $("proUpgradeBtn")?.addEventListener("click", () => showProModal("PRO"));
-      $("ultraUpgradeBtn")?.addEventListener("click", () => showProModal("ULTRA"));
-      $("masterUpgradeBtn")?.addEventListener("click", () => showProModal("MASTER"));
-      $("memoUnlockBtn")?.addEventListener("click", () => showProModal("PRO"));
-      // ✅ header controls
-      $("headerStartBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-
-      $("themeToggleBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        document.body.classList.toggle("dark-mode");
-        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
-        $("themeToggleBtn").textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
-      });
-
-      // Deep Focus(=Zen)
-      $("focusToggleBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        toggleZenMode(); // 기존 너 함수 그대로 사용
-      });
-
-    }
-
-    document.addEventListener("DOMContentLoaded", bindStaticUI);
-
-    // ===============================
-    // PATCH A-2: blob 애니메이션 강제 적용(덮어쓰기 방지)
-    // ===============================
-    document.addEventListener("DOMContentLoaded", () => {
-      const b1 = document.querySelector(".blob-1");
-      const b2 = document.querySelector(".blob-2");
-
-      console.log("[blob check]", !!b1, !!b2);
-
-      if (b1) {
-        b1.style.willChange = "transform, filter";
-        b1.style.filter = "blur(80px)";
-        b1.style.animation = "hf-float-1 12s ease-in-out infinite";
-      }
-      if (b2) {
-        b2.style.willChange = "transform, filter";
-        b2.style.filter = "blur(80px)";
-        b2.style.animation = "hf-float-2 15s ease-in-out infinite";
-      }
-    });
-
-
-    /* =========================
-      PART 1 END HERE.
-      다음 파트(PART 2)에서:
-      - Auth 로직(회원가입/로그인/로그아웃/인증체크)
-      - Habit 완료/XP/코인
-      - 글로벌로그/브로드캐스트 구독
-      - 상점/스티커 드래그/삭제모드
-      - 랭킹 로드
-      - 관리자 패널 동작(열기/탭/유저목록/코인선물/방송)
-      를 이어서 완성함.
-    ========================= */
-    /* =========================
-      9) Firestore helpers
-    ========================= */
-    import { increment, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    function userRef(uid) { return doc(db, "users", uid); }
-    function userLogRef(uid, dateKey) { return doc(db, "users", uid, "logs", dateKey); }
-    function userMemoRef(uid, dateKey) { return doc(db, "users", uid, "memos", dateKey); }
-    function systemBroadcastRef() { return doc(db, "system", "broadcast"); }
-    function systemTickerRef() { return doc(db, "system", "ticker"); }
-
-    async function ensureUserDoc(user) {
-      const ref = userRef(user.uid);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        await setDoc(ref, {
-          email: user.email || "",
-          createdAt: serverTimestamp(),
-          tier: "FREE",              // FREE | PRO | ULTRA | MASTER
-          xp: 0,
-          level: 1,
-          coins: 0,
-          streak: 0,
-          totalDays: 0,
-          lastCompletedDate: "",
-          lastActiveAt: serverTimestamp(),
-          theme: "",
-          inventory: [],
-          placedStickers: [],        // [{id,emoji,x,y,ts}]
-        }, { merge: true });
-      } else {
-        await updateDoc(ref, { lastActiveAt: serverTimestamp() }).catch(() => { });
-      }
+    function chooseSuggestion(theme) {
+      if (!theme) return "테마를 선택하세요.";
+      if (theme === "custom") return "커스텀은 입력한 루틴으로 진행돼요.";
+      const arr = themeData[theme] || [];
+      if (!arr.length) return "추천 루틴이 없습니다.";
+      return arr[Math.floor(Math.random() * arr.length)];
     }
 
     function calcLevelFromXp(xp) {
-      // 레벨업 곡선 (완만)
-      let level = 1;
-      let need = 100;
-      let remaining = xp;
+      let level = 1, need = 100, remaining = xp;
       while (remaining >= need) {
         remaining -= need;
         level += 1;
@@ -2985,39 +2776,7 @@ ard<!-- =========================
 
     function setCoinsUI(coins) {
       $("coinCount").textContent = String(coins || 0);
-      $("shopCoinCount").textContent = String(coins || 0);
-    }
-
-    function showDashboard(show) {
-      $("auth").style.display = show ? "none" : "block";
-      $("dashboardLayout").style.display = show ? "flex" : "none";
-      $("coinDisplay").style.display = show ? "block" : "none";
-      $("trashModeBtn").style.display = show ? "block" : "none";
-      $("shopOpenBtn").style.display = show ? "block" : "none";
-      $("rankOpenBtn").style.display = show ? "block" : "none";
-    }
-
-    function setTierUI(tier) {
-      const t = tier || "FREE";
-      // Memo panel (PRO+)
-      const memoOk = ["PRO", "ULTRA", "MASTER"].includes(t);
-      $("memoPanel").style.display = memoOk ? "flex" : "none";
-      $("memoHistoryPanel").style.display = memoOk ? "flex" : "none";
-      $("memoLocked").style.display = memoOk ? "none" : "flex";
-
-      // MASTER stuff
-      const isMaster = (t === "MASTER");
-      $("workoutSidePanel").style.display = isMaster ? "block" : "none";
-      $("timerBtn").style.display = isMaster ? "block" : "none";
-
-      // Aura effect on app
-      const appEl = $("app");
-      appEl.classList.toggle("aura-effect", isMaster);
-
-      // Tier badge text
-      const tb = $("tierBadge");
-      tb.style.display = "block";
-      tb.innerHTML = `<div style="font-weight:900;">등급: <span style="color:var(--primary)">${t}</span></div>`;
+      if ($("shopCoinCount")) $("shopCoinCount").textContent = String(coins || 0);
     }
 
     function setPetByLevel(level) {
@@ -3035,445 +2794,77 @@ ard<!-- =========================
       if (!bubble) return;
       bubble.textContent = msg;
       bubble.style.opacity = "1";
-      clearTimeout(petSay._t);
-      petSay._t = setTimeout(() => bubble.style.opacity = "0", 2000);
+      setTimeout(() => bubble.style.opacity = "0", 2000);
     }
 
     /* =========================
-      10) Heatmap
+       5) Firestore Core Refs
     ========================= */
-    function renderHeatmap(activeDatesSet) {
-      const grid = $("heatmapGrid");
-      if (!grid) return;
-      grid.innerHTML = "";
-      for (let i = 19; i >= 0; i--) {
-        const key = dateKeyFromOffset(i);
-        const cell = document.createElement("div");
-        cell.className = "grass" + (activeDatesSet.has(key) ? " active" : "");
-        cell.title = key;
-        grid.appendChild(cell);
+    function userRef(uid) { return doc(db, "users", uid); }
+    function userLogRef(uid, dateKey) { return doc(db, "users", uid, "logs", dateKey); }
+    function userMemoRef(uid, dateKey) { return doc(db, "users", uid, "memos", dateKey); }
+    function systemBroadcastRef() { return doc(db, "system", "broadcast"); }
+
+    async function ensureUserDoc(user) {
+      const ref = userRef(user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          email: user.email || "",
+          createdAt: serverTimestamp(),
+          tier: "FREE",
+          xp: 0, level: 1, coins: 0, streak: 0, totalDays: 0,
+          lastCompletedDate: "",
+          lastActiveAt: serverTimestamp(),
+          theme: "", inventory: [], placedStickers: []
+        }, { merge: true });
+      } else {
+        await updateDoc(ref, { lastActiveAt: serverTimestamp() }).catch(() => { });
       }
     }
 
-    async function loadHeatmap(uid) {
-      const snaps = await getDocs(collection(db, "users", uid, "logs"));
-      const set = new Set();
-      snaps.forEach(s => {
-        if (s.exists() && s.id) set.add(s.id);
-      });
-      renderHeatmap(set);
-    }
-
     /* =========================
-      11) Theme + suggestion
+       6) Core UI Functions
     ========================= */
-    function setThemeActive(theme) {
-      document.querySelectorAll(".theme-tag").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.theme === theme);
-      });
+    function showDashboard(show) {
+      $("auth").style.display = show ? "none" : "block";
+      $("dashboardLayout").style.display = show ? "flex" : "none";
+      $("coinDisplay").style.display = show ? "block" : "none";
+      $("trashModeBtn").style.display = show ? "block" : "none";
+      $("shopOpenBtn").style.display = show ? "block" : "none";
+      $("rankOpenBtn").style.display = show ? "block" : "none";
     }
 
-    function chooseSuggestion(theme) {
-      if (!theme) return "테마를 선택하세요.";
-      if (theme === "custom") return "커스텀은 입력한 루틴으로 진행돼요.";
-      const arr = themeData[theme] || [];
-      if (!arr.length) return "추천 루틴이 없습니다.";
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    function setTierUI(tier) {
+      const t = tier || "FREE";
+      const memoOk = ["PRO", "ULTRA", "MASTER"].includes(t);
+      if ($("memoPanel")) $("memoPanel").style.display = memoOk ? "flex" : "none";
+      if ($("memoHistoryPanel")) $("memoHistoryPanel").style.display = memoOk ? "flex" : "none";
+      if ($("memoLocked")) $("memoLocked").style.display = memoOk ? "none" : "flex";
 
-    function bindThemeButtons(currentUser, currentTier) {
-      document.querySelectorAll(".theme-tag").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          sfx.play("click");
-          const theme = btn.dataset.theme;
+      const isMaster = (t === "MASTER");
+      if ($("workoutSidePanel")) $("workoutSidePanel").style.display = isMaster ? "block" : "none";
+      if ($("timerBtn")) $("timerBtn").style.display = isMaster ? "block" : "none";
 
-          // FREE는 커스텀 금지
-          if (theme === "custom" && currentTier === "FREE") {
-            alert("커스텀 테마는 PRO부터 사용 가능합니다.");
-            return;
-          }
+      const appEl = $("app");
+      if (appEl) appEl.classList.toggle("aura-effect", isMaster);
 
-          setThemeActive(theme);
-          const suggestion = chooseSuggestion(theme);
-          $("todaySuggestion").textContent = suggestion;
-          $("habitName").value = suggestion;
-          await updateDoc(userRef(currentUser.uid), { theme }).catch(() => { });
-        });
-      });
-    }
-
-    /* =========================
-      12) Habit complete (core)
-    ========================= */
-    async function completeHabit(user, userData) {
-      const today = nowDateKey();
-      const logRef = userLogRef(user.uid, today);
-
-      const logSnap = await getDoc(logRef);
-      if (logSnap.exists()) {
-        $("status").textContent = "이미 오늘 완료했어요 ✅";
-        petSay("오늘은 이미 했어! 멋져 😎");
-        return;
+      const tb = $("tierBadge");
+      if (tb) {
+        tb.style.display = "block";
+        tb.innerHTML = `<div style="font-weight:900;">등급: <span style="color:var(--primary)">${t}</span></div>`;
       }
-
-      const tier = userData.tier || "FREE";
-      let xpGain = 20;
-      let coinGain = 1;
-
-      if (tier === "PRO") { xpGain = 25; coinGain = 1; }
-      if (tier === "ULTRA") { xpGain = 25; coinGain = 2; }
-      if (tier === "MASTER") { xpGain = 30; coinGain = 3; }
-
-      await runTransaction(db, async (tx) => {
-        const uRef = userRef(user.uid);
-        const uSnap = await tx.get(uRef);
-        const d = uSnap.data();
-
-        const last = d.lastCompletedDate || "";
-        let streak = d.streak || 0;
-
-        // streak 계산
-        const yesterday = dateKeyFromOffset(1);
-        if (!last) streak = 1;
-        else if (last === yesterday) streak += 1;
-        else if (last === today) streak = streak; // (이미 처리됨)
-        else streak = 1;
-
-        tx.set(logRef, { completed: true, ts: serverTimestamp(), habit: $("habitName").value || "" }, { merge: true });
-
-        tx.update(uRef, {
-          xp: increment(xpGain),
-          coins: increment(coinGain),
-          totalDays: increment(1),
-          streak,
-          lastCompletedDate: today,
-          lastActiveAt: serverTimestamp()
-        });
-      });
-
-      sfx.play("success");
-      safeConfetti(160);
-
-      $("status").textContent = `완료! +XP ${tier === "MASTER" ? 30 : (tier === "ULTRA" ? 25 : (tier === "PRO" ? 25 : 20))} / +코인`;
-      petSay("완료! 오늘도 갓생 😤");
-
-      if ((userData.streak || 0) + 1 === 3) toastAchievement("작심삼일 탈출!");
-      if ((userData.streak || 0) + 1 === 7) toastAchievement("일주일 연속!");
-      if ((userData.streak || 0) + 1 === 30) toastAchievement("30일 연속 미쳤다!");
-
-      appendTicker(`${user.email} 님이 오늘 습관을 완료했습니다!`);
-
-      // heatmap 업데이트
-      await loadHeatmap(user.uid).catch(() => { });
     }
 
     /* =========================
-      13) Memo (PRO+)
-    ========================= */
-    async function saveMemo(user) {
-      const today = nowDateKey();
-      const text = ($("dailyMemo").value || "").trim();
-      if (!text) return alert("메모를 입력하세요.");
-      await setDoc(userMemoRef(user.uid, today), {
-        date: today,
-        text,
-        ts: serverTimestamp()
-      }, { merge: true });
-      petSay("메모 저장 완료 ✍️");
-      $("dailyMemo").value = "";
-      await loadMemoHistory(user.uid);
-    }
-
-    async function loadMemoHistory(uid) {
-      const list = $("memoHistoryList");
-      if (!list) return;
-
-      // date 필드 기준 정렬 (문자열 YYYY-MM-DD)
-      const qy = query(collection(db, "users", uid, "memos"), orderBy("date", "desc"), limit(20));
-      const snaps = await getDocs(qy);
-      list.innerHTML = "";
-      if (snaps.empty) {
-        list.innerHTML = `<div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">기록된 메모가 없습니다.</div>`;
-        return;
-      }
-      snaps.forEach(s => {
-        const d = s.data();
-        const item = document.createElement("div");
-        item.className = "memo-item";
-        item.innerHTML = `<div class="memo-date">${d.date}</div><div>${(d.text || "").replace(/</g, "&lt;")}</div>`;
-        list.appendChild(item);
-      });
-    }
-
-    /* =========================
-      14) Shop + Stickers
-    ========================= */
-    function renderInventory(inv) {
-      const box = $("inventoryList");
-      if (!box) return;
-      box.innerHTML = "";
-      (inv || []).forEach((emoji) => {
-        const b = document.createElement("button");
-        b.className = "btn";
-        b.style.width = "100%";
-        b.style.padding = "10px 0";
-        b.style.borderRadius = "10px";
-        b.style.background = "rgba(0,0,0,0.04)";
-        b.style.boxShadow = "none";
-        b.textContent = emoji;
-        b.title = "클릭하면 화면에 배치";
-        b.addEventListener("click", () => spawnSticker(emoji, true));
-        box.appendChild(b);
-      });
-    }
-
-    function spawnSticker(emoji, save = false, preset = null) {
-      const layer = $("stickerLayer");
-      if (!layer) return;
-
-      const st = document.createElement("div");
-      st.className = "sticker";
-      st.textContent = emoji;
-
-      const id = preset?.id || crypto.randomUUID();
-      st.dataset.id = id;
-
-      const x = preset?.x ?? Math.floor(40 + Math.random() * (window.innerWidth - 120));
-      const y = preset?.y ?? Math.floor(120 + Math.random() * (window.innerHeight - 220));
-
-      st.style.left = `${x}px`;
-      st.style.top = `${y}px`;
-
-      // delete mode click
-      st.addEventListener("click", async (e) => {
-        if (!isDeleteMode) return;
-        e.stopPropagation();
-        st.remove();
-        await removePlacedSticker(id).catch(() => { });
-        petSay("삭제 완료 🗑️");
-      });
-
-      // drag
-      st.addEventListener("pointerdown", (e) => {
-        if (isDeleteMode) return;
-        dragCtx = { el: st, startX: e.clientX, startY: e.clientY, origX: parseInt(st.style.left, 10), origY: parseInt(st.style.top, 10) };
-        st.setPointerCapture(e.pointerId);
-      });
-      st.addEventListener("pointermove", (e) => {
-        if (!dragCtx || dragCtx.el !== st) return;
-        const nx = dragCtx.origX + (e.clientX - dragCtx.startX);
-        const ny = dragCtx.origY + (e.clientY - dragCtx.startY);
-        st.style.left = `${nx}px`;
-        st.style.top = `${ny}px`;
-      });
-      st.addEventListener("pointerup", async (e) => {
-        if (!dragCtx || dragCtx.el !== st) return;
-        dragCtx = null;
-        // 저장 갱신
-        await updatePlacedSticker(id, parseInt(st.style.left, 10), parseInt(st.style.top, 10)).catch(() => { });
-      });
-
-      layer.appendChild(st);
-
-      if (save) addPlacedSticker({ id, emoji, x, y });
-    }
-
-    let currentUserCache = null;
-
-    async function addPlacedSticker(stickerObj) {
-      if (!currentUserCache) return;
-      const u = currentUserCache;
-      await updateDoc(userRef(u.uid), {
-        placedStickers: arrayUnion({ ...stickerObj, ts: Date.now() })
-      }).catch(() => { });
-    }
-
-    async function updatePlacedSticker(id, x, y) {
-      if (!currentUserCache) return;
-      const u = currentUserCache;
-      const snap = await getDoc(userRef(u.uid));
-      const d = snap.data();
-      const arr = (d.placedStickers || []).map(s => (s.id === id ? { ...s, x, y } : s));
-      await updateDoc(userRef(u.uid), { placedStickers: arr }).catch(() => { });
-    }
-
-    async function removePlacedSticker(id) {
-      if (!currentUserCache) return;
-      const u = currentUserCache;
-      const snap = await getDoc(userRef(u.uid));
-      const d = snap.data();
-      const arr = (d.placedStickers || []).filter(s => s.id !== id);
-      await updateDoc(userRef(u.uid), { placedStickers: arr }).catch(() => { });
-    }
-
-    async function loadPlacedStickers(uid) {
-      const layer = $("stickerLayer");
-      if (!layer) return;
-      layer.innerHTML = "";
-      const snap = await getDoc(userRef(uid));
-      const d = snap.data();
-      (d.placedStickers || []).forEach(s => spawnSticker(s.emoji, false, s));
-    }
-
-    async function gachaRoll(user) {
-      const uRef = userRef(user.uid);
-      await runTransaction(db, async (tx) => {
-        const snap = await tx.get(uRef);
-        const d = snap.data();
-        const coins = d.coins || 0;
-        if (coins < 1) throw new Error("NO_COIN");
-        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
-        tx.update(uRef, { coins: increment(-1), inventory: arrayUnion(pick), lastActiveAt: serverTimestamp() });
-      }).then(async () => {
-        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
-        // 위 트랜잭션에서 pick과 동일 보장하려면 pick을 밖에서 만들고 tx에 넣어야 함.
-        // 안정성을 위해 다시 한번 user doc에서 마지막 added를 못 읽으니, 여기서는 효과만.
-        petSay("스티커 GET! 🎉");
-        safeConfetti(120);
-      }).catch((e) => {
-        if (e.message === "NO_COIN") alert("코인이 부족합니다!");
-        else console.error(e);
-      });
-    }
-
-    /* =========================
-      15) Ranking
-    ========================= */
-    async function loadRanking() {
-      const box = $("rankList");
-      if (!box) return;
-      box.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">불러오는 중...</div>`;
-      const qy = query(collection(db, "users"), orderBy("totalDays", "desc"), limit(20));
-      const snaps = await getDocs(qy);
-      box.innerHTML = "";
-      let i = 1;
-      snaps.forEach(s => {
-        const d = s.data();
-        const row = document.createElement("div");
-        row.style.display = "flex";
-        row.style.justifyContent = "space-between";
-        row.style.alignItems = "center";
-        row.style.padding = "10px";
-        row.style.borderRadius = "10px";
-        row.style.marginBottom = "8px";
-        row.style.background = "rgba(0,0,0,0.04)";
-        row.innerHTML = `
-          <div style="display:flex; flex-direction:column;">
-            <b>${i}. ${(d.email || "unknown").replace(/</g, "&lt;")}</b>
-            <span style="font-size:12px; color:var(--text-muted);">등급: ${d.tier || "FREE"} · 연속 ${d.streak || 0}일</span>
-          </div>
-          <div style="font-weight:900; color:var(--primary);">${d.totalDays || 0}회</div>
-        `;
-        box.appendChild(row);
-        i++;
-      });
-    }
-
-    /* =========================
-      16) Global Cheer (hearts)
-    ========================= */
-    function spawnHeart() {
-      const h = document.createElement("div");
-      h.className = "cheer-heart";
-      h.textContent = "💖";
-      h.style.left = `${Math.random() * (window.innerWidth - 20)}px`;
-      h.style.bottom = "10px";
-      document.body.appendChild(h);
-      setTimeout(() => h.remove(), 3000);
-    }
-
-    /* =========================
-      17) Workout (MASTER)
-    ========================= */
-    const workoutMissions = {
-      walk: ["10분 빠르게 걷기", "계단 5층 오르기", "산책 20분", "만보의 10% 달성"],
-      run: ["1km 러닝", "인터벌 5세트", "가벼운 조깅 15분", "200m 스프린트 3회"],
-      gym: ["스쿼트 30개", "푸쉬업 20개", "플랭크 60초", "데드리프트/스쿼트 가볍게 3세트"]
-    };
-    let workoutType = "walk";
-    let lastWorkoutMission = "";
-
-    function bindWorkoutPanel(user) {
-      document.querySelectorAll(".w-tab").forEach(b => {
-        b.addEventListener("click", () => {
-          sfx.play("click");
-          document.querySelectorAll(".w-tab").forEach(x => x.classList.remove("active"));
-          b.classList.add("active");
-          workoutType = b.dataset.type;
-          $("workoutResult").textContent = "❓";
-          $("completeWorkoutBtn").style.display = "none";
-        });
-      });
-
-      $("startWorkoutBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        const arr = workoutMissions[workoutType] || ["오늘은 쉬어도 됨"];
-        lastWorkoutMission = arr[Math.floor(Math.random() * arr.length)];
-        $("workoutResult").innerHTML = `<div class="workout-anim">${lastWorkoutMission}</div>`;
-        $("completeWorkoutBtn").style.display = "block";
-      });
-
-      $("completeWorkoutBtn")?.addEventListener("click", async () => {
-        if (!lastWorkoutMission) return;
-        // 코인 3배 보너스(추가로 +6)
-        await updateDoc(userRef(user.uid), { coins: increment(6), lastActiveAt: serverTimestamp() }).catch(() => { });
-        safeConfetti(140);
-        petSay("운동 완료! 코인 보너스 💰");
-        $("completeWorkoutBtn").style.display = "none";
-        lastWorkoutMission = "";
-      });
-    }
-
-    /* =========================
-      18) Pomodoro (MASTER)
-    ========================= */
-    let timerInterval = null;
-    function startPomodoro(minutes = 25) {
-      let remaining = minutes * 60;
-      $("status").textContent = `⏱️ ${minutes}분 집중 시작!`;
-
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        remaining--;
-        const mm = String(Math.floor(remaining / 60)).padStart(2, "0");
-        const ss = String(remaining % 60).padStart(2, "0");
-        $("timerBtn").textContent = `${mm}:${ss}`;
-        if (remaining <= 0) {
-          clearInterval(timerInterval);
-          $("timerBtn").textContent = "⏱️";
-          safeConfetti(120);
-          toastAchievement("집중 완료!");
-          alert("포모도로 종료! 5분 쉬어요.");
-        }
-      }, 1000);
-    }
-
-    /* =========================
-      19) Broadcast (system)
-    ========================= */
-    function bindBroadcastListener() {
-      if (unsubscribeBroadcast) unsubscribeBroadcast();
-      unsubscribeBroadcast = onSnapshot(systemBroadcastRef(), (snap) => {
-        if (!snap.exists()) return;
-        const d = snap.data();
-        if (d?.active) {
-          $("broadcastMsg").textContent = d.message || "긴급 공지";
-          $("broadcastOverlay").classList.add("active");
-          setTimeout(() => $("broadcastOverlay").classList.remove("active"), 6000);
-        }
-      });
-    }
-
-    /* =========================
-      20) Admin Panel Logic
+       7) Admin Panel (SAFE MODE)
     ========================= */
     function logAdmin(msg) {
       const box = $("matrixLog");
       if (!box) return;
       const line = document.createElement("div");
       line.className = "log-line";
-      const ts = new Date().toLocaleTimeString();
-      line.innerHTML = `<span>[${ts}]</span><div>${msg}</div>`;
+      line.innerHTML = `<span>[System]</span><div>${msg}</div>`;
       box.appendChild(line);
       box.scrollTop = box.scrollHeight;
     }
@@ -3487,584 +2878,867 @@ ard<!-- =========================
       $("adminPanel").style.display = "none";
     }
 
-    function bindAdminNav() {
-      document.querySelectorAll(".adminNavBtn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".adminNavBtn").forEach(b => b.classList.remove("active"));
-          btn.classList.add("active");
-          const pane = btn.dataset.pane;
-          document.querySelectorAll(".admin-pane").forEach(p => p.classList.remove("active"));
-          $(pane).classList.add("active");
+    function getTierColor(tier) {
+      if (tier === 'MASTER') return '#ffd700';
+      if (tier === 'ULTRA') return '#f59e0b';
+      if (tier === 'PRO') return '#6366f1';
+      return '#fff';
+    }
+
+    // [중요] 관리자 유저 로드 (안전 버전)
+    // [수정] ID를 'adminUserList'로 올바르게 수정함
+    /* =========================
+       [최종 수정] 관리자 유저 리스트 (ID 불일치 해결 버전)
+       - HTML의 id="admUserList"를 정확히 찾도록 수정함
+    ========================= */
+    /* =========================
+       [진단 모드] 관리자 유저 리스트
+       - 단계별로 알림창(Alert)을 띄워 어디가 문제인지 알려줍니다.
+    ========================= */
+    async function adminLoadUsers(filterEmail = "") {
+      console.log("adminLoadUsers 실행됨"); // 콘솔 확인용
+
+      const box = document.getElementById("adminUserList");
+      if (!box) {
+        alert("❌ 심각한 오류: HTML에서 'adminUserList'를 못 찾았습니다. 오타를 확인하세요.");
+        return;
+      }
+
+      box.innerHTML = `<div style="padding:20px; text-align:center; color:#888;">데이터 로딩 중...</div>`;
+
+      try {
+        const snaps = await getDocs(collection(db, "users"));
+        const rows = [];
+        snaps.forEach(s => {
+          const d = s.data();
+          if (filterEmail && !(d.email || "").includes(filterEmail)) return;
+          rows.push({ id: s.id, ...d });
         });
-      });
+
+        box.innerHTML = ""; // 초기화
+
+        if (!rows.length) {
+          box.innerHTML = `<div style="padding:20px; text-align:center; color:#888;">유저가 없습니다.</div>`;
+          return;
+        }
+
+        // 유저 카드 생성
+        rows.slice(0, 100).forEach(u => {
+          const card = document.createElement("div");
+          card.className = "admin-card";
+          card.style.padding = "12px";
+          card.style.marginBottom = "8px";
+          card.style.background = "rgba(255,255,255,0.05)";
+          card.style.border = "1px solid #444";
+          card.style.borderRadius = "8px";
+          card.style.display = "flex";
+          card.style.justifyContent = "space-between";
+          card.style.alignItems = "center";
+
+          // 중요: 클릭 강제 허용 스타일
+          card.style.pointerEvents = "auto";
+          card.style.zIndex = "99999";
+
+          const isBanned = u.isBanned === true;
+          if (isBanned) {
+            card.style.border = "1px solid #ef4444";
+            card.style.background = "rgba(239, 68, 68, 0.1)";
+          }
+
+          // 텍스트 영역
+          const infoDiv = document.createElement("div");
+          infoDiv.innerHTML = `
+            <div style="font-weight:900; color:#fff; pointer-events:none;">
+              ${(u.email || "unknown").replace(/</g, "&lt;")}
+              ${isBanned ? '<span style="color:#ef4444; margin-left:5px;">(차단됨)</span>' : ''}
+            </div>
+            <div style="color:#aaa; font-size:12px; margin-top:4px; pointer-events:none;">
+              코인: <b style="color:#ffd700">${u.coins || 0}</b>
+            </div>
+          `;
+
+          // 버튼 영역
+          const btnGroup = document.createElement("div");
+          btnGroup.style.display = "flex";
+          btnGroup.style.gap = "6px";
+
+          // [버튼 1] 코인
+          const btnCoin = document.createElement("button");
+          btnCoin.textContent = "💰 코인";
+          btnCoin.style.padding = "6px 10px";
+          btnCoin.style.cursor = "pointer";
+          btnCoin.style.background = "#333";
+          btnCoin.style.color = "white";
+          btnCoin.style.border = "1px solid #555";
+
+          // ✅ 클릭 이벤트 (진단용)
+          btnCoin.onclick = async (e) => {
+            e.stopPropagation(); // 이벤트 버블링 방지
+            alert(`[클릭 확인] ${u.email}님의 코인 버튼이 눌렸습니다!`);
+
+            const amountStr = prompt("변경할 코인 양 (예: 100, -50)", "100");
+            if (!amountStr) return;
+
+            try {
+              await updateDoc(userRef(u.id), { coins: increment(parseInt(amountStr)) });
+              alert("✅ 코인 변경 성공!");
+              adminLoadUsers(filterEmail);
+            } catch (err) {
+              alert("❌ 에러 발생: " + err.message);
+            }
+          };
+
+          // [버튼 2] 차단
+          const btnBan = document.createElement("button");
+          btnBan.textContent = isBanned ? "✅ 해제" : "⛔ 차단";
+          btnBan.style.padding = "6px 10px";
+          btnBan.style.cursor = "pointer";
+          btnBan.style.background = isBanned ? "#22c55e" : "#ef4444";
+          btnBan.style.color = "white";
+          btnBan.style.border = "none";
+
+          // ✅ 클릭 이벤트 (진단용)
+          btnBan.onclick = async (e) => {
+            e.stopPropagation();
+            alert(`[클릭 확인] ${u.email}님의 차단 버튼이 눌렸습니다!`);
+
+            if (!confirm("정말 상태를 변경하시겠습니까?")) return;
+
+            try {
+              await updateDoc(userRef(u.id), { isBanned: !isBanned });
+              alert("✅ 상태 변경 성공!");
+              adminLoadUsers(filterEmail);
+            } catch (err) {
+              alert("❌ 에러 발생: " + err.message);
+            }
+          };
+
+          btnGroup.appendChild(btnCoin);
+          btnGroup.appendChild(btnBan);
+
+          card.appendChild(infoDiv);
+          card.appendChild(btnGroup);
+
+          box.appendChild(card);
+        });
+
+      } catch (err) {
+        alert("❌ 목록 불러오기 실패: " + err.message);
+      }
     }
 
     async function adminRefreshDashboard() {
       const snaps = await getDocs(collection(db, "users"));
       let total = 0, pro = 0, active = 0;
-      const tiers = { FREE: 0, PRO: 0, ULTRA: 0, MASTER: 0 };
-
       const now = Date.now();
       const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
 
       snaps.forEach(s => {
         total++;
         const d = s.data();
-        const tier = d.tier || "FREE";
-        tiers[tier] = (tiers[tier] ?? 0) + 1;
-        if (["PRO", "ULTRA", "MASTER"].includes(tier)) pro++;
-
-        // lastActiveAt은 Timestamp일 수 있음
+        if (["PRO", "ULTRA", "MASTER"].includes(d.tier)) pro++;
         const la = d.lastActiveAt?.toMillis ? d.lastActiveAt.toMillis() : 0;
         if (la && la >= weekAgo) active++;
       });
 
-      $("dashTotal").textContent = String(total);
-      $("dashPro").textContent = String(pro);
-      $("dashActive").textContent = String(active);
-
-      // tier chart
-      const chart = $("tierChart");
-      chart.innerHTML = "";
-      const max = Math.max(1, ...Object.values(tiers));
-      Object.entries(tiers).forEach(([k, v]) => {
-        const bar = document.createElement("div");
-        bar.className = "chart-bar";
-        bar.style.width = `${Math.round((v / max) * 100)}%`;
-        bar.title = `${k}: ${v}`;
-        // 색은 CSS 지정 못하니 inline(요청 없음) 대신 간단히 등급별 고정
-        bar.style.background = k === "MASTER" ? "#ffd700" : (k === "ULTRA" ? "#f59e0b" : (k === "PRO" ? "#6366f1" : "#555"));
-        chart.appendChild(bar);
-      });
-
-      logAdmin(`DASH REFRESHED: total=${total}, pro=${pro}, active7d=${active}`);
-    }
-
-    async function adminLoadUsers(filterEmail = "") {
-      const box = $("admUserList");
-      box.innerHTML = `<div style="color:#666;">Loading...</div>`;
-      const snaps = await getDocs(collection(db, "users"));
-
-      const rows = [];
-      snaps.forEach(s => {
-        const d = s.data();
-        if (filterEmail && !(d.email || "").includes(filterEmail)) return;
-        rows.push({ id: s.id, ...d });
-      });
-
-      box.innerHTML = "";
-      if (!rows.length) {
-        box.innerHTML = `<div style="color:#666;">No users.</div>`;
-        return;
-      }
-
-      rows.slice(0, 200).forEach(u => {
-        const el = document.createElement("div");
-        el.className = "admin-card";
-        el.style.display = "grid";
-        el.style.gridTemplateColumns = "1fr auto";
-        el.style.gap = "12px";
-        el.innerHTML = `
-          <div>
-            <div style="font-weight:900; color:#fff;">${(u.email || "unknown").replace(/</g, "&lt;")}</div>
-            <div style="color:#888; font-size:12px; margin-top:6px;">
-              tier: <b style="color:#fff">${u.tier || "FREE"}</b> · streak: <b style="color:#fff">${u.streak || 0}</b> · total: <b style="color:#fff">${u.totalDays || 0}</b> · coins: <b style="color:#fff">${u.coins || 0}</b>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <button class="btn" data-act="give10" style="background:#222; color:#fff; border:1px solid #444; width:auto;">+10💰</button>
-            <button class="btn" data-act="ban" style="background:#ef4444; color:#fff; border:none; width:auto;">(샘플)제한</button>
-          </div>
-        `;
-
-        el.querySelector('[data-act="give10"]').addEventListener("click", async () => {
-          await updateDoc(userRef(u.id), { coins: increment(10) }).catch(() => { });
-          logAdmin(`GIFTED +10 coins -> ${u.email}`);
-          adminRefreshDashboard();
-        });
-
-        el.querySelector('[data-act="ban"]').addEventListener("click", () => {
-          alert("데모 버튼입니다. (실제 차단 기능은 별도 설계 필요)");
-        });
-
-        box.appendChild(el);
-      });
-    }
-
-    async function adminMassGiftCoins(amount = 100) {
-      const snaps = await getDocs(collection(db, "users"));
-      const docs = [];
-      snaps.forEach(s => docs.push(s));
-
-      // batch in chunks
-      let i = 0;
-      while (i < docs.length) {
-        const batch = writeBatch(db);
-        const chunk = docs.slice(i, i + 400);
-        chunk.forEach(s => batch.update(s.ref, { coins: increment(amount) }));
-        await batch.commit();
-        i += 400;
-      }
-      logAdmin(`MASS GIFT completed: +${amount} coins to ${docs.length} users`);
-      await adminRefreshDashboard();
-    }
-
-    async function adminBroadcast(message) {
-      const msg = (message || "").trim();
-      if (!msg) return alert("내용을 입력하세요.");
-      await setDoc(systemBroadcastRef(), { active: true, message: msg, ts: serverTimestamp() }, { merge: true });
-      logAdmin(`BROADCAST SENT: "${msg}"`);
-      setTimeout(() => setDoc(systemBroadcastRef(), { active: false }, { merge: true }).catch(() => { }), 6500);
+      if ($("dashTotal")) $("dashTotal").textContent = String(total);
+      if ($("dashPro")) $("dashPro").textContent = String(pro);
+      if ($("dashActive")) $("dashActive").textContent = String(active);
     }
 
     /* =========================
-      21) UI Bindings (after login)
+       8) Initial Bindings
     ========================= */
-    function bindAuthedUI(user, getUserData) {
-      $("logoutBtn")?.addEventListener("click", async () => {
+    let isGlobalEventBound = false;
+    let currentUserCache = null;
+
+    function bindStaticUI() {
+      const goAuth = () => $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      $("topStartBtn")?.addEventListener("click", () => { sfx.play("click"); $("authSection")?.scrollIntoView({ behavior: "smooth", block: "start" }); });
+      $("startNowBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
+      $("heroStartBtn")?.addEventListener("click", () => { sfx.play("click"); goAuth(); });
+
+      $("darkModeToggle")?.addEventListener("click", () => {
         sfx.play("click");
-        await signOut(auth);
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "on" : "off");
+      });
+      if (localStorage.getItem("darkMode") === "on") document.body.classList.add("dark-mode");
+
+      $("zenToggleBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(); });
+      $("zenExitBtn")?.addEventListener("click", () => { sfx.play("click"); toggleZenMode(false); });
+      $("modalCloseBtn")?.addEventListener("click", closeProModal);
+      $("proUpgradeBtn")?.addEventListener("click", () => showProModal("PRO"));
+      $("ultraUpgradeBtn")?.addEventListener("click", () => showProModal("ULTRA"));
+      $("masterUpgradeBtn")?.addEventListener("click", () => showProModal("MASTER"));
+
+      $("signupBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        const email = ($("email").value || "").trim();
+        const password = ($("password").value || "").trim();
+        if (!email || !password || password.length < 6) return alert("입력 확인 (비번 6자 이상)");
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          alert("회원가입 완료!");
+        } catch (e) { alert(e.message); }
       });
 
-      $("habitBtn")?.addEventListener("click", async () => {
+      $("signinBtn")?.addEventListener("click", async () => {
         sfx.play("click");
-        const data = await getUserData();
-        await completeHabit(user, data);
+        const email = ($("email").value || "").trim();
+        const password = ($("password").value || "").trim();
+        if (!email || !password) return alert("이메일/비번 입력");
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (e) { alert("로그인 실패: " + e.message); }
       });
 
-      $("saveMemoBtn")?.addEventListener("click", async () => {
-        sfx.play("click");
-        await saveMemo(user);
-      });
-
-      $("petContainer")?.addEventListener("click", () => {
-        sfx.play("click");
-        petSay(["할 수 있어!", "오늘도 한 걸음!", "멈추지마!", "너는 된다!"][Math.floor(Math.random() * 4)]);
-      });
-
-      $("globalCheerBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        for (let i = 0; i < 12; i++) setTimeout(spawnHeart, i * 120);
-        appendTicker(`💖 ${user.email} 님이 모두에게 응원을 보냈습니다!`);
-        petSay("응원 발사 💖");
-      });
-
-      // shop open/close
-      $("shopOpenBtn")?.addEventListener("click", () => { sfx.play("click"); $("shopPanel").style.display = "block"; });
-      $("shopCloseBtn")?.addEventListener("click", () => { sfx.play("click"); $("shopPanel").style.display = "none"; });
-
-      // rank open/close
-      $("rankOpenBtn")?.addEventListener("click", async () => { sfx.play("click"); $("rankPanel").style.display = "block"; await loadRanking(); });
-      $("rankCloseBtn")?.addEventListener("click", () => { sfx.play("click"); $("rankPanel").style.display = "none"; });
-
-      // gacha
-      $("gachaBtn")?.addEventListener("click", async () => {
-        sfx.play("click");
-        // 트랜잭션 안에서 pick을 고정하려면 이렇게:
-        const pick = STICKERS[Math.floor(Math.random() * STICKERS.length)];
-        await runTransaction(db, async (tx) => {
-          const uRef = userRef(user.uid);
-          const snap = await tx.get(uRef);
-          const d = snap.data();
-          const coins = d.coins || 0;
-          if (coins < 1) throw new Error("NO_COIN");
-          tx.update(uRef, { coins: increment(-1), inventory: arrayUnion(pick), lastActiveAt: serverTimestamp() });
-        }).then(() => {
-          petSay(`스티커 GET! ${pick}`);
-          safeConfetti(120);
-          spawnSticker(pick, true);
-        }).catch((e) => {
-          if (e.message === "NO_COIN") alert("코인이 부족합니다!");
-          else console.error(e);
-        });
-      });
-
-      // delete mode
-      $("trashModeBtn")?.addEventListener("click", () => {
-        sfx.play("click");
-        isDeleteMode = !isDeleteMode;
-        $("trashModeBtn").style.filter = isDeleteMode ? "drop-shadow(0 0 10px rgba(245,158,11,0.9))" : "none";
-        petSay(isDeleteMode ? "삭제 모드 ON (스티커 클릭해서 삭제)" : "삭제 모드 OFF");
-      });
-
-      // pomodoro
-      $("timerBtn")?.addEventListener("click", async () => {
-        sfx.play("click");
-        const data = await getUserData();
-        if ((data.tier || "FREE") !== "MASTER") return;
-        startPomodoro(25);
-      });
-
-      // admin buttons (only admin)
-      $("adminOpenBtn")?.addEventListener("click", () => openAdmin());
+      // Admin UI Bindings
+      // [수정] Admin UI Bindings (탭 클릭 시 데이터 로드 추가)
       $("adminCloseBtn")?.addEventListener("click", closeAdmin);
       $("adminExitBtn")?.addEventListener("click", closeAdmin);
-      bindAdminNav();
 
+      document.querySelectorAll(".adminNavBtn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          // 1. 탭 활성화 UI 처리
+          document.querySelectorAll(".adminNavBtn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.querySelectorAll(".admin-pane").forEach(p => p.classList.remove("active"));
+
+          const paneId = btn.dataset.pane;
+          $(paneId).classList.add("active");
+
+          // 2. [중요] '유저 관리' 탭을 눌렀을 때만 목록 로드 실행!
+          if (paneId === "pane-users") {
+            console.log("유저 관리 탭 클릭됨 -> 목록 로드 시작");
+            await adminLoadUsers();
+          }
+        });
+      });
       $("refreshAdminBtn")?.addEventListener("click", async () => {
         sfx.play("click");
         await adminRefreshDashboard();
         await adminLoadUsers($("adminSearch").value.trim());
       });
-
       $("adminSearch")?.addEventListener("input", async () => {
-        const v = $("adminSearch").value.trim();
-        await adminLoadUsers(v);
+        await adminLoadUsers($("adminSearch").value.trim());
+      });
+
+      // ✅ [추가됨] 검색 버튼 클릭 이벤트
+      $("adminSearchBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        await adminLoadUsers($("adminSearch").value.trim());
       });
 
       $("godGiftBtn")?.addEventListener("click", async () => {
-        if (!confirm("모든 유저에게 100코인을 선물할까요?")) return;
-        await adminMassGiftCoins(100);
+        if (confirm("전체 100코인 선물?")) {
+          const snaps = await getDocs(collection(db, "users"));
+          let i = 0; const allDocs = []; snaps.forEach(d => allDocs.push(d));
+          while (i < allDocs.length) {
+            const batch = writeBatch(db);
+            allDocs.slice(i, i + 400).forEach(d => batch.update(d.ref, { coins: increment(100) }));
+            await batch.commit();
+            i += 400;
+          }
+          alert("전송 완료");
+        }
+      });
+    }
+
+    function bindAuthedUI(user, getUserData) {
+      if (isGlobalEventBound) return;
+      isGlobalEventBound = true;
+
+      $("logoutBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        isGlobalEventBound = false;
+        await signOut(auth);
+        window.location.reload();
       });
 
-      $("godBroadcastBtn")?.addEventListener("click", async () => {
-        await adminBroadcast($("broadcastInput").value);
-        $("broadcastInput").value = "";
-      });
+      $("habitBtn")?.addEventListener("click", async () => {
+        sfx.play("click");
+        const uSnap = await getDoc(userRef(user.uid));
+        if (uSnap.exists()) {
+          const d = uSnap.data();
+          const today = nowDateKey();
+          if ((d.lastCompletedDate === today)) {
+            petSay("이미 완료했어!"); return;
+          }
+          let xp = 20, coin = 1;
+          if (d.tier === "PRO") { xp = 25; }
+          if (d.tier === "ULTRA") { xp = 25; coin = 2; }
+          if (d.tier === "MASTER") { xp = 30; coin = 3; }
 
-      // close panels on background click? (safe)
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          $("shopPanel").style.display = "none";
-          $("rankPanel").style.display = "none";
-          closeProModal();
-          closeAdmin();
-          toggleZenMode(false);
+          await setDoc(userLogRef(user.uid, today), { completed: true, ts: serverTimestamp(), habit: $("habitName").value }, { merge: true });
+          await updateDoc(userRef(user.uid), {
+            xp: increment(xp), coins: increment(coin), totalDays: increment(1),
+            streak: (d.lastCompletedDate === dateKeyFromOffset(1) ? (d.streak || 0) + 1 : 1),
+            lastCompletedDate: today,
+            lastActiveAt: serverTimestamp()
+          });
+          sfx.play("success"); safeConfetti(); petSay("완료!");
+          $("status").textContent = "완료!";
+          appendTicker(`${user.email} 님이 습관 성공!`);
         }
       });
     }
 
     /* =========================
-      22) Auth actions
+       9) Main Entry
     ========================= */
-    $("signupBtn")?.addEventListener("click", async () => {
-      sfx.play("click");
-      const email = ($("email").value || "").trim();
-      const password = ($("password").value || "").trim();
-      if (!email || !password) return alert("이메일/비밀번호를 입력하세요.");
-      if (password.length < 6) return alert("비밀번호는 6자 이상이어야 합니다.");
-
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        // 인증메일(원하면)
-        try { await sendEmailVerification(cred.user); } catch (_) { }
-        alert("회원가입 완료! (원하면 이메일 인증을 진행하세요)");
-      } catch (e) {
-        alert(e?.message || "회원가입 실패");
-        console.error(e);
-      }
-    });
-
-    $("signinBtn")?.addEventListener("click", async () => {
-      sfx.play("click");
-      const email = ($("email").value || "").trim();
-      const password = ($("password").value || "").trim();
-      if (!email || !password) return alert("이메일/비밀번호를 입력하세요.");
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (e) {
-        alert("로그인 실패: 이메일/비밀번호 확인");
-        console.error(e);
-      }
-    });
-
-    $("resetPwBtn")?.addEventListener("click", async () => {
-      sfx.play("click");
-      const email = ($("email").value || "").trim();
-      if (!email) return alert("이메일을 입력하세요.");
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("비밀번호 재설정 메일을 보냈습니다.");
-      } catch (e) {
-        alert("전송 실패: 이메일 확인");
-        console.error(e);
-      }
-    });
-
-    /* =========================
-      23) Single Auth Observer (NO DUPLICATE)
-    ========================= */
-    let userDataCache = null;
-    let userUnsub = null;
+    document.addEventListener("DOMContentLoaded", bindStaticUI);
 
     onAuthStateChanged(auth, async (user) => {
-      // cleanup
-      if (userUnsub) { userUnsub(); userUnsub = null; }
-      if (unsubscribeLogs) { unsubscribeLogs(); unsubscribeLogs = null; }
-
       if (!user) {
         currentUserCache = null;
-        userDataCache = null;
         showDashboard(false);
         $("welcome").textContent = "";
-        $("stickerLayer").innerHTML = "";
-        $("adminOpenBtn").style.display = "none";
+        const ab = $("adminOpenBtn"); if (ab) ab.style.display = "none";
         return;
-      }
-      // ✅ 관리자 버튼 강제 표시 패치
-      const adminBtn = document.getElementById("adminOpenBtn");
-      if (adminBtn && user.email === "test@gmail.com") {
-        adminBtn.style.display = "block";
-
-        adminBtn.onclick = () => {
-          document.getElementById("adminPanel").style.display = "block";
-        };
       }
       currentUserCache = user;
       showDashboard(true);
       $("welcome").textContent = `${user.email} 님`;
 
-      await ensureUserDoc(user);
-      bindBroadcastListener();
+      // Live Subscription
+      onSnapshot(userRef(user.uid), async (snap) => {
+        if (!snap.exists()) { await ensureUserDoc(user); return; }
+        const data = snap.data();
 
-      // live user doc subscribe
-      userUnsub = onSnapshot(
-        userRef(user.uid),
-        async (snap) => {
-          console.log("[onSnapshot] fired", snap.exists(), snap.id);
+        // 1. BAN Check
+        if (data.isBanned) {
+          alert("🚫 차단된 계정입니다.");
+          await signOut(auth);
+          window.location.reload();
+          return;
+        }
+        // 2. Admin Check
+        const isAdmin = isAdminUser(user);
+        if (isAdmin) data.tier = "MASTER";
 
-          if (!snap.exists()) {
-            console.warn("[onSnapshot] user doc missing -> ensureUserDoc again");
-            await ensureUserDoc(user);
+        // 3. UI Update
+        setXpUI(data.xp || 0);
+        setCoinsUI(data.coins || 0);
+        setTierUI(data.tier || "FREE");
+        setPetByLevel(calcLevelFromXp(data.xp || 0).level);
+        if ($("streakCount")) $("streakCount").textContent = `🔥 연속 ${data.streak || 0}일`;
+
+        const theme = data.theme || "";
+        setThemeActive(theme);
+        if (theme) {
+          $("habitName").value = chooseSuggestion(theme);
+          $("todaySuggestion").textContent = chooseSuggestion(theme);
+        }
+
+        // 4. Admin Button
+        const ab = $("adminOpenBtn");
+        if (ab && isAdmin) {
+          ab.style.display = "flex";
+          ab.onclick = openAdmin;
+          // 패널 열려있으면 갱신
+          if ($("adminPanel").style.display === "block") await adminRefreshDashboard();
+        } else if (ab) {
+          ab.style.display = "none";
+        }
+      });
+
+      bindAuthedUI(user);
+      appendTicker(`${user.email} 접속`);
+    });
+    // ===================================
+    // HabitFlow 오류 수정 패치
+    // 기존 <script type="module"> 내부의 Main Entry 섹션 이후에 추가하세요
+    // ===================================
+
+    /* =========================
+       10) 추가 이벤트 바인딩 (오류 수정)
+    ========================= */
+
+    // ✅ 1. 운동 패널 탭 버튼 이벤트 연결
+    function bindWorkoutTabs() {
+      document.querySelectorAll('.w-tab').forEach(tab => {
+        tab.addEventListener('click', function () {
+          // 활성 탭 전환
+          document.querySelectorAll('.w-tab').forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+
+          // 선택된 운동 타입 저장
+          const workoutType = this.dataset.type;
+          console.log('선택된 운동:', workoutType);
+
+          // 결과 초기화
+          const resultEl = document.getElementById('workoutResult');
+          if (resultEl) {
+            resultEl.textContent = '❓';
+            resultEl.classList.remove('workout-anim');
+          }
+
+          const completeBtn = document.getElementById('completeWorkoutBtn');
+          if (completeBtn) completeBtn.style.display = 'none';
+        });
+      });
+    }
+
+    // ✅ 2. 테마 선택 버튼 이벤트 연결
+    function bindThemeTags() {
+      document.querySelectorAll('.theme-tag').forEach(tag => {
+        tag.addEventListener('click', async function () {
+          if (!currentUserCache) return;
+
+          const theme = this.dataset.theme;
+          sfx.play('click');
+
+          // 활성 상태 전환
+          setThemeActive(theme);
+
+          // Firestore 업데이트
+          try {
+            await updateDoc(userRef(currentUserCache.uid), {
+              theme: theme,
+              lastActiveAt: serverTimestamp()
+            });
+
+            // 추천 루틴 표시
+            const suggestion = chooseSuggestion(theme);
+            const suggEl = document.getElementById('todaySuggestion');
+            const habitInput = document.getElementById('habitName');
+
+            if (suggEl) suggEl.textContent = suggestion;
+            if (habitInput) habitInput.value = suggestion;
+
+            petSay('테마 선택 완료!');
+          } catch (err) {
+            console.error('테마 저장 실패:', err);
+            alert('테마 저장에 실패했습니다: ' + err.message);
+          }
+        });
+      });
+    }
+
+    // ✅ 3. 운동 미션 뽑기 버튼
+    function bindWorkoutButtons() {
+      const startBtn = document.getElementById('startWorkoutBtn');
+      const completeBtn = document.getElementById('completeWorkoutBtn');
+      const resultEl = document.getElementById('workoutResult');
+
+      if (startBtn) {
+        startBtn.addEventListener('click', function () {
+          sfx.play('click');
+
+          // 활성 탭 확인
+          const activeTab = document.querySelector('.w-tab.active');
+          if (!activeTab) return alert('운동 종목을 선택해주세요!');
+
+          const workoutType = activeTab.dataset.type;
+
+          // 운동별 미션 데이터
+          const missions = {
+            walk: ['10분 산책', '15분 빠르게 걷기', '5000보 걷기', '계단 3층 오르기'],
+            run: ['5분 조깅', '1km 달리기', '10분 인터벌 런', '400m 전력질주'],
+            gym: ['팔굽혀펴기 10개', '스쿼트 15개', '플랭크 30초', '버피 5개']
+          };
+
+          const missionList = missions[workoutType] || ['운동하기'];
+          const randomMission = missionList[Math.floor(Math.random() * missionList.length)];
+
+          // 결과 표시
+          if (resultEl) {
+            resultEl.textContent = randomMission;
+            resultEl.classList.add('workout-anim');
+          }
+
+          // 완료 버튼 표시
+          if (completeBtn) {
+            completeBtn.style.display = 'block';
+          }
+
+          petSay('화이팅! 💪');
+        });
+      }
+
+      if (completeBtn) {
+        completeBtn.addEventListener('click', async function () {
+          if (!currentUserCache) return;
+
+          sfx.play('success');
+          safeConfetti();
+
+          try {
+            // 코인 3배 지급
+            await updateDoc(userRef(currentUserCache.uid), {
+              coins: increment(3),
+              lastActiveAt: serverTimestamp()
+            });
+
+            toastAchievement('운동 챌린지 완료! 🏋️');
+            petSay('대단해요! +3 코인');
+
+            // 버튼 숨기기
+            this.style.display = 'none';
+            if (resultEl) {
+              resultEl.textContent = '✅ 완료!';
+              resultEl.classList.remove('workout-anim');
+            }
+
+            appendTicker(`${currentUserCache.email} 님이 운동 완료!`);
+          } catch (err) {
+            console.error('운동 완료 처리 실패:', err);
+            alert('오류가 발생했습니다: ' + err.message);
+          }
+        });
+      }
+    }
+
+    // ✅ 4. Live Ticker 초기화
+    function initLiveTicker() {
+      const track = document.getElementById('tickerContent');
+      if (!track) return;
+
+      // 초기 메시지 추가
+      const initialMessages = [
+        '🎉 HabitFlow에 오신 것을 환영합니다!',
+        '⚡ 오늘도 작은 습관 하나 완료해보세요',
+        '🔥 연속 기록이 쌓이면 보상이 커져요',
+        '💎 매일 접속하면 코인을 받을 수 있어요'
+      ];
+
+      initialMessages.forEach(msg => {
+        const item = document.createElement('div');
+        item.className = 'ticker-item';
+        item.textContent = msg;
+        track.appendChild(item);
+      });
+    }
+
+    // ✅ 5. 메모 저장 버튼 (PRO+ 전용)
+    function bindMemoButtons() {
+      const saveBtn = document.getElementById('saveMemoBtn');
+      const memoInput = document.getElementById('dailyMemo');
+
+      if (saveBtn && memoInput) {
+        saveBtn.addEventListener('click', async function () {
+          if (!currentUserCache) return;
+
+          const content = memoInput.value.trim();
+          if (!content) return alert('메모 내용을 입력해주세요!');
+
+          sfx.play('click');
+
+          try {
+            const today = nowDateKey();
+            await setDoc(userMemoRef(currentUserCache.uid, today), {
+              content: content,
+              timestamp: serverTimestamp()
+            });
+
+            alert('메모가 저장되었습니다! ✅');
+            petSay('기록 완료!');
+
+          } catch (err) {
+            console.error('메모 저장 실패:', err);
+            alert('메모 저장에 실패했습니다: ' + err.message);
+          }
+        });
+      }
+    }
+
+    // ✅ 6. 전역 응원 버튼
+    function bindGlobalCheerButton() {
+      const cheerBtn = document.getElementById('globalCheerBtn');
+
+      if (cheerBtn) {
+        cheerBtn.addEventListener('click', function () {
+          if (!currentUserCache) return;
+
+          sfx.play('click');
+
+          // 하트 애니메이션 생성
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              const heart = document.createElement('div');
+              heart.className = 'cheer-heart';
+              heart.textContent = '💖';
+              heart.style.left = `${Math.random() * 90 + 5}%`;
+              heart.style.bottom = '0px';
+              document.body.appendChild(heart);
+
+              setTimeout(() => heart.remove(), 3000);
+            }, i * 100);
+          }
+
+          petSay('응원 전송!');
+          appendTicker(`${currentUserCache.email} 님이 모두에게 응원을 보냈어요! 💖`);
+        });
+      }
+    }
+
+    // ✅ 7. Focus/Zen 모드 토글 버튼 추가
+    function bindFocusToggle() {
+      const focusBtn = document.getElementById('focusToggleBtn');
+      if (focusBtn) {
+        focusBtn.addEventListener('click', () => {
+          sfx.play('click');
+          toggleZenMode();
+        });
+      }
+    }
+
+    // ✅ 8. 테마 토글 버튼 (헤더)
+    function bindHeaderThemeToggle() {
+      const themeBtn = document.getElementById('themeToggleBtn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          sfx.play('click');
+          document.body.classList.toggle('dark-mode');
+
+          // 아이콘 변경
+          if (document.body.classList.contains('dark-mode')) {
+            themeBtn.textContent = '☀️';
+            localStorage.setItem('darkMode', 'on');
+          } else {
+            themeBtn.textContent = '🌙';
+            localStorage.setItem('darkMode', 'off');
+          }
+        });
+      }
+    }
+
+    // ✅ 9. 비밀번호 찾기 버튼
+    function bindPasswordReset() {
+      const resetBtn = document.getElementById('resetPwBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', async () => {
+          const email = document.getElementById('email').value.trim();
+          if (!email) return alert('이메일을 입력해주세요!');
+
+          try {
+            await sendPasswordResetEmail(auth, email);
+            alert('비밀번호 재설정 이메일을 발송했습니다! ✅');
+          } catch (err) {
+            alert('오류: ' + err.message);
+          }
+        });
+      }
+    }
+    // ✅ 11. 플로팅 버튼 (상점, 랭킹, 휴지통) 이벤트 연결
+    function bindFloatingButtons() {
+      // 1. 상점 버튼 & 패널
+      const shopBtn = document.getElementById('shopOpenBtn');
+      const shopPanel = document.getElementById('shopPanel');
+      const shopClose = document.getElementById('shopCloseBtn');
+
+      if (shopBtn && shopPanel) {
+        shopBtn.addEventListener('click', () => {
+          sfx.play('click');
+          shopPanel.style.display = 'block';
+        });
+      }
+      if (shopClose && shopPanel) {
+        shopClose.addEventListener('click', () => {
+          sfx.play('click');
+          shopPanel.style.display = 'none';
+        });
+      }
+
+      // 2. 랭킹 버튼 & 패널
+      const rankBtn = document.getElementById('rankOpenBtn');
+      const rankPanel = document.getElementById('rankPanel');
+      const rankClose = document.getElementById('rankCloseBtn');
+
+      if (rankBtn && rankPanel) {
+        rankBtn.addEventListener('click', () => {
+          sfx.play('click');
+          rankPanel.style.display = 'block';
+        });
+      }
+      if (rankClose && rankPanel) {
+        rankClose.addEventListener('click', () => {
+          sfx.play('click');
+          rankPanel.style.display = 'none';
+        });
+      }
+
+      // 3. 휴지통 버튼 (기능 미정이므로 클릭 반응만 연결)
+      const trashBtn = document.getElementById('trashModeBtn');
+      if (trashBtn) {
+        trashBtn.addEventListener('click', () => {
+          sfx.play('click');
+          // 추측에 의한 기능 구현을 방지하기 위해 알림창만 띄움
+          alert('🗑️ 휴지통 기능은 준비 중입니다.');
+        });
+      }
+    }
+    // ✅ 12. 상점 기능 연결 (뽑기 로직)
+    function bindShopEvents() {
+      const gachaBtn = $("gachaBtn");
+
+      if (gachaBtn) {
+        gachaBtn.addEventListener("click", async () => {
+          // 1. 로그인 체크
+          if (!currentUserCache) {
+            alert("로그인이 필요합니다.");
             return;
           }
 
-          const data = snap.data();
+          try {
+            // 2. 현재 코인 확인 (DB 조회)
+            const userDocRef = userRef(currentUserCache.uid);
+            const snap = await getDoc(userDocRef);
 
-          // ✅ ADMIN이면 tier를 먼저 MASTER로 강제 (UI 업데이트보다 먼저!)
-          const isAdmin = isAdminUser(user);
-          if (isAdmin) {
-            data.tier = "MASTER";
-          }
+            if (!snap.exists()) return;
 
+            const data = snap.data();
+            const currentCoins = data.coins || 0;
 
-          // ---- UI updates ----
-          const level = setXpUI(data.xp || 0);
-          setPetByLevel(level);
+            if (currentCoins < 1) {
+              alert("💎 코인이 부족해요! (1코인 필요)");
+              return;
+            }
 
-          setCoinsUI(data.coins || 0);
-          setTierUI(data.tier || "FREE");
+            // 3. 랜덤 뽑기 및 DB 업데이트
+            sfx.play("click");
+            const randomSticker = STICKERS[Math.floor(Math.random() * STICKERS.length)];
 
-          $("streakCount").textContent = `🔥 연속 ${data.streak || 0}일 / 총 ${data.totalDays || 0}회`;
+            await updateDoc(userDocRef, {
+              coins: increment(-1),           // 코인 1개 차감
+              inventory: arrayUnion(randomSticker), // 인벤토리에 스티커 추가 (중복 방지됨)
+              lastActiveAt: serverTimestamp()
+            });
 
-          // theme
-          const theme = data.theme || "";
-          if (theme) {
-            setThemeActive(theme);
-            const suggestion = chooseSuggestion(theme);
-            $("todaySuggestion").textContent = suggestion;
-            $("habitName").value = suggestion;
-          } else {
-            setThemeActive("");
-            $("todaySuggestion").textContent = "테마를 선택하세요.";
-            $("habitName").value = "테마를 선택하세요.";
-          }
+            // 4. 결과 알림
+            alert(`🎉 축하합니다! [ ${randomSticker} ] 스티커를 획득했어요!`);
 
-          // inventory
-          renderInventory(data.inventory || []);
+            // (참고: 코인 UI는 기존 onSnapshot이 자동으로 갱신해줍니다)
 
-          // placed stickers
-          await loadPlacedStickers(user.uid).catch(() => ({}));
-
-          // heatmap
-          await loadHeatmap(user.uid).catch(() => ({}));
-
-          // memo history (tier 기준)
-          if (["PRO", "ULTRA", "MASTER"].includes(data.tier || "FREE")) {
-            await loadMemoHistory(user.uid).catch(() => ({}));
-          }
-
-          // ✅ admin visibility (위에서 구한 isAdmin 재사용)
-          $("adminOpenBtn").style.display = isAdmin ? "block" : "none";
-          if (isAdmin) {
-            await adminRefreshDashboard().catch(() => ({}));
-            await adminLoadUsers($("adminSearch").value.trim()).catch(() => ({}));
+          } catch (err) {
+            console.error(err);
+            alert("오류가 발생했습니다: " + err.message);
           }
         });
+      }
+    }
+    // ✅ 13. 메모 히스토리 기능 (버튼 생성 + 로드)
+    function bindMemoHistory() {
+      const saveBtn = document.getElementById("saveMemoBtn");
+      
+      let historyBtn = document.getElementById("openMemoHistoryBtn");
+      if (saveBtn && !historyBtn) {
+        historyBtn = document.createElement("button");
+        historyBtn.id = "openMemoHistoryBtn";
+        historyBtn.className = "btn";
+        historyBtn.style.cssText = "margin-top:8px; background:#333; color:white; border:1px solid #555;";
+        historyBtn.textContent = "📂 지난 기록 보기";
+        saveBtn.parentNode.insertBefore(historyBtn, saveBtn.nextSibling);
+      }
 
-      // bind one-time UI handlers that need user reference
-      const getUserData = async () => userDataCache || (await getDoc(userRef(user.uid))).data();
+      if (historyBtn) {
+        historyBtn.addEventListener("click", async () => {
+          if (!currentUserCache) return alert("로그인이 필요합니다.");
+          sfx.play("click");
 
-      // theme buttons
-      bindThemeButtons(user, (userDataCache?.tier || "FREE"));
+          const historyPanel = document.getElementById("memoHistoryPanel");
+          const listContainer = document.getElementById("memoHistoryList");
+          
+          if (!historyPanel || !listContainer) return;
 
-      // workout panel bindings
-      bindWorkoutPanel(user);
+          const isHidden = historyPanel.style.display === "none";
+          historyPanel.style.display = isHidden ? "flex" : "none";
 
-      // authed UI events
-      bindAuthedUI(user, getUserData);
+          if (isHidden) {
+            listContainer.innerHTML = "<div style='padding:10px; text-align:center;'>🔄 로딩 중...</div>";
+            try {
+              const q = query(
+                collection(db, "users", currentUserCache.uid, "memos"),
+                orderBy("timestamp", "desc"),
+                limit(10)
+              );
+              const snaps = await getDocs(q);
+              listContainer.innerHTML = ""; 
 
-      // initial ticker
-      appendTicker(`${user.email} 님이 접속했습니다.`);
-      // ✅ 기능 전체 바인딩 (이게 빠져 있었음)
-      bindThemeButtons(user, userDataCache?.tier || "FREE");
-      bindWorkoutPanel(user);
-      bindAuthedUI(user, async () => userDataCache);
+              if (snaps.empty) {
+                listContainer.innerHTML = "<div style='padding:10px; text-align:center; color:#888;'>기록된 메모가 없습니다.</div>";
+                return;
+              }
+
+              snaps.forEach(d => {
+                const data = d.data();
+                const item = document.createElement("div");
+                item.className = "memo-item";
+                item.innerHTML = `
+                  <div class="memo-date" style="font-size:10px; color:#aaa; margin-bottom:4px;">${d.id}</div>
+                  <div class="memo-text" style="white-space:pre-wrap;">${data.content || ""}</div>
+                `;
+                listContainer.appendChild(item);
+              });
+            } catch (err) {
+              console.error(err);
+              listContainer.innerHTML = "<div style='padding:10px; color:#ef4444;'>오류 발생</div>";
+            }
+          }
+        });
+      }
+    }
+
+    // ✅ 14. Log 텍스트 클릭 기능 (버튼이 없어서 텍스트에 연결)
+    function bindLogButton() {
+      let logTarget = document.getElementById("openLogBtn");
+
+      if (!logTarget) {
+        const heatmapContainer = document.querySelector(".heatmap-container");
+        if (heatmapContainer) {
+          const spans = heatmapContainer.querySelectorAll("span");
+          spans.forEach(span => {
+            if (span.textContent.trim() === "Log") {
+              logTarget = span;
+              logTarget.style.cursor = "pointer";
+              logTarget.style.textDecoration = "underline";
+              logTarget.style.color = "var(--primary)";
+            }
+          });
+        }
+      }
+
+      const heatmapSection = document.querySelector(".heatmap-container");
+      if (logTarget && heatmapSection) {
+        logTarget.addEventListener("click", () => {
+          sfx.play("click");
+          heatmapSection.scrollIntoView({ behavior: "smooth", block: "center" });
+          
+          heatmapSection.style.transition = "0.3s";
+          heatmapSection.style.transform = "scale(1.02)";
+          setTimeout(() => heatmapSection.style.transform = "scale(1)", 300);
+        });
+      }
+    }
+
+    // ✅ 통합 초기화 함수
+    function initAdditionalBindings() {
+      bindWorkoutTabs();
+      bindThemeTags();
+      bindWorkoutButtons();
+      bindMemoButtons();
+      bindGlobalCheerButton();
+      bindFocusToggle();
+      bindHeaderThemeToggle();
+      bindPasswordReset();
+      initLiveTicker();
+
+      bindFloatingButtons(); // 상점, 랭킹 등
+      bindShopEvents();      // 상점 로직
+      bindMemoHistory();     // 메모 기록
+      bindLogButton();       // 로그 이동
+    }
+
+    // ===================================
+    // 최종 초기화 (DOMContentLoaded에 추가)
+    // ===================================
+    document.addEventListener('DOMContentLoaded', () => {
+      bindStaticUI();
+      initAdditionalBindings();
+      console.log('✅ HabitFlow 초기화 완료');
     });
-
-    /* =========================
-      24) Safety: prevent overlay blocking clicks
-    ========================= */
-    // (이미 CSS로 pointer-events 정리되어 있음)
-
   </script>
-  <!-- ===================== DASHBOARD (로그인 후 보임) ===================== -->
-  <section id="dashboard" style="display:none;">
-    <div class="dashboard-layout">
-
-      <!-- ✅ 왼쪽: 메인 카드 -->
-      <div class="glass card main-card">
-        <div class="top-row">
-          <div>
-            <div id="welcome" class="welcome">-</div>
-            <div class="level-row">
-              <span id="levelText" class="level">Lv.1</span>
-              <span id="xpText" class="xp">0 / 100 XP</span>
-            </div>
-            <div class="xp-bar">
-              <div id="xpBarFill" class="xp-fill" style="width:0%"></div>
-            </div>
-          </div>
-
-          <button id="logoutBtn" class="ghost-btn">로그아웃</button>
-        </div>
-
-        <div class="pet-wrap">
-          <div id="pet" class="pet">🥚</div>
-        </div>
-
-        <button id="broadcastBtn" class="primary-btn">💌 모두에게 응원 보내기</button>
-
-        <div class="mini-row">
-          <div id="streakCount" class="mini-pill">🔥 연속 0일 / 총 0회</div>
-          <button id="openLogBtn" class="mini-link">Log</button>
-        </div>
-
-        <div class="tier-row">
-          <div class="tier-label">등급: <b id="tierText">FREE</b></div>
-          <div class="coins">⭐ <b id="coinsText">0</b></div>
-        </div>
-
-        <hr class="sep" />
-
-        <!-- ✅ 오늘의 루틴 팩 -->
-        <div class="section-title">🎁 오늘의 루틴 팩</div>
-        <div class="theme-tabs">
-          <button class="theme-btn" data-theme="survival">🚑 생존</button>
-          <button class="theme-btn" data-theme="growth">✨ 갓생</button>
-          <button class="theme-btn" data-theme="detox">📵 디톡스</button>
-          <button class="theme-btn" data-theme="custom">➕ 커스텀</button>
-        </div>
-
-        <div class="suggest-card">
-          <div class="suggest-title">오늘의 추천 루틴</div>
-          <div id="todaySuggestion" class="suggest-text">테마를 선택하면 추천이 뜹니다.</div>
-        </div>
-
-        <div class="input-row">
-          <input id="habitName" class="input" placeholder="오늘 할 '딱 1개' 습관" />
-          <button id="addHabitBtn" class="accent-btn">추가</button>
-        </div>
-
-        <div id="habitList" class="habit-list"></div>
-
-        <button id="completeDayBtn" class="big-done">오늘 습관 완료 ✅</button>
-      </div>
-
-      <!-- ✅ 오른쪽: 운동/메모/히트맵/인벤토리 패널 -->
-      <div class="right-stack">
-
-        <!-- 운동 패널 -->
-        <div id="workoutSidePanel" class="glass card workout-side-panel">
-          <div class="w-title">🔥 오늘의 챌린지</div>
-          <div class="workout-tabs">
-            <button class="w-tab active" data-type="walk">🚶 걷기</button>
-            <button class="w-tab" data-type="run">🏃 달리기</button>
-            <button class="w-tab" data-type="gym">🏋️ 헬스</button>
-          </div>
-
-          <div class="workout-display">
-            <div id="workoutResult" class="wd-main">?</div>
-            <div class="wd-sub">종목 선택 후 미션 뽑기!</div>
-          </div>
-
-          <button id="startWorkoutBtn" class="btn">미션 랜덤 뽑기</button>
-          <button id="completeWorkoutBtn" class="btn done" style="display:none;">완료 (코인 3배)</button>
-        </div>
-
-        <!-- 메모 패널 -->
-        <div id="memoPanel" class="glass card memo-panel" style="display:none;">
-          <div class="memo-header">
-            <div class="memo-title">📝 오늘의 메모</div>
-            <span class="memo-badge">PRO+</span>
-          </div>
-
-          <textarea id="memoInput" class="memo-input" placeholder="오늘 느낀 점, 회고, 내일 계획..."></textarea>
-          <div class="memo-actions">
-            <button id="saveMemoBtn" class="accent-btn">저장</button>
-            <button id="openMemoHistoryBtn" class="ghost-btn">기록 보기</button>
-          </div>
-
-          <div id="memoHistory" class="memo-history" style="display:none;"></div>
-        </div>
-
-        <!-- 히트맵 -->
-        <div class="glass card">
-          <div class="section-title">📈 히트맵</div>
-          <div id="heatmap" class="heatmap"></div>
-        </div>
-
-        <!-- 인벤토리 -->
-        <div class="glass card">
-          <div class="section-title">🎒 인벤토리</div>
-          <div id="inventory" class="inventory"></div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ✅ 관리자 버튼 / 관리자 패널 -->
-  <button id="adminOpenBtn" class="admin-fab" style="display:none;">🛠 관리자</button>
-
-  <section id="adminPanel" class="admin-panel" style="display:none;">
-    <div class="glass card admin-shell">
-      <div class="admin-top">
-        <div class="admin-title">🛠 관리자 패널</div>
-        <button id="adminCloseBtn" class="ghost-btn">닫기</button>
-      </div>
-
-      <div class="admin-grid">
-        <div class="admin-box">
-          <div class="admin-box-title">유저 검색</div>
-          <div class="input-row">
-            <input id="adminSearch" class="input" placeholder="이메일로 검색" />
-            <button id="adminSearchBtn" class="accent-btn">검색</button>
-          </div>
-          <div id="adminUserList" class="admin-list"></div>
-        </div>
-
-        <div class="admin-box">
-          <div class="admin-box-title">관리자 로그인 강제</div>
-          <div class="admin-desc">
-            관리자 이메일/비번을 설정하면, 선택한 유저를 로그인된 상태”로 전환하는 기능(세션 스위치)을 붙일 수 있어요.
-            (Firebase Auth 특성상 서버 없이 완전한 강제로그인은 제한이 있어 별도 구현 필요)
-          </div>
-
-          <div class="input-row">
-            <input id="adminEmail" class="input" placeholder="관리자 이메일" value="test@gmail.com" />
-          </div>
-          <div class="input-row">
-            <input id="adminPass" class="input" placeholder="관리자 비밀번호" type="password" />
-            <button id="saveAdminCredBtn" class="accent-btn">저장</button>
-          </div>
-
-          <div id="adminStatus" class="admin-status">-</div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- ✅ BOTTOM LIVE TICKER (site bottom, one-line marquee) -->
   <div id="bottomTicker" class="bottom-ticker" aria-label="실시간 활동">
     <div class="ticker-track" id="tickerContent"></div>
   </div>
